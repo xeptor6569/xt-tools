@@ -1,0 +1,69 @@
+@import 'tailwindcss';
+
+/* Design tokens. Colours are checked for WCAG AA in both schemes. */
+@theme {
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+  --color-bg: #ffffff;
+  --color-surface: #f4f5f7;
+  --color-fg: #111827;
+  --color-muted: #4b5563;
+  --color-border: #d1d5db;
+  --color-accent: #1d4ed8;
+  --color-accent-fg: #ffffff;
+  --color-danger: #b91c1c;
+  --color-danger-bg: #fef2f2;
+  --color-warning: #92400e;
+  --color-warning-bg: #fffbeb;
+  --color-success: #166534;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #0b0f17;
+    --color-surface: #151b26;
+    --color-fg: #e5e7eb;
+    --color-muted: #a1a8b3;
+    --color-border: #374151;
+    --color-accent: #93b4ff;
+    --color-accent-fg: #0b0f17;
+    --color-danger: #fca5a5;
+    --color-danger-bg: #2a1215;
+    --color-warning: #fcd34d;
+    --color-warning-bg: #2a2110;
+    --color-success: #86efac;
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
+  html {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  a {
+    color: var(--color-accent);
+    text-decoration-line: underline;
+    text-underline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

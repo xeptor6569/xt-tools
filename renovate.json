@@ -1,0 +1,43 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "docker:pinDigests", "helpers:pinGitHubActionDigests", ":semanticCommits"],
+  "rangeStrategy": "pin",
+  "packageRules": [
+    {
+      "description": "Astro and its integrations move together.",
+      "matchPackageNames": ["astro", "@astrojs/**"],
+      "groupName": "astro"
+    },
+    {
+      "description": "The @playwright/test package and the Playwright Docker image must stay on the same version.",
+      "matchPackageNames": ["@playwright/test", "mcr.microsoft.com/playwright"],
+      "groupName": "playwright"
+    },
+    {
+      "description": "Tailwind packages move together.",
+      "matchPackageNames": ["tailwindcss", "@tailwindcss/**"],
+      "groupName": "tailwind"
+    },
+    {
+      "description": "Blocked: typescript-eslint and @astrojs/check don't support TypeScript 7 yet (PLAN.md D9).",
+      "matchPackageNames": ["typescript"],
+      "allowedVersions": "<6.1"
+    },
+    {
+      "description": "Blocked: @astrojs/preact requires Preact 10 (PLAN.md D10).",
+      "matchPackageNames": ["preact"],
+      "allowedVersions": "<11"
+    },
+    {
+      "description": "Types follow the pinned Node major.",
+      "matchPackageNames": ["@types/node"],
+      "allowedVersions": "<27"
+    },
+    {
+      "description": "Automerge dev-dependency patches when CI passes.",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
+    }
+  ]
+}

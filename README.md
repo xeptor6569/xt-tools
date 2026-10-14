@@ -5,7 +5,7 @@
 xt-tools is a self-hostable collection of 100+ privacy-first developer and everyday tools that run entirely in your browser. There's no tracking and no server-side processing, and the code makes no network calls. Host it with one Docker command, or put the static files on any web server, and it keeps working offline as an installable PWA.
 
 > [!NOTE]
-> **Status: planning.** Nothing can be run yet. The full build plan, including decisions, architecture, tool catalog and phases, is in **[PLAN.md](PLAN.md)**. The commands below show what the project is aiming for. Each one will be confirmed as its phase is completed.
+> **Status: Phase 0 (foundation) done.** The site, scaffolder, validator, Docker image and CI work, with one reference tool (Slugify). No image is published yet, so build it from source (see [Run it now](#run-it-now)). The full build plan, including decisions, architecture, tool catalog and phases, is in **[PLAN.md](PLAN.md)**.
 
 ## Principles
 
@@ -36,6 +36,18 @@ About 180 tools in 13 categories:
 | Design           | Gradients, box shadows, CSS `clamp()`, WCAG contrast checker, font pairing                                                                               |
 
 The full list, with tool IDs and phases, is in [PLAN.md § 19](PLAN.md#19-tool-catalog).
+
+## Run it now
+
+With Docker installed:
+
+```sh
+git clone https://github.com/xeptor6569/xt-tools.git && cd xt-tools
+make build up    # builds the image and serves it on http://localhost:8080
+make down        # stop it
+```
+
+Or with Node 26: `npm ci && npm run build && npx astro preview`.
 
 ## Quick start (planned for v1.0)
 
@@ -81,7 +93,7 @@ Browsers turn off some features on plain HTTP unless the address is `localhost`.
 
 The HTTPS Compose overlay sets this up for both public domains and LANs.
 
-## Contributing (planned workflow)
+## Contributing
 
 You only need Docker. Local Node 26 is optional.
 
@@ -92,7 +104,7 @@ make test                         # 3. validator, unit and end-to-end tests
 make build up                     # 4. rebuild and redeploy; the new tool appears automatically
 ```
 
-With Node installed, run `npm run new-tool`, `npm run dev`, `npm test` and `npm run test:e2e` directly. `CONTRIBUTING.md` will cover the tool contract, templates and the definition of done. Until then, see [PLAN.md § 5](PLAN.md#5-tool-contract) and [§ 19.3](PLAN.md#193-definition-of-done-per-tool).
+With Node installed, run `npm run new-tool`, `npm run dev`, `npm test` and `npm run test:e2e` directly. [CONTRIBUTING.md](CONTRIBUTING.md) covers the tool contract, the rules CI enforces and the definition of done.
 
 ## Security and privacy
 
@@ -104,4 +116,4 @@ Astro 7 (static, multi-page) · Preact islands · TypeScript (strict) · Tailwin
 
 ## License
 
-MIT. The `LICENSE` file will be added in Phase 0. Third-party licenses will be listed on the site's `/licenses/` page.
+[MIT](LICENSE). Third-party licenses are listed on the site's `/licenses/` page.

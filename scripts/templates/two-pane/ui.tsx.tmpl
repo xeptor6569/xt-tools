@@ -1,0 +1,20 @@
+import { useMemo, useState } from 'preact/hooks';
+import TwoPane from '../../components/ui/TwoPane.tsx';
+import { runTool } from '../../lib/run-tool.ts';
+import { __FN__ } from './logic.ts';
+
+export default function __COMPONENT__() {
+  const [input, setInput] = useState('');
+  const result = useMemo(() => runTool(() => __FN__(input)), [input]);
+
+  return (
+    <TwoPane
+      inputLabel="Input"
+      input={input}
+      onInput={setInput}
+      outputLabel="Output"
+      output={result.output ?? ''}
+      error={result.error}
+    />
+  );
+}

@@ -1,0 +1,26 @@
+#!/bin/sh
+# Pre-commit: format and lint staged files, then validate tools.
+# Enabled by `npm install` (scripts/setup-hooks.ts sets core.hooksPath).
+set -eu
+
+if ! command -v npx >/dev/null 2>&1 || [ ! -d node_modules ]; then
+  echo "pre-commit: Node or node_modules not found locally; skipping (CI runs the same checks)."
+  exit 0
+fi
+
+files=$(git diff --cached --name-only --diff-filter=ACMR)
+[ -z "$files" ] && exit 0
+
+lintable=$(printf '%s\n' "$files" | grep -E '\.(ts|tsx|js|astro)$' || true)
+formattable=$(printf '%s\n' "$files" | grep -E '\.(ts|tsx|js|astro|json|css|md|yaml|yml)$' || true)
+
+if [ -n "$formattable" ]; then
+  # shellcheck disable=SC2086
+  npx prettier --check --ignore-unknown $formattable
+fi
+if [ -n "$lintable" ]; then
+  # shellcheck disable=SC2086
+  npx eslint --max-warnings=0 $lintable
+fi
+
+npm run --silent validate-tools

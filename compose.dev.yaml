@@ -1,0 +1,72 @@
+# Development and testing with only Docker installed. Use the Makefile:
+#   make dev         hot-reload dev server on http://localhost:4321
+#   make new-tool    scaffold a tool inside the container
+#   make test-e2e    build the site image and run Playwright against it,
+#                    on a network with no internet access
+
+services:
+  dev:
+    build:
+      context: .
+      target: dev
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    user: '${UID:-1000}:${GID:-1000}'
+    ports:
+      - '127.0.0.1:4321:4321'
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    environment:
+      ASTRO_TELEMETRY_DISABLED: '1'
+      WATCH_POLL: '1'
+    stdin_open: true
+    tty: true
+
+  # The production image, built from the working tree.
+  site:
+    profiles: [test]
+    image: ${XT_SITE_IMAGE:-xt-tools:local}
+    build:
+      context: .
+      args:
+        BASE_PATH: ${BASE_PATH:-/}
+        VERSION: ${VERSION:-dev}
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - e2e
+
+  e2e:
+    profiles: [test]
+    build:
+      context: .
+      target: e2e
+    depends_on:
+      site:
+        condition: service_healthy
+    environment:
+      E2E_BASE_URL: http://site:8080${BASE_PATH:-/}
+      E2E_EXPECT_HEADERS: '1'
+      BASE_PATH: ${BASE_PATH:-/}
+      CI: '1'
+    volumes:
+      - ./test-results:/app/test-results
+      - ./playwright-report:/app/playwright-report
+    ipc: host
+    networks:
+      - e2e
+
+volumes:
+  node_modules:
+
+networks:
+  # internal: no route to the internet. Anything that tries to phone home fails.
+  e2e:
+    internal: true

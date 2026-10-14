@@ -1,0 +1,43 @@
+---
+import { categories } from '../../categories.ts';
+import Icon from '../../components/site/Icon.astro';
+import ToolCard from '../../components/site/ToolCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { href } from '../../lib/href.ts';
+import { toolsInCategory } from '../../tools/registry.ts';
+
+export function getStaticPaths() {
+  return categories.map((category) => ({ params: { id: category.id }, props: { category } }));
+}
+
+const { category } = Astro.props;
+const tools = toolsInCategory(category.id);
+---
+
+<BaseLayout title={category.label} description={category.description}>
+  <nav aria-label="Breadcrumb" class="mb-4 text-sm">
+    <ol class="flex items-center gap-1 text-muted">
+      <li>
+        <a href={href()}>Home</a>
+      </li>
+      <li aria-hidden="true">›</li>
+      <li aria-current="page" class="text-fg">
+        {category.label}
+      </li>
+    </ol>
+  </nav>
+  <h1 class="mb-2 flex items-center gap-2 text-3xl font-bold">
+    <Icon name={category.icon} class="size-7" />
+    {category.label}
+  </h1>
+  <p class="mb-6 text-muted">{category.description}</p>
+  {tools.length > 0 ? (
+    <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" data-xt="tool-grid">
+      {tools.map((tool) => (
+        <ToolCard tool={tool} />
+      ))}
+    </ul>
+  ) : (
+    <p>No tools in this category yet.</p>
+  )}
+</BaseLayout>

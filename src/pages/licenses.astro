@@ -1,0 +1,58 @@
+---
+import { shippedPackages } from '../../scripts/lib/licenses.ts';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// The bundled page can't use import.meta.dirname, so resolve from the project root.
+const packages = shippedPackages(process.cwd());
+
+const bundled = [
+  {
+    name: 'Lucide icons',
+    license: 'ISC',
+    homepage: 'https://lucide.dev',
+    note: 'Category and UI icons (copied, v1.57.0).',
+  },
+];
+---
+
+<BaseLayout title="Licenses" description="Open source software and data bundled with xt-tools, with their licenses.">
+  <h1 class="mb-2 text-3xl font-bold">Licenses</h1>
+  <p class="mb-6 text-muted">
+    xt-tools is released under the MIT license. It ships the following open source software and data.
+  </p>
+
+  <h2 class="mb-3 text-xl font-semibold">Packages</h2>
+  <table class="mb-8 w-full border-collapse text-left text-sm">
+    <thead>
+      <tr class="border-b border-border">
+        <th scope="col" class="py-2 pr-4">
+          Package
+        </th>
+        <th scope="col" class="py-2 pr-4">
+          Version
+        </th>
+        <th scope="col" class="py-2">
+          License
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {packages.map((p) => (
+        <tr class="border-b border-border">
+          <td class="py-2 pr-4">{p.homepage ? <a href={p.homepage}>{p.name}</a> : p.name}</td>
+          <td class="py-2 pr-4 font-mono">{p.version}</td>
+          <td class="py-2">{p.license}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  <h2 class="mb-3 text-xl font-semibold">Bundled assets and data</h2>
+  <ul class="list-disc pl-5 text-sm">
+    {bundled.map((b) => (
+      <li>
+        <a href={b.homepage}>{b.name}</a> ({b.license}): {b.note}
+      </li>
+    ))}
+  </ul>
+</BaseLayout>

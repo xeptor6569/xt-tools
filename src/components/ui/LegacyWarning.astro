@@ -1,0 +1,16 @@
+---
+import Icon from '../site/Icon.astro';
+
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props;
+---
+
+<div class="flex gap-3 rounded-lg border border-warning bg-warning-bg p-4 text-sm text-fg">
+  <Icon name="triangle-alert" class="size-5 shrink-0 text-warning" />
+  <p>
+    <strong class="text-warning">Legacy:</strong> {text}
+  </p>
+</div>

@@ -1,0 +1,52 @@
+---
+import Icon from '../components/site/Icon.astro';
+import ToolCard from '../components/site/ToolCard.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { categoryHref } from '../lib/href.ts';
+import { allTools, toolsByCategory } from '../tools/registry.ts';
+
+const groups = toolsByCategory().filter((g) => g.tools.length > 0);
+const total = allTools().length;
+---
+
+<BaseLayout
+  title="xt-tools"
+  description="Privacy-first developer and everyday tools that run entirely in your browser. No tracking, no server, no network calls."
+>
+  <h1 class="mb-2 text-3xl font-bold">Tools</h1>
+  <p class="mb-6 text-muted">
+    {total}
+    {total === 1 ? 'tool' : 'tools'} that run entirely in your browser. Nothing you enter leaves this device.
+  </p>
+
+  <nav aria-label="Filter by category" class="mb-8">
+    <ul class="flex flex-wrap gap-2">
+      {groups.map(({ category, tools }) => (
+        <li>
+          <a
+            href={categoryHref(category.id)}
+            class="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-sm text-fg no-underline hover:border-accent"
+          >
+            <Icon name={category.icon} class="size-4" />
+            {category.label}
+            <span class="text-muted">({tools.length})</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+
+  {groups.map(({ category, tools }) => (
+    <section class="mb-8" aria-labelledby={`cat-${category.id}`}>
+      <h2 id={`cat-${category.id}`} class="mb-3 flex items-center gap-2 text-xl font-semibold">
+        <Icon name={category.icon} />
+        {category.label}
+      </h2>
+      <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" data-xt="tool-grid">
+        {tools.map((tool) => (
+          <ToolCard tool={tool} />
+        ))}
+      </ul>
+    </section>
+  ))}
+</BaseLayout>

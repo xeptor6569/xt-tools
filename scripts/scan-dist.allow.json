@@ -1,0 +1,9 @@
+{
+  "$comment": "Absolute URLs allowed to appear in built JavaScript. Each entry needs a reason. Loading constructs (fetch, import(), Worker, importScripts...) with absolute URLs are never allowed.",
+  "allow": [
+    {
+      "prefix": "http://www.w3.org/",
+      "reason": "XML namespace identifiers used by Preact for SVG and MathML; never fetched."
+    }
+  ]
+}

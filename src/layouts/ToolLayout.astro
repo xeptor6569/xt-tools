@@ -1,0 +1,59 @@
+---
+import { getCategory } from '../categories.ts';
+import Icon from '../components/site/Icon.astro';
+import CapabilityNotice from '../components/ui/CapabilityNotice.tsx';
+import LegacyWarning from '../components/ui/LegacyWarning.astro';
+import { categoryHref, href } from '../lib/href.ts';
+import type { ToolMeta } from '../tools/types.ts';
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  meta: ToolMeta;
+}
+
+const { meta } = Astro.props;
+const category = getCategory(meta.category);
+const requires = meta.requires ?? [];
+---
+
+<BaseLayout title={meta.name} description={meta.description}>
+  <nav aria-label="Breadcrumb" class="mb-4 text-sm">
+    <ol class="flex flex-wrap items-center gap-1 text-muted">
+      <li>
+        <a href={href()}>Home</a>
+      </li>
+      <li aria-hidden="true">›</li>
+      {category && (
+        <>
+          <li>
+            <a href={categoryHref(category.id)}>{category.label}</a>
+          </li>
+          <li aria-hidden="true">›</li>
+        </>
+      )}
+      <li aria-current="page" class="text-fg">
+        {meta.name}
+      </li>
+    </ol>
+  </nav>
+
+  <header class="mb-6 flex flex-col gap-2">
+    <h1 class="text-2xl font-bold">{meta.name}</h1>
+    <p class="text-muted">{meta.description}</p>
+  </header>
+
+  <div class="mb-6 flex flex-col gap-3 empty:hidden">
+    {requires.length > 0 && <CapabilityNotice client:load requires={requires} />}
+    {meta.legacy && <LegacyWarning text={meta.legacy} />}
+    {meta.sensitive && (
+      <p class="flex items-center gap-2 text-sm text-muted">
+        <Icon name="shield" class="size-4 shrink-0" />
+        Sensitive tool: input is never stored or put in the URL.
+      </p>
+    )}
+  </div>
+
+  <section aria-label="Tool" translate="no">
+    <slot />
+  </section>
+</BaseLayout>

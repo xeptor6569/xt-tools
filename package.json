@@ -1,0 +1,59 @@
+{
+  "name": "xt-tools",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Privacy-first developer and everyday tools that run entirely in your browser.",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xeptor6569/xt-tools.git"
+  },
+  "engines": {
+    "node": ">=26"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/postbuild.ts",
+    "preview": "astro preview",
+    "check": "astro check && tsc --noEmit",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "validate-tools": "node scripts/validate-tools.ts",
+    "new-tool": "node scripts/new-tool.ts",
+    "remove-tool": "node scripts/remove-tool.ts",
+    "list-tools": "node scripts/list-tools.ts",
+    "check-licenses": "node scripts/check-licenses.ts",
+    "smoke": "node scripts/smoke-test.ts",
+    "prepare": "node scripts/setup-hooks.ts"
+  },
+  "dependencies": {
+    "preact": "10.29.8"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "@astrojs/preact": "6.0.6",
+    "@axe-core/playwright": "4.13.0",
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.64.1",
+    "@tailwindcss/vite": "4.3.3",
+    "@types/node": "26.6.5",
+    "astro": "7.3.8",
+    "eslint": "10.12.0",
+    "eslint-plugin-astro": "3.2.1",
+    "eslint-plugin-jsx-a11y-x": "0.2.0",
+    "globals": "17.13.0",
+    "prettier": "3.9.10",
+    "prettier-plugin-astro": "1.1.1",
+    "prettier-plugin-tailwindcss": "0.8.1",
+    "tailwindcss": "4.3.3",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.2",
+    "vitest": "5.0.4"
+  },
+  "allowScripts": {
+    "fsevents": false
+  }
+}

@@ -1,0 +1,16 @@
+import { describe, expect, it } from 'vitest';
+import { expectRobust } from '../../../tests/helpers/expect-robust.ts';
+import { __FN__ } from './logic.ts';
+
+describe('__FN__', () => {
+  it('returns output for simple input', () => {
+    expect(__FN__('hello')).toBe('hello');
+  });
+
+  it('survives empty, huge and malformed input', () => {
+    expectRobust(__FN__);
+  });
+
+  it.todo('XT-TODO: add known test vectors');
+  it.todo('XT-TODO: decide what empty input should return');
+});

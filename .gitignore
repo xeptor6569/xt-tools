@@ -15,6 +15,8 @@ node_modules/
 # ---------------------------------------------
 dist/
 out/
+# Generated server snippets (scripts/gen-csp.ts)
+build/
 .astro/
 .vite/
 *.tsbuildinfo
@@ -43,16 +45,14 @@ playwright/.cache/
 *.pem
 *.key
 *.crt
-!tests/fixtures/**/*.pem
 
 # ---------------------------------------------
 # Docker artifacts
 # ---------------------------------------------
 # Exported images for air-gapped installs (make export)
-offline-tools.tar.gz
+xt-tools*.tar.gz
 *.tar
 *.tar.gz
-!tests/fixtures/**/*.tar.gz
 
 # Local compose overrides
 compose.override.yaml
@@ -68,7 +68,6 @@ deploy/caddy_config/
 dist.zip
 release/
 *.zip
-!tests/fixtures/**/*.zip
 
 # ---------------------------------------------
 # Logs and debug
@@ -118,3 +117,8 @@ $RECYCLE.BIN/
 .temp/
 .tmp/
 *.local
+
+# ---------------------------------------------
+# Keep every test fixture, whatever its extension (keys, archives, ...)
+# ---------------------------------------------
+!tests/fixtures/**

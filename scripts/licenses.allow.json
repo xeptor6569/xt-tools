@@ -1,0 +1,19 @@
+{
+  "$comment": "License policy. See PLAN.md section 16.2. 'shipped' lists dev-installed packages whose code still reaches the browser (hydration runtime). 'exceptions' records approved packages outside the allowlist, with a reason.",
+  "allow": [
+    "MIT",
+    "ISC",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "Apache-2.0",
+    "0BSD",
+    "CC0-1.0",
+    "Unlicense",
+    "BlueOak-1.0.0",
+    "MPL-2.0",
+    "CC-BY-3.0",
+    "CC-BY-4.0"
+  ],
+  "shipped": ["astro", "@astrojs/preact"],
+  "exceptions": {}
+}

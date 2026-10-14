@@ -1,0 +1,5 @@
+// Runs __NAME__ off the main thread.
+import { expose } from '../../lib/worker-rpc.ts';
+import { __FN__ } from './logic.ts';
+
+expose({ __FN__ });
