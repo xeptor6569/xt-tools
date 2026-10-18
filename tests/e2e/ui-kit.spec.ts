@@ -125,3 +125,26 @@ test('large input is hashed in a worker without freezing the page', async ({ pag
   await page.evaluate(() => new Promise((r) => setTimeout(r, 0)));
   expect(Date.now() - start).toBeLessThan(1000);
 });
+
+test('untrusted Markdown is sanitized and sandboxed in the preview', async ({ page }) => {
+  await page.goto('tools/markdown-editor/');
+  await waitForHydration(page);
+  const evil = [
+    '# Hello',
+    '<script>window.parent.__xtPwned = true</script>',
+    '<img src="x" onerror="window.parent.__xtPwned = true">',
+    '[click](javascript:alert(1))',
+    '![tracker](https://tracker.example/pixel.png)',
+    '<iframe src="https://evil.example/"></iframe>',
+    '<form action="https://evil.example/"><input name="q"></form>',
+  ].join('\n\n');
+  await page.locator('[data-xt="input"]').fill(evil);
+  const preview = page.locator('[data-xt="preview"]');
+  await expect(preview).toHaveAttribute('srcdoc', /<h1>Hello<\/h1>/);
+  const doc = (await preview.getAttribute('srcdoc')) ?? '';
+  for (const bad of ['<script', 'onerror', 'javascript:', 'tracker.example', '<iframe', '<form'])
+    expect(doc).not.toContain(bad);
+  expect(doc).toContain('external content blocked');
+  await expect(preview).toHaveAttribute('sandbox', '');
+  expect(await page.evaluate(() => (window as unknown as { __xtPwned?: boolean }).__xtPwned)).toBeUndefined();
+});

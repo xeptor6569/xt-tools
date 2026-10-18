@@ -25,6 +25,8 @@ make new-tool ARGS="jwt-debugger --name 'JWT debugger' --category crypto \
 # or: npm run new-tool -- jwt-debugger --name ... --yes
 ```
 
+To create several tools at once from a spec (see `catalog/`): `npm run batch-tools -- catalog/01-text-converter.json --skip-existing --only id1,id2`.
+
 Options: `--requires camera,microphone`, `--sensitive`, `--heavy`, `--worker` (also scaffolds a Web Worker), `--template`. Run `npm run new-tool -- --help` for the full list. `make remove-tool ARGS="jwt-debugger --yes"` deletes a tool and its page.
 
 ### Templates

@@ -10,6 +10,9 @@ const BENIGN_CONSOLE_ERRORS: RegExp[] = [
   // Chromium ignores COOP on plain-HTTP origins (e.g. http://site:8080 in the
   // e2e network). The header still applies when the site is served over HTTPS.
   /The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy/,
+  // Playwright injects this fixture's init script into every frame. In the
+  // sandboxed preview (no allow-scripts) it is blocked, which is the point.
+  /Blocked script execution in 'about:srcdoc' because the document's frame is sandboxed/,
 ];
 
 interface Guard {
@@ -78,7 +81,12 @@ export async function waitForHydration(page: Page): Promise<void> {
 export async function expectAccessible(page: Page): Promise<void> {
   for (const colorScheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme });
-    const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
+    // Sandboxed previews can't run axe's script; their content is checked by the sanitizer tests.
+    const results = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
+      .exclude('[data-xt="preview"]')
+      .options({ iframes: false })
+      .analyze();
     const summary = results.violations.map(
       (v) => `[${colorScheme}] ${v.id}: ${v.help} (${v.nodes.map((n) => n.target.join(' ')).join(', ')})`,
     );

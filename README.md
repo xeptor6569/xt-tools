@@ -5,7 +5,7 @@
 xt-tools is a self-hostable collection of 100+ privacy-first developer and everyday tools that run entirely in your browser. There's no tracking and no server-side processing, and the code makes no network calls. Host it with one Docker command, or put the static files on any web server, and it keeps working offline as an installable PWA.
 
 > [!NOTE]
-> **Status: Phase 1 done.** The site, scaffolder (six templates), shared UI kit, validator, Docker image and CI work, with 11 tools: Slugify, Hash text, Base encoder, JSON formatter, IPv4 subnet calculator, UUID generator, Case converter, Color converter, Crontab explainer, Regex tester and QR code generator. No image is published yet, so build it from source (see [Run it now](#run-it-now)). The full build plan, including decisions, architecture, tool catalog and phases, is in **[PLAN.md](PLAN.md)**.
+> **Status: Phase 2 in progress (v0.1).** 43 tools work today: every Text and Converter tool from the catalog plus the Phase 1 pilots (hashing, JSON, regex, cron, QR codes, UUIDs, IPv4 subnets and more). The site, scaffolder, shared UI kit, Docker image and CI are in place. No image is published yet, so build it from source (see [Run it now](#run-it-now)). The full build plan is in **[PLAN.md](PLAN.md)**.
 
 ## Principles
 

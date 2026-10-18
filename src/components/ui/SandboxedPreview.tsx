@@ -1,6 +1,6 @@
-import DOMPurify from 'dompurify';
 import { useEffect, useState } from 'preact/hooks';
-import { href } from '../../lib/href.ts';
+import { PREVIEW_CSS } from '../../lib/preview-css.ts';
+import { sanitizeHtml } from '../../lib/sanitize.ts';
 
 interface Props {
   /** Untrusted HTML, e.g. rendered Markdown or an email body. */
@@ -12,20 +12,15 @@ interface Props {
 /**
  * Renders untrusted HTML in an iframe with an empty sandbox (no scripts, no
  * same-origin access, no forms, no top navigation), after sanitizing it with
- * DOMPurify. The iframe inherits the page CSP, so remote images, fonts and
- * tracking pixels are blocked too. See PLAN.md section 9.5.
+ * DOMPurify and removing remote resources. The iframe also inherits the page
+ * CSP. See PLAN.md section 9.5.
  */
 export default function SandboxedPreview({ html, title, class: className = 'h-96' }: Props) {
   const [doc, setDoc] = useState('');
 
   useEffect(() => {
-    const clean = DOMPurify.sanitize(html, {
-      USE_PROFILES: { html: true, svg: true },
-      FORBID_TAGS: ['style', 'form'],
-      FORBID_ATTR: ['style'],
-    });
     setDoc(
-      `<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="${href('preview.css')}"></head><body>${clean}</body></html>`,
+      `<!doctype html><html><head><meta charset="utf-8"><style>${PREVIEW_CSS}</style></head><body>${sanitizeHtml(html)}</body></html>`,
     );
   }, [html]);
 

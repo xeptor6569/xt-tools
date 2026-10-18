@@ -2,6 +2,7 @@ import preact from '@astrojs/preact';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 import { createHash } from 'node:crypto';
+import { PREVIEW_CSS } from './src/lib/preview-css.ts';
 import { themeBootstrapScript } from './src/lib/theme.ts';
 
 const basePath = process.env.BASE_PATH ?? '/';
@@ -14,6 +15,7 @@ const version = process.env.VERSION?.trim() || 'dev';
 // Astro doesn't hash `is:inline` scripts, so hash the theme bootstrap here.
 const sha256 = (text: string) => `sha256-${createHash('sha256').update(text).digest('base64')}` as const;
 const themeScriptHash = sha256(themeBootstrapScript(basePath));
+const previewStyleHash = sha256(PREVIEW_CSS);
 
 // One policy for every page. scripts/gen-csp.ts copies it (plus frame-ancestors)
 // into the nginx header, so keep both in sync by only editing it here.
@@ -47,7 +49,7 @@ export default defineConfig({
       algorithm: 'SHA-256',
       directives: [...cspDirectives],
       scriptDirective: { resources: ["'self'", "'wasm-unsafe-eval'"], hashes: [themeScriptHash] },
-      styleDirective: { resources: ["'self'"] },
+      styleDirective: { resources: ["'self'"], hashes: [previewStyleHash] },
     },
   },
   vite: {

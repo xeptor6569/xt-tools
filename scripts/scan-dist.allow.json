@@ -4,6 +4,18 @@
     {
       "prefix": "http://www.w3.org/",
       "reason": "XML namespace identifiers used by Preact for SVG and MathML; never fetched."
+    },
+    {
+      "prefix": "https://web.archive.org/web/20120819044459/http://www.roysac.com/",
+      "reason": "Credit line inside bundled FIGlet font data (ascii-art); never fetched."
+    },
+    {
+      "prefix": "http://patorjk.com/figfont-editor",
+      "reason": "Credit line inside bundled FIGlet font data (ascii-art); never fetched."
+    },
+    {
+      "prefix": "https://github.com/markedjs/marked",
+      "reason": "Text of marked's internal error message; never fetched."
     }
   ]
 }
