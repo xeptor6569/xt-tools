@@ -1,0 +1,22 @@
+import { ToolInputError } from '../types.ts';
+
+export interface Variant {
+  label: string;
+  value: string;
+}
+
+const MAX_INPUT = 1_000_000;
+
+/**
+ * XT-TODO: implement __NAME__. Return one entry per output variant.
+ *
+ * Keep this a pure function: no DOM, no framework, no storage. Throw
+ * ToolInputError with a helpful message when the input can't be processed.
+ */
+export function __FN__(input: string): Variant[] {
+  if (input.length > MAX_INPUT) throw new ToolInputError('Input is too large (maximum 1 MB).');
+  return [
+    { label: 'Upper case', value: input.toUpperCase() },
+    { label: 'Lower case', value: input.toLowerCase() },
+  ];
+}

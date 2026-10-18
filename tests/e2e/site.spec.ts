@@ -42,6 +42,20 @@ test('unknown pages return the custom 404', async ({ page, guard }) => {
   await expectAccessible(page);
 });
 
+test('theme choice applies immediately and survives a reload', async ({ page }) => {
+  await page.goto('');
+  const select = page.locator('select[data-xt-theme]');
+  await expect(select).toHaveValue('system');
+  await select.selectOption('dark');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(page.locator('select[data-xt-theme]')).toHaveValue('dark');
+  await expectAccessible(page);
+  await page.locator('select[data-xt-theme]').selectOption('system');
+  await expect(page.locator('html')).not.toHaveAttribute('data-theme', /.*/);
+});
+
 test('licenses page passes axe', async ({ page }) => {
   await page.goto('licenses/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Licenses');

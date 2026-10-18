@@ -19,8 +19,24 @@
   --color-success: #166534;
 }
 
+/* Dark tokens: chosen explicitly, or by the system when no theme is stored. */
+:root[data-theme='dark'] {
+  --color-bg: #0b0f17;
+  --color-surface: #151b26;
+  --color-fg: #e5e7eb;
+  --color-muted: #a1a8b3;
+  --color-border: #374151;
+  --color-accent: #93b4ff;
+  --color-accent-fg: #0b0f17;
+  --color-danger: #fca5a5;
+  --color-danger-bg: #2a1215;
+  --color-warning: #fcd34d;
+  --color-warning-bg: #2a2110;
+  --color-success: #86efac;
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --color-bg: #0b0f17;
     --color-surface: #151b26;
     --color-fg: #e5e7eb;
@@ -39,6 +55,14 @@
 @layer base {
   :root {
     color-scheme: light dark;
+  }
+
+  :root[data-theme='light'] {
+    color-scheme: light;
+  }
+
+  :root[data-theme='dark'] {
+    color-scheme: dark;
   }
 
   html {

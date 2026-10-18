@@ -1,0 +1,20 @@
+import { describe, expect, it } from 'vitest';
+import { expectRobust } from '../../../tests/helpers/expect-robust.ts';
+import { __FN__ } from './logic.ts';
+
+describe('__FN__', () => {
+  it('marks added and removed lines', () => {
+    expect(__FN__('a\nb\nc', 'a\nc\nd')).toEqual([
+      { kind: 'same', text: 'a' },
+      { kind: 'removed', text: 'b' },
+      { kind: 'same', text: 'c' },
+      { kind: 'added', text: 'd' },
+    ]);
+  });
+
+  it('survives empty, huge and malformed input', () => {
+    expectRobust((text) => __FN__(text, 'other'));
+  });
+
+  it.todo('XT-TODO: add tool-specific comparison cases');
+});

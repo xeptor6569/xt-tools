@@ -53,7 +53,8 @@ const requires = meta.requires ?? [];
     )}
   </div>
 
-  <section aria-label="Tool" translate="no">
+  {/* min-h-screen keeps the footer below the fold, so output that appears after hydration doesn't shift it (CLS). */}
+  <section aria-label="Tool" translate="no" class="min-h-screen">
     <slot />
   </section>
 </BaseLayout>

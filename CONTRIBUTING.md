@@ -27,6 +27,34 @@ make new-tool ARGS="jwt-debugger --name 'JWT debugger' --category crypto \
 
 Options: `--requires camera,microphone`, `--sensitive`, `--heavy`, `--worker` (also scaffolds a Web Worker), `--template`. Run `npm run new-tool -- --help` for the full list. `make remove-tool ARGS="jwt-debugger --yes"` deletes a tool and its page.
 
+### Templates
+
+Pick the closest starting point with `--template`. Each one scaffolds a working tool that passes every check.
+
+| Template             | Shape                                                                        | Example tools                                |
+| -------------------- | ---------------------------------------------------------------------------- | -------------------------------------------- |
+| `two-pane` (default) | Input on the left, output with Copy on the right. Supports `--worker`.       | JSON formatter, Base encoder                 |
+| `text-transform`     | One input, many labelled outputs, each with its own Copy button              | Case converter, IPv4 subnet, Color converter |
+| `generator`          | Options + Generate button; randomness is injected so tests are deterministic | UUID generator                               |
+| `file-processor`     | Drop zone → results; files never leave the device                            | File checksum, EXIF viewer                   |
+| `diff`               | Two inputs → line-by-line differences                                        | Text diff, JSON diff                         |
+| `reference-table`    | Searchable static table (`data.ts`)                                          | HTTP status codes, port reference            |
+
+### Shared UI kit
+
+Build the UI from `src/components/ui/` so every tool looks and behaves the same:
+
+- **Inputs:** `TextArea`, `Input`, `Select`, `Toggle`, `Tabs`, `AlgorithmSelect` (labels legacy options and warns when one is picked). Text inputs default to no spellcheck, autocomplete or autocorrect.
+- **Actions:** `Button`, `CopyButton` (works over plain HTTP too), `DownloadButton`, `FileDropZone`, `ShareButton`.
+- **Results:** `OutputRegion` (announces updates to screen readers), `KeyValueList`, `ResultTable`, `ErrorMessage`, `LoadingState`, `LegacyNotice`.
+- **Containment:** `SandboxedPreview` for untrusted HTML, Markdown, SVG or email (sanitized with DOMPurify, rendered in an empty-sandbox iframe).
+- **Layout:** `TwoPane`, `ExampleButton` (fed from `meta.examples`).
+- **Hooks:** `useWorker` (with a timeout that terminates runaway work), `useDebounced`, `usePersistentState` + `RememberToggle` (opt-in local storage), `useShareableState` (restores a `#s=` share link).
+
+Never use `usePersistentState`, `RememberToggle`, `useShareableState` or `ShareButton` in a `sensitive` tool; the validator rejects it.
+
+Inline `style` attributes are blocked by the CSP. For dynamic colours or sizes, set a CSS custom property from an effect (`el.style.setProperty('--x', value)`) and use it in a class such as `bg-(--x)`; see the color converter.
+
 The scaffolder creates:
 
 ```
@@ -42,7 +70,7 @@ The new tool appears on the home page, its category page, the search index and t
 
 ## The tool contract
 
-`meta.ts` exports an object that `satisfies ToolMeta` (`src/tools/types.ts`). Use only `import type` in it, so plain Node can load it.
+`meta.ts` declares `const meta: ToolMeta = { … }` and default-exports it (`src/tools/types.ts`). Use only `import type` in it, so plain Node can load it.
 
 | Field         | Rule                                                                                   |
 | ------------- | -------------------------------------------------------------------------------------- |

@@ -1,0 +1,20 @@
+import { describe, expect, it } from 'vitest';
+import { expectRobust } from '../../../tests/helpers/expect-robust.ts';
+import { rows } from './data.ts';
+import { __FN__ } from './logic.ts';
+
+describe('__FN__', () => {
+  it('returns everything for an empty query', () => {
+    expect(__FN__(rows, '')).toHaveLength(rows.length);
+  });
+
+  it('matches every term, ignoring case', () => {
+    expect(__FN__(rows, 'EXAMPLE second').map((r) => r.value)).toEqual(['2']);
+  });
+
+  it('survives empty, huge and malformed queries', () => {
+    expectRobust((q) => __FN__(rows, q));
+  });
+
+  it.todo('XT-TODO: test lookups against the real data');
+});

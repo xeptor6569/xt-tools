@@ -1,0 +1,17 @@
+import { describe, expect, it } from 'vitest';
+import { expectRobust } from '../../../tests/helpers/expect-robust.ts';
+import { __FN__ } from './logic.ts';
+
+const encode = (text: string) => new TextEncoder().encode(text);
+
+describe('__FN__', () => {
+  it('describes a file', () => {
+    expect(__FN__(encode('hi'), 'a.txt')).toContainEqual({ label: 'Size', value: '2 bytes' });
+  });
+
+  it('survives empty, huge and malformed files', () => {
+    expectRobust((text) => __FN__(encode(text), 'test.bin'));
+  });
+
+  it.todo('XT-TODO: add fixture files under tests/fixtures/ and test real output');
+});

@@ -3,7 +3,7 @@
 import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 
-const steps = ['gen-csp.ts', 'scan-dist.ts', 'precompress.ts'];
+const steps = ['gen-csp.ts', 'scan-dist.ts', 'check-budget.ts', 'precompress.ts'];
 
 for (const step of steps) {
   try {

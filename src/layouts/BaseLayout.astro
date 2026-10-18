@@ -2,6 +2,8 @@
 import '../styles/global.css';
 import { categories } from '../categories.ts';
 import { categoryHref, href } from '../lib/href.ts';
+import { themeBootstrapScript } from '../lib/theme.ts';
+import ThemeSwitch from '../components/site/ThemeSwitch.astro';
 
 interface Props {
   title: string;
@@ -28,6 +30,8 @@ const version = __XT_VERSION__;
     <link rel="icon" href={href('favicon.svg')} type="image/svg+xml" />
   </head>
   <body class="flex min-h-screen flex-col">
+    {/* Runs before first paint. It's in <body> because Astro adds the CSP <meta> at the end of <head>. */}
+    <script is:inline set:html={themeBootstrapScript(import.meta.env.BASE_URL)} />
     <a
       href="#main"
       class="sr-only rounded bg-accent px-3 py-2 text-accent-fg focus:not-sr-only focus:absolute focus:top-2 focus:left-2"
@@ -39,7 +43,10 @@ const version = __XT_VERSION__;
         <a href={href()} class="text-lg font-bold text-fg no-underline">
           xt-tools
         </a>
-        <span class="hidden text-sm text-muted sm:inline">Your toolbox, your server, no internet required.</span>
+        <span class="hidden text-sm text-muted md:inline">Your toolbox, your server, no internet required.</span>
+        <div class="ml-auto">
+          <ThemeSwitch />
+        </div>
       </div>
     </header>
     <main id="main" class="mx-auto w-full max-w-6xl flex-1 px-4 py-6">

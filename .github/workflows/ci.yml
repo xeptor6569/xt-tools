@@ -60,26 +60,40 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Scaffold a tool with a worker
-        run: >
-          npm run new-tool -- ci-demo --name "CI demo" --category text
-          --description "Temporary tool created by CI to test the scaffolder." --worker --yes
-      - name: The new tool passes every check without other edits
+      - name: Scaffold one tool per template, plus one with a worker
+        run: |
+          for t in two-pane text-transform generator file-processor diff reference-table; do
+            npm run new-tool -- "ci-$t" --name "CI $t" --category text \
+              --description "Temporary tool created by CI to test the $t template." --template "$t" --yes
+          done
+          npm run new-tool -- ci-worker --name "CI worker" --category text \
+            --description "Temporary tool created by CI to test the worker template." --worker --yes
+      - name: The new tools pass every check without other edits
         run: |
           npm run validate-tools
           npm run check
           npm run lint
           npm test
           npm run build
-          test -f dist/tools/ci-demo/index.html
-          grep -q 'ci-demo' dist/search-index.json
-          grep -q 'tools/ci-demo/' dist/index.html
-          grep -q 'tools/ci-demo/' dist/category/text/index.html
-      - name: Remove it again
+          for id in $(ls src/tools | grep '^ci-'); do
+            test -f "dist/tools/$id/index.html"
+            grep -q "\"$id\"" dist/search-index.json
+            grep -q "tools/$id/" dist/index.html
+            grep -q "tools/$id/" dist/category/text/index.html
+          done
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('package-lock.json') }}
+      - name: End-to-end tests cover the new tools
         run: |
-          npm run remove-tool -- ci-demo --yes
-          test ! -e src/tools/ci-demo
-          test ! -e src/pages/tools/ci-demo.astro
+          npx playwright install --with-deps chromium
+          npx playwright test tests/e2e/tools.spec.ts
+      - name: Remove them again
+        run: |
+          for id in $(ls src/tools | grep '^ci-'); do npm run remove-tool -- "$id" --yes; done
+          test -z "$(ls src/tools | grep '^ci-')"
+          test -z "$(ls src/pages/tools | grep '^ci-')"
           npm run validate-tools -- --strict
 
   image:
@@ -121,6 +135,21 @@ jobs:
       - name: Stop containers
         if: always()
         run: docker compose -f compose.dev.yaml --profile test down
+      - name: Lighthouse (performance, accessibility, best practices)
+        if: matrix.base == '/'
+        run: |
+          docker run -d --rm --name xt-lh --read-only --tmpfs /tmp --cap-drop ALL \
+            --security-opt no-new-privileges -p 8080:8080 xt-tools:ci
+          for i in $(seq 1 30); do curl -sf http://localhost:8080/healthz && break; sleep 1; done
+          npx --yes @lhci/cli@0.15.1 autorun
+      - name: Upload Lighthouse reports
+        if: always() && matrix.base == '/'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: lighthouse
+          path: .lighthouseci/
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Upload Playwright report
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

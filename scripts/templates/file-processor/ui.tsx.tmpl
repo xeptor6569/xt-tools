@@ -1,0 +1,39 @@
+import { useState } from 'preact/hooks';
+import ErrorMessage from '../../components/ui/ErrorMessage.tsx';
+import FileDropZone from '../../components/ui/FileDropZone.tsx';
+import KeyValueList from '../../components/ui/KeyValueList.tsx';
+import LoadingState from '../../components/ui/LoadingState.tsx';
+import OutputRegion from '../../components/ui/OutputRegion.tsx';
+import { errorMessage } from '../../lib/run-tool.ts';
+import { __FN__, MAX_BYTES, type FileFact } from './logic.ts';
+
+export default function __COMPONENT__() {
+  const [facts, setFacts] = useState<FileFact[]>([]);
+  const [error, setError] = useState<string>();
+  const [busy, setBusy] = useState(false);
+
+  const onFiles = async ([file]: File[]) => {
+    if (!file) return;
+    setBusy(true);
+    try {
+      setFacts(__FN__(new Uint8Array(await file.arrayBuffer()), file.name));
+      setError(undefined);
+    } catch (e) {
+      setFacts([]);
+      setError(errorMessage(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div class="flex flex-col gap-4">
+      <FileDropZone label="Choose a file" onFiles={onFiles} maxBytes={MAX_BYTES} />
+      <OutputRegion label="Results" busy={busy}>
+        {busy && <LoadingState label="Reading file…" />}
+        {facts.length > 0 && <KeyValueList items={facts} />}
+        <ErrorMessage message={error} />
+      </OutputRegion>
+    </div>
+  );
+}

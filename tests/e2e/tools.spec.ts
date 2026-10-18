@@ -24,7 +24,7 @@ for (const tool of tools) {
       for (const text of ['hello', '', '\u{1F680} \uD800 <script>alert(1)</script>']) {
         await input.fill(text);
         await page.waitForTimeout(150);
-        await expect(page.locator('[data-xt="error"]').first()).not.toHaveText(/report it as a bug/);
+        await expect(page.locator('[data-xt="error"]', { hasText: /report it as a bug/ })).toHaveCount(0);
       }
     });
 

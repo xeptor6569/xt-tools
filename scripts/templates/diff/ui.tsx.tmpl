@@ -1,0 +1,46 @@
+import { useMemo, useState } from 'preact/hooks';
+import ErrorMessage from '../../components/ui/ErrorMessage.tsx';
+import OutputRegion from '../../components/ui/OutputRegion.tsx';
+import TextArea from '../../components/ui/TextArea.tsx';
+import { useDebounced } from '../../components/ui/useDebounced.ts';
+import { runTool } from '../../lib/run-tool.ts';
+import { __FN__ } from './logic.ts';
+
+const STYLE = {
+  same: { sign: ' ', label: 'unchanged', class: 'text-fg' },
+  added: { sign: '+', label: 'added', class: 'bg-surface text-success' },
+  removed: { sign: '−', label: 'removed', class: 'bg-surface text-danger' },
+} as const;
+
+export default function __COMPONENT__() {
+  const [before, setBefore] = useState('');
+  const [after, setAfter] = useState('');
+  const a = useDebounced(before);
+  const b = useDebounced(after);
+  const result = useMemo(() => runTool(() => __FN__(a, b)), [a, b]);
+  const changes = result.output?.filter((l) => l.kind !== 'same').length ?? 0;
+
+  return (
+    <div class="flex flex-col gap-4">
+      <div class="grid gap-4 md:grid-cols-2">
+        <TextArea label="Original" value={before} onValue={setBefore} data-xt="input" />
+        <TextArea label="Changed" value={after} onValue={setAfter} />
+      </div>
+      <OutputRegion label="Differences">
+        <p class="text-sm text-muted">{changes === 0 ? 'No differences.' : `${changes} changed line(s).`}</p>
+        {result.output && result.output.length > 0 && (
+          <ol class="overflow-x-auto rounded-lg border border-border font-mono text-sm">
+            {result.output.map((line, i) => (
+              <li key={i} class={`px-3 whitespace-pre ${STYLE[line.kind].class}`}>
+                <span class="sr-only">{STYLE[line.kind].label}: </span>
+                <span aria-hidden="true">{STYLE[line.kind].sign} </span>
+                {line.text}
+              </li>
+            ))}
+          </ol>
+        )}
+        <ErrorMessage message={result.error} />
+      </OutputRegion>
+    </div>
+  );
+}

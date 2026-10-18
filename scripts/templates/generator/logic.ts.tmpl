@@ -1,0 +1,25 @@
+import { ToolInputError } from '../types.ts';
+
+/** Returns `n` cryptographically random bytes. The UI passes crypto.getRandomValues; tests pass a fake. */
+export type RandomBytes = (n: number) => Uint8Array;
+
+export const MAX_COUNT = 1000;
+
+/** Parses the "how many" field. */
+export function parseCount(text: string): number {
+  const trimmed = text.trim();
+  if (trimmed === '') return 1;
+  if (!/^\d+$/.test(trimmed)) throw new ToolInputError('Enter a whole number.');
+  const n = Number(trimmed);
+  if (n < 1 || n > MAX_COUNT) throw new ToolInputError(`Enter a number from 1 to ${MAX_COUNT}.`);
+  return n;
+}
+
+/**
+ * XT-TODO: implement __NAME__. Generate `count` values from `random`.
+ *
+ * Keep this a pure function: randomness is injected so tests are deterministic.
+ */
+export function __FN__(count: number, random: RandomBytes): string[] {
+  return Array.from({ length: count }, () => [...random(16)].map((b) => b.toString(16).padStart(2, '0')).join(''));
+}

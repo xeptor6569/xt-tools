@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'preact/hooks';
 import { copyText } from '../../lib/clipboard.ts';
+import { buttonClass } from './Button.tsx';
 
 interface Props {
   text: string;
   label?: string;
+  /** Accessible name when several copy buttons share a screen, e.g. "Copy SHA-256". */
+  ariaLabel?: string;
+  compact?: boolean;
 }
 
-export default function CopyButton({ text, label = 'Copy' }: Props) {
+export default function CopyButton({ text, label = 'Copy', ariaLabel, compact }: Props) {
   const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle');
 
   useEffect(() => {
@@ -21,10 +25,11 @@ export default function CopyButton({ text, label = 'Copy' }: Props) {
         type="button"
         disabled={text === ''}
         onClick={async () => setState((await copyText(text)) ? 'copied' : 'failed')}
-        class="rounded-md border border-border bg-surface px-3 py-1.5 text-sm font-medium text-fg hover:border-accent disabled:cursor-not-allowed disabled:opacity-60"
+        class={compact ? `${buttonClass('secondary')} min-h-7 px-2 py-0.5 text-xs` : buttonClass('secondary')}
+        aria-label={ariaLabel}
         data-xt="copy"
       >
-        {state === 'copied' ? 'Copied' : label}
+        {state === 'copied' ? 'Copied' : state === 'failed' ? 'Copy failed' : label}
       </button>
       <span role="status" class="sr-only">
         {state === 'copied' ? 'Copied to clipboard' : state === 'failed' ? 'Copy failed' : ''}

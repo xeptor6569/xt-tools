@@ -1,6 +1,6 @@
 import type { ToolMeta } from '../types.ts';
 
-export default {
+const meta: ToolMeta = {
   id: 'slugify',
   name: 'Slugify',
   description: 'Turn any text into a clean, URL-friendly slug.',
@@ -11,4 +11,6 @@ export default {
     { input: 'Hello, World! Ça va?', expect: 'hello-world-ca-va' },
     { input: 'Straße & Café', expect: 'strasse-and-cafe' },
   ],
-} satisfies ToolMeta;
+};
+
+export default meta;

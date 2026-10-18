@@ -45,10 +45,23 @@ function readHomepage(root: string, path: string): string | undefined {
       repository?: string | { url?: string };
     };
     const repo = typeof pkg.repository === 'string' ? pkg.repository : pkg.repository?.url;
-    return pkg.homepage ?? repo?.replace(/^git\+/, '').replace(/\.git$/, '');
+    return normalizeUrl(pkg.homepage) ?? normalizeUrl(repo);
   } catch {
     return undefined;
   }
+}
+
+/** Turns npm repository shorthands into https URLs; drops anything else. */
+export function normalizeUrl(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  let url = value
+    .trim()
+    .replace(/^git\+/, '')
+    .replace(/\.git$/, '');
+  url = url.replace(/^git@github\.com:/, 'https://github.com/').replace(/^github:/, 'https://github.com/');
+  url = url.replace(/^git:\/\//, 'https://').replace(/^ssh:\/\/git@/, 'https://');
+  if (/^[\w.-]+\/[\w.-]+$/.test(url)) url = `https://github.com/${url}`;
+  return /^https?:\/\/[^\s]+$/.test(url) ? url.replace(/^http:/, 'https:') : undefined;
 }
 
 /**

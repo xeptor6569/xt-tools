@@ -24,7 +24,8 @@ Options:
   --sensitive            The tool handles secrets (no URL state or persistence)
   --heavy                The tool lazy-loads WASM or large data
   --worker               Also scaffold a Web Worker
-  --template <name>      Template (default: two-pane)
+  --template <name>      two-pane (default), text-transform, generator, file-processor,
+                         diff or reference-table
   --yes, -y              Accept defaults and never prompt (for CI)
   --help, -h             Show this help
 
@@ -92,9 +93,15 @@ function splitList(value: string | undefined): string[] {
 
 // ---- Gather inputs --------------------------------------------------------
 
-const templates = existsSync(TEMPLATES_DIR) ? readdirSync(TEMPLATES_DIR) : [];
+const templates = existsSync(TEMPLATES_DIR) ? readdirSync(TEMPLATES_DIR).filter((t) => !t.startsWith('_')) : [];
 if (!templates.includes(opts.template)) {
   fail(`unknown template "${opts.template}". Available: ${templates.join(', ')}`);
+}
+const templateDir = join(TEMPLATES_DIR, opts.template);
+const sharedDir = join(TEMPLATES_DIR, '_shared');
+if (opts.worker && !existsSync(join(templateDir, 'ui.worker.tsx.tmpl'))) {
+  const withWorker = templates.filter((t) => existsSync(join(TEMPLATES_DIR, t, 'ui.worker.tsx.tmpl')));
+  fail(`template "${opts.template}" has no --worker variant. Templates with one: ${withWorker.join(', ')}`);
 }
 
 let id = positionals[0];
@@ -170,18 +177,21 @@ const lit = (v: unknown): string =>
 
 const metaSource = `import type { ToolMeta } from '../types.ts';
 
-export default {
+const meta: ToolMeta = {
 ${Object.entries(meta)
   .map(([k, v]) => `  ${k}: ${lit(v)},`)
   .join('\n')}
-} satisfies ToolMeta;
+};
+
+export default meta;
 `;
 
 const fnName = /^\d/.test(toolId) ? `run${toPascalCase(toolId)}` : toCamelCase(toolId);
 const componentName = `${/^\d/.test(toolId) ? 'Tool' : ''}${toPascalCase(toolId)}Tool`;
 
 function render(file: string): string {
-  return readFileSync(join(TEMPLATES_DIR, opts.template, file), 'utf8')
+  const path = existsSync(join(templateDir, file)) ? join(templateDir, file) : join(sharedDir, file);
+  return readFileSync(path, 'utf8')
     .replaceAll('__ID__', toolId)
     .replaceAll('__NAME__', toolName)
     .replaceAll('__FN__', fnName)
@@ -189,14 +199,18 @@ function render(file: string): string {
 }
 
 const dir = toolDir(toolId);
-const files: Array<[string, string]> = [
-  [join(dir, 'meta.ts'), metaSource],
-  [join(dir, 'logic.ts'), render('logic.ts.tmpl')],
-  [join(dir, 'logic.test.ts'), render('logic.test.ts.tmpl')],
-  [join(dir, 'ui.tsx'), render(opts.worker ? 'ui.worker.tsx.tmpl' : 'ui.tsx.tmpl')],
-  ...(opts.worker ? ([[join(dir, 'worker.ts'), render('worker.ts.tmpl')]] as Array<[string, string]>) : []),
-  [pagePath(toolId), render('page.astro.tmpl')],
-];
+// Every *.tmpl in the template folder becomes a file in the tool folder.
+// ui.worker.tsx.tmpl replaces ui.tsx when --worker is given.
+const files: Array<[string, string]> = [[join(dir, 'meta.ts'), metaSource]];
+for (const tmpl of readdirSync(templateDir)
+  .filter((f) => f.endsWith('.tmpl'))
+  .sort()) {
+  if (tmpl === 'ui.worker.tsx.tmpl') continue;
+  const source = tmpl === 'ui.tsx.tmpl' && opts.worker ? 'ui.worker.tsx.tmpl' : tmpl;
+  files.push([join(dir, tmpl.slice(0, -'.tmpl'.length)), render(source)]);
+}
+if (opts.worker) files.push([join(dir, 'worker.ts'), render('worker.ts.tmpl')]);
+files.push([pagePath(toolId), render('page.astro.tmpl')]);
 
 const existing = files.filter(([path]) => existsSync(path));
 if (existing.length > 0) fail(`refusing to overwrite:\n  ${existing.map(([p]) => rel(p)).join('\n  ')}`);

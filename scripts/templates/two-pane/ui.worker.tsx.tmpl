@@ -2,6 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import TwoPane from '../../components/ui/TwoPane.tsx';
 import { useWorker } from '../../components/ui/useWorker.ts';
 import { errorMessage } from '../../lib/run-tool.ts';
+import meta from './meta.ts';
 
 const createWorker = () => new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
 
@@ -45,6 +46,7 @@ export default function __COMPONENT__() {
       output={output}
       error={error}
       busy={busy}
+      examples={meta.examples}
     />
   );
 }

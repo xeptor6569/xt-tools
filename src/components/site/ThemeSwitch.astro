@@ -1,0 +1,31 @@
+---
+// Theme picker in the site header. Plain <select> plus a small bundled script,
+// so pages without tools ship no framework code.
+---
+
+<label class="flex items-center gap-2 text-sm text-muted">
+  <span>Theme</span>
+  <select data-xt-theme class="rounded-md border border-border bg-bg px-2 py-1 text-sm text-fg">
+    <option value="system">System</option>
+    <option value="light">Light</option>
+    <option value="dark">Dark</option>
+  </select>
+</label>
+
+<script>
+  import { readJson, writeJson, removeKey } from '../../lib/storage.ts';
+  import { applyTheme, THEME_KEY, type Theme } from '../../lib/theme.ts';
+
+  const valid = (v: unknown): v is Theme => v === 'system' || v === 'light' || v === 'dark';
+
+  for (const select of document.querySelectorAll<HTMLSelectElement>('select[data-xt-theme]')) {
+    const stored = readJson<unknown>(THEME_KEY);
+    select.value = valid(stored) ? stored : 'system';
+    select.addEventListener('change', () => {
+      const theme = valid(select.value) ? select.value : 'system';
+      applyTheme(theme);
+      if (theme === 'system') removeKey(THEME_KEY);
+      else writeJson(THEME_KEY, theme);
+    });
+  }
+</script>

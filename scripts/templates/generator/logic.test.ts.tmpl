@@ -1,0 +1,25 @@
+import { describe, expect, it } from 'vitest';
+import { expectRobust } from '../../../tests/helpers/expect-robust.ts';
+import { ToolInputError } from '../types.ts';
+import { __FN__, parseCount } from './logic.ts';
+
+const zeros = (n: number) => new Uint8Array(n);
+
+describe('__FN__', () => {
+  it('generates the requested number of values', () => {
+    expect(__FN__(3, zeros)).toHaveLength(3);
+  });
+
+  it('parses the count field', () => {
+    expect(parseCount('')).toBe(1);
+    expect(parseCount(' 5 ')).toBe(5);
+    expect(() => parseCount('0')).toThrow(ToolInputError);
+    expect(() => parseCount('abc')).toThrow(ToolInputError);
+  });
+
+  it('survives empty, huge and malformed count input', () => {
+    expectRobust(parseCount);
+  });
+
+  it.todo('XT-TODO: check the output format against known examples');
+});

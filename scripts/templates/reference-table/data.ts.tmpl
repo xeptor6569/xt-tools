@@ -1,0 +1,11 @@
+// XT-TODO: replace with the real reference data. Cite the source here.
+export interface Row extends Record<string, string> {
+  name: string;
+  value: string;
+  description: string;
+}
+
+export const rows: readonly Row[] = [
+  { name: 'Example one', value: '1', description: 'The first example row.' },
+  { name: 'Example two', value: '2', description: 'The second example row.' },
+];

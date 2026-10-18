@@ -67,13 +67,15 @@ for (const folder of toolIds) {
     err('logic.test.ts must contain at least one test');
   }
 
-  // Sensitive tools never use shareable URL state.
+  // Sensitive tools never put input in the URL or in storage.
   try {
     const meta = (await loadMeta(folder)) as { sensitive?: boolean } | undefined;
     if (meta?.sensitive) {
       for (const file of readdirSync(dir)) {
-        if (/\.(ts|tsx)$/.test(file) && /useShareableState/.test(readFileSync(join(dir, file), 'utf8'))) {
-          err(`${file}: sensitive tools must not use useShareableState`);
+        if (!/\.(ts|tsx)$/.test(file)) continue;
+        const source = readFileSync(join(dir, file), 'utf8');
+        for (const banned of ['useShareableState', 'ShareButton', 'usePersistentState', 'RememberToggle']) {
+          if (source.includes(banned)) err(`${file}: sensitive tools must not use ${banned}`);
         }
       }
     }
