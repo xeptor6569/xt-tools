@@ -96,7 +96,10 @@ LABEL org.opencontainers.image.title="xt-tools" \
       org.opencontainers.image.licenses="MIT"
 
 USER root
-RUN rm -rf /usr/share/nginx/html/* /etc/nginx/conf.d/*
+# Pick up Alpine security fixes released since the base image was built
+# (the weekly rebuild keeps this current).
+RUN apk upgrade --no-cache \
+ && rm -rf /usr/share/nginx/html/* /etc/nginx/conf.d/*
 COPY --chown=root:root deploy/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY --chown=root:root deploy/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY --chown=root:root deploy/nginx/security-headers.conf deploy/nginx/mime-extra.conf /etc/nginx/snippets/
