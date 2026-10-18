@@ -1,0 +1,292 @@
+[
+  {
+    "id": "date-time",
+    "name": "Date-time converter",
+    "category": "converter",
+    "template": "text-transform",
+    "description": "Convert dates between Unix timestamps, ISO 8601, RFC 2822 and local time, one or many at once.",
+    "keywords": ["date", "time", "timestamp", "unix", "epoch", "iso 8601", "rfc 2822", "batch unix timestamp converter"]
+  },
+  {
+    "id": "base-converter",
+    "name": "Integer base converter",
+    "category": "converter",
+    "template": "text-transform",
+    "description": "Convert whole numbers of any size between binary, octal, decimal, hex and other bases.",
+    "keywords": ["base", "binary", "octal", "decimal", "hexadecimal", "radix", "number"]
+  },
+  {
+    "id": "roman-numerals",
+    "name": "Roman numeral converter",
+    "category": "converter",
+    "description": "Convert numbers to Roman numerals and back.",
+    "keywords": ["roman", "numerals", "number", "latin"]
+  },
+  {
+    "id": "base-encoder",
+    "name": "Base encoder",
+    "category": "converter",
+    "description": "Encode and decode text as Base64, Base64URL, Base32, Base58, Ascii85 or hex.",
+    "keywords": ["base64", "base32", "base58", "hex"]
+  },
+  {
+    "id": "base64-file",
+    "name": "Base64 file converter",
+    "category": "converter",
+    "template": "file-processor",
+    "description": "Turn a file into Base64 or a data URI, or turn Base64 back into a downloadable file.",
+    "keywords": ["base64", "file", "data uri", "encode", "decode", "binary"]
+  },
+  {
+    "id": "color-converter",
+    "name": "Color converter",
+    "category": "converter",
+    "description": "Convert any CSS color between hex, RGB, HSL, HWB, Lab, LCH and OKLCH.",
+    "keywords": ["color", "hex", "rgb"]
+  },
+  {
+    "id": "case-converter",
+    "name": "Case converter",
+    "category": "converter",
+    "description": "Convert text between camelCase, snake_case, kebab-case, Title Case and more.",
+    "keywords": ["case"]
+  },
+  {
+    "id": "nato-alphabet",
+    "name": "NATO alphabet",
+    "category": "converter",
+    "description": "Spell text out with the NATO phonetic alphabet, or turn code words back into letters.",
+    "keywords": ["nato", "phonetic", "alphabet", "spelling", "alfa bravo charlie", "radio"]
+  },
+  {
+    "id": "text-to-binary",
+    "name": "Text to binary",
+    "category": "converter",
+    "description": "Convert text to binary, octal, decimal or hex byte values and back.",
+    "keywords": ["binary", "ascii", "bytes", "text to binary", "bits", "utf-8"]
+  },
+  {
+    "id": "text-to-unicode",
+    "name": "Text to Unicode",
+    "category": "converter",
+    "template": "text-transform",
+    "description": "Show the Unicode code points of text and escape it for JavaScript, CSS, HTML and more.",
+    "keywords": ["unicode", "code point", "escape", "utf-16", "html entity", "u+"]
+  },
+  {
+    "id": "data-format-converter",
+    "name": "Data format converter",
+    "category": "converter",
+    "description": "Convert between JSON, YAML, TOML, XML, CSV, .env, INI and Java properties.",
+    "keywords": [
+      "json",
+      "yaml",
+      "toml",
+      "xml",
+      "csv",
+      "env",
+      "ini",
+      "properties",
+      "json to yaml",
+      "yaml to json",
+      "json to csv"
+    ]
+  },
+  {
+    "id": "list-converter",
+    "name": "List converter",
+    "category": "converter",
+    "description": "Sort, dedupe, wrap, join and split lists of items.",
+    "keywords": ["list", "lines", "join", "split", "sort", "comma separated", "quote"]
+  },
+  {
+    "id": "table-converter",
+    "name": "Table converter",
+    "category": "converter",
+    "description": "Convert tables between CSV, TSV, JSON, Markdown and HTML.",
+    "keywords": ["table", "csv", "tsv", "markdown table", "html table", "markdown table generator", "csv to markdown"]
+  },
+  {
+    "id": "html-to-markdown",
+    "name": "HTML to Markdown",
+    "category": "converter",
+    "description": "Convert HTML into clean Markdown.",
+    "keywords": ["html", "markdown", "convert", "turndown"]
+  },
+  {
+    "id": "unit-converter",
+    "name": "Unit converter",
+    "category": "converter",
+    "template": "text-transform",
+    "description": "Convert length, mass, temperature, data size (KB vs KiB), time, speed and more.",
+    "keywords": [
+      "unit",
+      "convert",
+      "length",
+      "weight",
+      "temperature",
+      "celsius",
+      "fahrenheit",
+      "kib",
+      "mib",
+      "bytes",
+      "temperature converter"
+    ]
+  },
+  {
+    "id": "time-zones",
+    "name": "Time zone converter",
+    "category": "converter",
+    "template": "text-transform",
+    "description": "Convert a time between time zones and find meeting times that work everywhere.",
+    "keywords": ["time zone", "timezone", "meeting planner", "utc", "world time", "convert time"]
+  },
+  {
+    "id": "number-to-words",
+    "name": "Number to words",
+    "category": "converter",
+    "template": "text-transform",
+    "description": "Spell out numbers in English words, including ordinals and cheque-style amounts.",
+    "keywords": ["number", "words", "spell", "ordinal", "cheque", "check"]
+  },
+  {
+    "id": "morse-code",
+    "name": "Morse code",
+    "category": "converter",
+    "description": "Translate text to Morse code and back, and play it as audio.",
+    "keywords": ["morse", "code", "telegraph", "audio", "dots and dashes"]
+  },
+  {
+    "id": "punycode",
+    "name": "Punycode converter",
+    "category": "converter",
+    "description": "Convert internationalized domain names to Punycode and back.",
+    "keywords": ["punycode", "idn", "domain", "xn--", "unicode domain"]
+  },
+  {
+    "id": "text-encodings",
+    "name": "Text encodings",
+    "category": "converter",
+    "template": "text-transform",
+    "description": "Encode text as quoted-printable, UTF-7, UTF-16 or percent-encoding and decode it again.",
+    "keywords": ["quoted-printable", "utf-7", "utf-16", "encoding", "mime", "email"]
+  },
+
+  {
+    "id": "lorem-ipsum",
+    "name": "Lorem ipsum generator",
+    "category": "text",
+    "template": "generator",
+    "description": "Generate placeholder paragraphs, sentences or words of lorem ipsum.",
+    "keywords": ["lorem", "ipsum", "placeholder", "dummy text", "filler"]
+  },
+  {
+    "id": "text-stats",
+    "name": "Text statistics",
+    "category": "text",
+    "template": "text-transform",
+    "description": "Count characters, words, sentences, lines and bytes, and estimate reading time.",
+    "keywords": ["count", "characters", "words", "length", "reading time", "statistics"]
+  },
+  {
+    "id": "emoji-picker",
+    "name": "Emoji picker",
+    "category": "text",
+    "template": "reference-table",
+    "heavy": true,
+    "description": "Search every emoji by name or keyword and copy it, its code points or its shortcode.",
+    "keywords": ["emoji", "emoticon", "smiley", "unicode", "shortcode", "picker"]
+  },
+  {
+    "id": "string-obfuscator",
+    "name": "String obfuscator",
+    "category": "text",
+    "description": "Mask part of a string, such as an API key or email, keeping only the first and last characters.",
+    "keywords": ["obfuscate", "mask", "redact", "hide", "secret", "censor"]
+  },
+  {
+    "id": "text-diff",
+    "name": "Text diff",
+    "category": "text",
+    "template": "diff",
+    "description": "Compare two texts line by line and word by word.",
+    "keywords": ["diff", "compare", "difference", "changes"]
+  },
+  {
+    "id": "numeronym",
+    "name": "Numeronym generator",
+    "category": "text",
+    "description": "Turn words into numeronyms like i18n, l10n and a11y.",
+    "keywords": ["numeronym", "i18n", "a11y", "abbreviation"]
+  },
+  {
+    "id": "ascii-art",
+    "name": "ASCII art text",
+    "category": "text",
+    "heavy": true,
+    "description": "Render text as large ASCII-art letters in dozens of FIGlet fonts.",
+    "keywords": ["ascii", "art", "figlet", "banner", "text art"]
+  },
+  {
+    "id": "text-cleanup",
+    "name": "Text cleanup",
+    "category": "text",
+    "description": "Remove duplicate lines, trailing spaces, blank lines and other clutter from text.",
+    "keywords": ["dedupe", "duplicate lines", "trim", "blank lines", "whitespace", "clean", "remove"]
+  },
+  {
+    "id": "word-frequency",
+    "name": "Word frequency counter",
+    "category": "text",
+    "template": "text-transform",
+    "description": "Count how often each word appears in a text.",
+    "keywords": ["word", "frequency", "count", "occurrences", "keyword density"]
+  },
+  {
+    "id": "invisible-chars",
+    "name": "Invisible character detector",
+    "category": "text",
+    "template": "text-transform",
+    "description": "Find invisible, zero-width, bidirectional and look-alike characters hidden in text.",
+    "keywords": ["invisible", "zero width", "homoglyph", "bidi", "unicode", "hidden characters", "trojan source"]
+  },
+  {
+    "id": "unicode-normalizer",
+    "name": "Unicode normalizer",
+    "category": "text",
+    "template": "text-transform",
+    "description": "Normalize text to NFC, NFD, NFKC or NFKD and see what changed.",
+    "keywords": ["unicode", "normalize", "nfc", "nfd", "nfkc", "nfkd", "combining"]
+  },
+  {
+    "id": "text-to-speech",
+    "name": "Text to speech",
+    "category": "text",
+    "requires": ["speech-synthesis"],
+    "description": "Read text aloud with the voices built into this device, without sending it anywhere.",
+    "keywords": ["speech", "tts", "read aloud", "voice", "speak"]
+  },
+  {
+    "id": "readability",
+    "name": "Readability score",
+    "category": "text",
+    "template": "text-transform",
+    "description": "Score English text with Flesch reading ease, Flesch–Kincaid grade and other readability tests.",
+    "keywords": ["readability", "flesch", "kincaid", "grade level", "reading ease"]
+  },
+  {
+    "id": "markdown-editor",
+    "name": "Markdown editor",
+    "category": "text",
+    "description": "Write Markdown with a live preview, then copy the HTML or print it to PDF.",
+    "keywords": ["markdown", "md", "preview", "html", "markdown to html", "pdf", "editor"]
+  },
+  {
+    "id": "fancy-text",
+    "name": "Fancy text",
+    "category": "text",
+    "template": "text-transform",
+    "description": "Turn text into bold, italic, script, double-struck and other Unicode styles.",
+    "keywords": ["fancy", "unicode", "bold", "italic", "font", "cursive", "styled text"]
+  }
+]
