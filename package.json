@@ -36,6 +36,7 @@
     "croner": "10.0.1",
     "cronstrue": "3.32.0",
     "culori": "4.0.2",
+    "diff": "8.0.4",
     "dompurify": "3.4.17",
     "fast-xml-parser": "5.11.2",
     "js-xxhash": "5.0.1",
