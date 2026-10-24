@@ -10,7 +10,7 @@ xt-tools is a self-hostable collection of privacy-first developer and everyday t
 ## Principles
 
 - **Nothing leaves your device unless a tool says so.** No analytics, CDNs, remote fonts or telemetry. A tool marked Network names the services it contacts and sends a query only when you run it, with no cookies. Six layers still enforce this: lint rules, a validator, a scan of the built files, a strict Content Security Policy, end-to-end tests that fail on any external request, and tests run on a network with no internet access.
-- **Works offline.** After the first visit, the site keeps working without a connection. This needs HTTPS or `localhost` ([why](#https-and-secure-contexts)).
+- **Works offline.** After the first visit, pages are saved for use without a connection. Settings can download the larger tools ahead of time. This needs HTTPS or `localhost` ([why](#https-and-secure-contexts)). A lookup still needs a connection when you run it.
 - **Self-host anywhere.** The output is plain static files: nginx, Apache, Caddy, shared hosting or a NAS all work. The Docker image runs as a non-root user on a read-only filesystem.
 - **Small and fast.** Each page loads only its own code, at most 150 KB of gzipped JavaScript. Heavy tools (PDF, ffmpeg, SQLite, Argon2, OpenPGP) download their WASM only when you use them.
 - **Easy to extend.** One folder per tool, registered automatically. A new tool takes one command to create.

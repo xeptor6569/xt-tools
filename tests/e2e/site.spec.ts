@@ -1,7 +1,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { categories } from '../../src/categories.ts';
-import { expect, expectAccessible, test } from './fixtures.ts';
+import { expect, expectAccessible, serviceWorkerAvailable, test } from './fixtures.ts';
 import { loadTools } from './registry.ts';
 
 const tools = await loadTools();
@@ -110,10 +110,53 @@ test('licenses page passes axe', async ({ page }) => {
   await expectAccessible(page);
 });
 
+test('settings page offers offline download and passes axe', async ({ page }) => {
+  await page.goto('settings/');
+  test.skip(!(await serviceWorkerAvailable(page)), 'plain HTTP other than localhost cannot register a service worker');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Settings');
+  await expect(page.getByRole('button', { name: 'Download everything', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Clear all local data' })).toBeVisible();
+  await expect(page.locator('[data-xt="offline-banner"]')).toBeHidden();
+  await expect(page.locator('[data-xt="update"]')).toBeHidden();
+  await expectAccessible(page);
+});
+
+test('settings page explains that offline mode needs HTTPS', async ({ page }) => {
+  await page.goto('settings/');
+  test.skip(await serviceWorkerAvailable(page), 'this origin can register a service worker');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Settings');
+  await expect(page.locator('[data-xt="offline-banner"]')).toHaveText('Offline mode needs HTTPS.');
+  await expect(page.locator('[data-xt="offline-needs-https"]')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Download everything', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Clear all local data' })).toBeVisible();
+  await expect(page.locator('[data-xt="update"]')).toBeHidden();
+  await expectAccessible(page);
+});
+
+test('clear all local data removes pins and the theme', async ({ page }) => {
+  await page.goto('');
+  await expect(page.locator('html')).toHaveAttribute('data-xt-pins', 'ready');
+  await page.locator('[data-xt="tool-grid"] button[data-xt-pin="tool:slugify"]').click();
+  await expect(page.locator('[data-xt="pinned"]').getByRole('link', { name: 'Slugify' })).toBeVisible();
+  await page.goto('settings/');
+  await page.locator('select[data-xt-theme]').first().selectOption('dark');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await page.getByRole('button', { name: 'Clear all local data' }).click();
+  const reloaded = page.waitForEvent('load');
+  await page.getByRole('button', { name: 'Delete data' }).click();
+  await reloaded;
+  await expect(page.getByRole('heading', { level: 1, name: 'Settings' })).toBeVisible();
+  await page.goto('');
+  await expect(page.locator('html')).toHaveAttribute('data-xt-pins', 'ready');
+  await expect(page.locator('html')).not.toHaveAttribute('data-theme', /.*/);
+  await expect(page.locator('[data-xt="pinned"]').getByRole('link')).toHaveCount(0);
+});
+
 test('CSP meta tag is present on every page type', async ({ page }) => {
   for (const path of [
     '',
     'licenses/',
+    'settings/',
     `category/${categories[0].id}/`,
     ...tools.slice(0, 3).map((t) => `tools/${t.id}/`),
   ]) {
