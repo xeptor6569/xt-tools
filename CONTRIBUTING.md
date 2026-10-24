@@ -109,6 +109,10 @@ In `logic.ts`, throw `ToolInputError` (from `src/tools/types.ts`) for problems w
 - **Dependencies.** Everything is bundled locally. Ask before adding a dependency over roughly 100 KB gzipped to a non-heavy tool. Shipped licenses must be on the allowlist in `scripts/licenses.allow.json`. Put browser-shipped libraries in `dependencies` and build tooling in `devDependencies`.
 - **Formatting.** Prettier and ESLint run in a pre-commit hook (enabled by `npm install`) and in CI.
 
+## Bundled datasets
+
+Hand-curated data (for example the .gitignore templates or the Kubernetes schemas) lives in `public/data/` with a version in the file name. Each dataset has a module in `scripts/datasets/<name>.ts`; run `npm run refresh-data -- <name>` to download a new version. This is a developer-only step: it writes the file, removes the old version, updates the tool's file-name constant and records the source, license and SHA-256 in [docs/datasets.md](docs/datasets.md). Tools load the file with `loadLocalAsset()` and show a `LoadingState` meanwhile. Credit new data on the licenses page (`src/pages/licenses.astro`).
+
 ## Testing details
 
 - `npm test` runs Vitest over `src/**/*.test.ts` and `tests/unit/`.

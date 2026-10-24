@@ -15,5 +15,7 @@
     "CC-BY-4.0"
   ],
   "shipped": ["astro", "@astrojs/preact"],
-  "exceptions": {}
+  "exceptions": {
+    "argparse": "Python-2.0 (permissive). Used only by sql-formatter's CLI (bin/sql-formatter-cli.cjs); never bundled into the site. Approved by the user on 2026-10-24."
+  }
 }

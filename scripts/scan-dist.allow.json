@@ -16,6 +16,46 @@
     {
       "prefix": "https://github.com/markedjs/marked",
       "reason": "Text of marked's internal error message; never fetched."
+    },
+    {
+      "prefix": "https://github.com/cfworker",
+      "reason": "Fallback base URI for $ref resolution in @cfworker/json-schema (json-schema, k8s-manifest); the tools pass their own non-http base URI and nothing is fetched."
+    },
+    {
+      "prefix": "https://opensource.org/licenses/MIT",
+      "reason": "Preserved @license comment in Prism core (code-to-image worker); never fetched."
+    },
+    {
+      "prefix": "https://lea.verou.me",
+      "reason": "Preserved @author comment in Prism core (code-to-image worker); never fetched."
+    },
+    {
+      "prefix": "https://github.com/faker-js/faker",
+      "reason": "Text of a faker error message (mock-data worker); never fetched."
+    },
+    {
+      "prefix": "https://fakerjs.dev/guide/localization.html",
+      "reason": "Text of a faker error message (mock-data worker); never fetched."
+    },
+    {
+      "prefix": "https://avatars.githubusercontent.com/u/",
+      "reason": "String template in faker's image module, which faker always bundles; mock-data offers no image/avatar fields and never loads or renders generated values."
+    },
+    {
+      "prefix": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/",
+      "reason": "String template in faker's image module, which faker always bundles; mock-data offers no image/avatar fields and never loads or renders generated values."
+    },
+    {
+      "prefix": "https://loremflickr.com/",
+      "reason": "String template in faker's image module, which faker always bundles; mock-data offers no image/avatar fields and never loads or renders generated values."
+    },
+    {
+      "prefix": "https://picsum.photos/seed/",
+      "reason": "String template in faker's image module, which faker always bundles; mock-data offers no image/avatar fields and never loads or renders generated values."
+    },
+    {
+      "prefix": "http://www.google.com/bot.html",
+      "reason": "Part of the Googlebot user-agent string in faker's user-agent data (mock-data output text); never fetched."
     }
   ]
 }
