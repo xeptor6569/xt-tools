@@ -101,7 +101,11 @@ jobs:
       - name: End-to-end tests cover the new tools
         run: |
           mkdir -p test-results playwright-report
-          docker compose -f compose.dev.yaml --profile test build site e2e
+          # The temporary ci-* tools still have their XT-TODO placeholders, so
+          # this test image skips only the strict check (XT_VALIDATE_STRICT=0).
+          # The real tools are already validated strictly in the checks job,
+          # which scaffolds nothing, and every production build stays strict.
+          XT_VALIDATE_STRICT=0 docker compose -f compose.dev.yaml --profile test build site e2e
           docker compose -f compose.dev.yaml --profile test run --rm e2e npx playwright test tests/e2e/tools.spec.ts
       - name: Remove them again
         run: |

@@ -30,9 +30,13 @@ FROM deps AS build
 ARG BASE_PATH=/
 ARG SITE_URL=
 ARG VERSION=dev
+# Only the CI scaffolding-loop test image sets this to 0: it deliberately
+# contains freshly scaffolded tools that still have XT-TODO placeholders.
+# Every production build stays strict (CI and the Docker build both run it).
+ARG XT_VALIDATE_STRICT=1
 ENV BASE_PATH=${BASE_PATH} SITE_URL=${SITE_URL} VERSION=${VERSION}
 COPY . .
-RUN npm run validate-tools -- --strict \
+RUN npm run validate-tools $( [ "$XT_VALIDATE_STRICT" = "1" ] && echo --strict ) \
  && npm run check-licenses \
  && npm test \
  && npm run build \

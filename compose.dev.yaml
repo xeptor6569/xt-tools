@@ -33,6 +33,7 @@ services:
       args:
         BASE_PATH: ${BASE_PATH:-/}
         VERSION: ${VERSION:-dev}
+        XT_VALIDATE_STRICT: ${XT_VALIDATE_STRICT:-1}
     read_only: true
     tmpfs:
       - /tmp
