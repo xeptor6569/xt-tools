@@ -7,6 +7,7 @@ import { createInterface } from 'node:readline/promises';
 import { parseArgs } from 'node:util';
 import { categories, categoryIds, getCategory, groupIdsFor } from '../src/categories.ts';
 import { capabilityIds } from '../src/capabilities.ts';
+import { NETWORK_HOSTS } from '../src/lib/network-allow.ts';
 import { ID_PATTERN, validateMeta } from '../src/tools/validate-meta.ts';
 import { ROOT, TEMPLATES_DIR, pagePath, rel, slugify, toCamelCase, toPascalCase, toolDir } from './lib/tools.ts';
 
@@ -23,6 +24,7 @@ Options:
   --keywords <a,b,c>     Comma-separated search keywords (default: words of the name)
   --requires <a,b>       Capabilities: ${capabilityIds.join(', ')}
   --sensitive            The tool handles secrets (no URL state or persistence)
+  --network <origins>    Comma-separated allowlisted HTTPS origins this tool contacts
   --heavy                The tool lazy-loads WASM or large data
   --worker               Also scaffold a Web Worker
   --template <name>      two-pane (default), text-transform, generator, file-processor,
@@ -53,6 +55,7 @@ try {
       keywords: { type: 'string' },
       requires: { type: 'string' },
       sensitive: { type: 'boolean', default: false },
+      network: { type: 'string' },
       heavy: { type: 'boolean', default: false },
       worker: { type: 'boolean', default: false },
       template: { type: 'string', default: 'two-pane' },
@@ -195,13 +198,29 @@ const meta: Record<string, unknown> = {
 if (opts.sensitive) meta.sensitive = true;
 if (requires.length > 0) meta.requires = requires;
 if (opts.heavy) meta.heavy = true;
+if (opts.network) {
+  const hosts = splitList(opts.network);
+  const unknown = hosts.filter((host) => !(NETWORK_HOSTS as readonly string[]).includes(host));
+  if (hosts.length === 0 || unknown.length > 0) {
+    fail(`--network hosts must be allowlisted origins: ${NETWORK_HOSTS.join(', ')}`);
+  }
+  meta.network = { hosts };
+}
 
 const problems = validateMeta(meta, toolId);
 if (problems.length > 0) fail(`invalid metadata:\n  - ${problems.join('\n  - ')}`);
 
 const quote = (s: string) => `'${s.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
-const lit = (v: unknown): string =>
-  Array.isArray(v) ? `[${v.map((x) => lit(x)).join(', ')}]` : typeof v === 'string' ? quote(v) : String(v);
+const lit = (v: unknown): string => {
+  if (Array.isArray(v)) return `[${v.map((x) => lit(x)).join(', ')}]`;
+  if (typeof v === 'string') return quote(v);
+  if (v && typeof v === 'object') {
+    return `{ ${Object.entries(v)
+      .map(([key, value]) => `${key}: ${lit(value)}`)
+      .join(', ')} }`;
+  }
+  return String(v);
+};
 
 const metaSource = `import type { ToolMeta } from '../types.ts';
 

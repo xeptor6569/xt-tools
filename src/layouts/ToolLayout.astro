@@ -6,6 +6,7 @@ import SaveTool from '../components/site/SaveTool.astro';
 import CapabilityNotice from '../components/ui/CapabilityNotice.tsx';
 import LegacyWarning from '../components/ui/LegacyWarning.astro';
 import { categoryHref, href } from '../lib/href.ts';
+import { formatHostList } from '../lib/network-allow.ts';
 import type { ToolMeta } from '../tools/types.ts';
 import BaseLayout from './BaseLayout.astro';
 
@@ -64,6 +65,12 @@ const requires = meta.requires ?? [];
       <p class="flex items-center gap-2 text-sm text-muted">
         <Icon name="shield" class="size-4 shrink-0" />
         Sensitive tool: input is never stored or put in the URL.
+      </p>
+    )}
+    {meta.network && (
+      <p role="note" data-xt="network" class="rounded-lg border border-border bg-surface p-3 text-sm text-fg">
+        <strong>Network.</strong> When you run this tool it contacts {formatHostList(meta.network.hosts)}. Nothing is
+        sent until then, and the request carries no cookies. The rest of the site stays on this device.
       </p>
     )}
   </div>

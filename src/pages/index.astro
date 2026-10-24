@@ -12,13 +12,14 @@ const total = allTools().length;
 
 <BaseLayout
   title="xt-tools"
-  description="Privacy-first developer and everyday tools that run entirely in your browser. No tracking, no server, no network calls."
+  description="Privacy-first developer and everyday tools that run in your browser. No tracking. A tool marked Network names the service it contacts and runs only when you ask."
 >
   <h1 class="mb-2 text-3xl font-bold">Tools</h1>
   <p class="mb-6 text-muted">
     {total}
-    {total === 1 ? 'tool' : 'tools'} that run entirely in your browser. Nothing you enter leaves this device. Pin a
-    tool, group or category to keep it at the top of this page.
+    {total === 1 ? 'tool' : 'tools'}. Most run entirely in this browser. A card marked Network sends your query to the
+    service named on its page, and only after you run it. Pin a tool, group or category to keep it at the top of this
+    page.
   </p>
 
   <div data-xt="pinned"></div>

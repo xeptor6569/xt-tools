@@ -66,7 +66,7 @@ The user must approve any change to D1–D7. Agent defaults can be revisited, bu
 
 ## 2. Core principles
 
-1. **Nothing leaves the device.** No runtime network calls, analytics, CDNs, remote fonts or telemetry, at runtime or at build time where avoidable. Six layers enforce this ([section 9.2](#92-enforcement-layers)): lint rules, the validator, a scan of `dist/`, a strict CSP, end-to-end tests that block external requests, and end-to-end tests run on a Docker network with no internet access.
+1. **Nothing leaves the device unless a tool says so.** No analytics, CDNs, remote fonts or telemetry. A tool may contact a named HTTPS service only when it sets `network.hosts`, the user runs it, and every host is on the allowlist in `src/lib/network-allow.ts`. Lookups are not sent on page load, carry no cookies, and do not follow redirects. Six layers still enforce this ([section 9.2](#92-enforcement-layers)): lint rules, the validator, a scan of `dist/`, a strict CSP, end-to-end tests that block external requests, and end-to-end tests run on a Docker network with no internet access.
 2. **One folder per tool.** Each tool is self-contained and registers itself automatically. There is no central list to edit by hand.
 3. **Static output only.** The build produces plain files that any web server can host: nginx, Apache, Caddy, shared hosting or a NAS.
 4. **Ship little JavaScript.** Each tool page loads only its own code. Heavy tools lazy-load WASM or large datasets only when used.
@@ -227,6 +227,7 @@ export interface ToolMeta {
   requires?: Capability[]; // e.g. ['camera'], ['display-capture'], ['webcrypto']
   heavy?: boolean; // lazy-loads WASM or large data and shows a loading state
   legacy?: string; // tool-level warning text (per-algorithm warnings live in the UI, 5.3)
+  network?: { hosts: string[] }; // allowlisted HTTPS origins, contacted only after the user runs the tool
   examples?: ToolExample[]; // drive the e2e example test and the "Try an example" button
 }
 ```
@@ -438,8 +439,9 @@ Build this in Phase 1, before the pilot tools. Components live in `src/component
 
 ### 9.1 What we promise
 
-- The code we ship makes no network requests other than same-origin requests for the site's own files.
-- Tool input stays in the tab.
+- Offline tools make no network requests other than same-origin requests for the site's own files.
+- A network tool may `GET` an allowlisted HTTPS origin after the user runs it. The request sends the query they typed (or, for "this connection", the IP the service sees) and nothing else: no cookies, no page-load request, and no redirect to a host that is not on the list.
+- Tool input stays in the tab, apart from that explicit lookup.
 - localStorage is written only for favorites, collections, recents, theme and per-tool state the user has opted into (never for sensitive tools).
 - Anyone can verify this through the CSP in devtools and an offline test.
 
@@ -447,7 +449,7 @@ Build this in Phase 1, before the pilot tools. Components live in `src/component
 
 | Layer                          | What it catches                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **ESLint**                     | Bans the globals `fetch`, `XMLHttpRequest`, `WebSocket`, `EventSource` and `RTCPeerConnection`. Bans `navigator.sendBeacon`, `Math.random` (use `crypto.getRandomValues`), `eval`, `new Function`, `dangerouslySetInnerHTML`, `innerHTML` assignment and `document.write`. Bans `href="/…"` literals. Bans DOM globals in `logic.ts`. Only `src/lib/load-local-asset.ts` may call `fetch`, and it rejects anything that isn't the same origin. |
+| **ESLint**                     | Bans the globals `fetch`, `XMLHttpRequest`, `WebSocket`, `EventSource` and `RTCPeerConnection`. Bans `navigator.sendBeacon`, `Math.random` (use `crypto.getRandomValues`), `eval`, `new Function`, `dangerouslySetInnerHTML`, `innerHTML` assignment and `document.write`. Bans `href="/…"` literals. Bans DOM globals in `logic.ts`. Only `src/lib/load-local-asset.ts` may call `fetch` for same-origin files, and only `src/lib/network.ts` may call it for an allowlisted HTTPS origin. |
 | **Validator**                  | Structure and contract rules ([6.2](#62-npm-run-validate-tools)).                                                                                                                                                                                                                                                                                                                                                                              |
 | **`scan-dist`**                | External references in built HTML and CSS, and absolute-URL loaders in built JS, including bundled dependencies.                                                                                                                                                                                                                                                                                                                               |
 | **CSP**                        | Blocks anything else at runtime ([9.3](#93-content-security-policy)).                                                                                                                                                                                                                                                                                                                                                                          |
@@ -467,7 +469,7 @@ style-src 'self' <astro-hashes>;
 img-src 'self' blob: data:;
 media-src 'self' blob: data:;
 font-src 'self' data:;
-connect-src 'self' blob: data:;
+connect-src 'self' blob: data: <allowlisted lookup origins>;
 worker-src 'self' blob:;
 frame-src 'self' blob:;
 manifest-src 'self';
@@ -879,7 +881,7 @@ The current file already matches the spec. Phase 0 makes these fixes:
 
 ### 17.2 Repository metadata
 
-- **GitHub description:** "100+ privacy-first developer and everyday tools that run entirely in your browser. No tracking, no server, no network calls. Self-host with one Docker command and work fully offline as a PWA."
+- **GitHub description:** "100+ privacy-first developer and everyday tools that run in your browser. No tracking. Network tools name the service they contact and run only when you ask. Self-host with one Docker command."
 - **Topics:** self-hosted, offline-first, privacy, developer-tools, pwa, docker, astro, preact, static-site, web-tools, cybersecurity, homelab.
 - **README tagline:** "Your toolbox, your server, no internet required."
 - Set the description and topics with `gh repo edit` in Phase 4.
@@ -940,7 +942,7 @@ The current file already matches the spec. Phase 0 makes these fixes:
 - `math-evaluator` + `unit-calculator`
 - `qr-generator` + `wifi-qr`
 
-### 19.2 Catalog by category (181 pages)
+### 19.2 Catalog by category (185 pages)
 
 #### Crypto (23)
 
@@ -968,7 +970,7 @@ The current file already matches the spec. Phase 0 makes these fixes:
 - `pdf-signature`: PDF signature checker · H · R:webcrypto · **P5**
 - `totp`: TOTP generator and validator (RFC 6238) · S
 
-#### Converter (20)
+#### Converter (21)
 
 - `date-time`: Date-time converter, with a batch Unix timestamp tab
 - `base-converter`: Integer base converter (BigInt)
@@ -985,6 +987,7 @@ The current file already matches the spec. Phase 0 makes these fixes:
 - `table-converter`: CSV/TSV/JSON ⇄ Markdown/HTML tables, with a table editor
 - `html-to-markdown`: HTML to Markdown
 - `unit-converter`: Unit converter, including KB vs KiB and temperature
+- `currency-converter`: Currency converter. Latest ECB rates from Frankfurter, fetched only when the two currencies differ · network: `api.frankfurter.dev`
 - `time-zones`: Time zone converter and meeting planner (`Intl` only)
 - `number-to-words`: Number to words
 - `morse-code`: Morse code with audio (WebAudio)
@@ -1072,7 +1075,7 @@ The current file already matches the spec. Phase 0 makes these fixes:
 - `vim-cheatsheet`: Vim cheatsheet
 - `tmux-cheatsheet`: tmux cheatsheet
 
-#### Network (15)
+#### Network (18)
 
 - `ipv4-subnet`: IPv4 subnet calculator · **P1**
 - `ipv4-converter`: IPv4 address converter
@@ -1089,6 +1092,9 @@ The current file already matches the spec. Phase 0 makes these fixes:
 - `wireguard`: WireGuard config and key generator (X25519 via Noble) · S
 - `transfer-time`: Bandwidth/transfer time calculator
 - `hosts-merger`: Hosts file and adblock list merger · W
+- `ip-lookup`: Public IP address and approximate location · network: `api.ipify.org`, `api64.ipify.org`, `ipwho.is`
+- `dns-lookup`: DNS lookup through Cloudflare DNS-over-HTTPS (one resolver, not worldwide propagation) · network: `cloudflare-dns.com`
+- `whois-lookup`: RDAP registration data for .com, .net, .org and ARIN IP addresses. A referral to another registry is refused · network: `rdap.verisign.com`, `rdap.publicinterestregistry.org`, `rdap.arin.net`
 
 #### Math (11)
 
@@ -1168,7 +1174,7 @@ The current file already matches the spec. Phase 0 makes these fixes:
 - Empty, very large and malformed input never crash the tool. Errors are shown inline and announced.
 - Copy and download work where relevant, including over plain HTTP.
 - The tool works keyboard-only and has zero axe violations in both themes.
-- It makes no network requests. The validator (`--strict`), `scan-dist` and the end-to-end suite all pass.
+- It makes no network requests, unless it is a network tool: then it contacts only its declared hosts, only after the user runs it, and the page still passes the end-to-end suite because that suite never clicks the button. The validator (`--strict`) and `scan-dist` pass either way.
 - `sensitive`, `requires`, `heavy` and legacy labels are set where they apply. Secure algorithms are the default.
 - At least one `examples` entry exists for text-in/text-out tools.
 - The page passes the JavaScript budget. Heavy assets load lazily, with a `LoadingState`.
@@ -1301,3 +1307,4 @@ Every phase ends with the full check set from [13.3](#133-commands-per-phase) pa
 | 2026-10-24 | CI    | **CI moved to self-hosted runners, with continuous deployment.** At the user's request, `ci.yml` runs on `[self-hosted, linux, x64]` (override with the `XT_RUNNER_LABELS` repository variable) for pushes to `main` and manual runs. Pull requests stay on `ubuntu-latest` because the repository is public. A new `deploy` job runs after every green push to `main` (and on manual runs on `main`): `scripts/deploy.ts` builds `xt-tools:sha-<short>` with the host's Docker, writes `compose.yaml` and `.env` into `XT_DEPLOY_DIR` (default `~/xt-tools`), runs `docker compose -p xt-tools-prod up -d --wait`, checks `/healthz` and the base path on the host port, and rolls back to the previous image on failure. It keeps the live and previous images and removes older ones. Defaults: port 3125 and base `/`, changeable with the repository variables `XT_PORT`, `XT_BIND`, `BASE_PATH` and `SITE_URL`. The job uses the `production` environment and the `deploy-production` concurrency group; `make deploy` does the same by hand. **Changes for a shared, non-ephemeral host:** each job uses unique Compose project, image and container names and cleans up with `if: always()`. Reports written by the root-run Playwright container are handed back to the runner user. The scaffolding job's e2e run now uses the Compose test profile (Playwright image) instead of `playwright install --with-deps`, which needs root; its test image sets `XT_VALIDATE_STRICT=0` because the temporary `ci-*` tools intentionally keep their `XT-TODO` placeholders (production builds stay strict). Lighthouse runs in the Playwright image in the site container's network namespace, so it still audits `http://localhost:8080` without a host browser or a published port. `compose.yaml` gained an `XT_IMAGE` variable (default unchanged). The deploy script is Node `.ts` (D17), so the deploy job sets up Node. Verified locally: actionlint (only the earlier shellcheck style warnings remain), the containerised Lighthouse run (all assertions pass), and deploy, redeploy, rollback and setting validation with `scripts/deploy.ts`. Documented in `docs/self-hosted-runner.md`. |
 | 2026-10-24 | 2     | **Added `docker-compose-builder` at the user's request (68 tools).** A form-based Compose file builder, separate from `docker-compose-converter`: service tabs (add, duplicate, remove), image/build, container name, restart policy, ports, expose, volumes, environment rows, env files, command/entrypoint, working directory, user, hostname, dependencies with conditions, network attachments, declared volumes/networks (external, driver), and per-service/top-level "extra" YAML mappings for every other Compose key. It generates YAML 1.1 with quoted ports, auto-declares referenced named volumes and networks with warnings, imports an existing compose.yaml (unrecognized keys are preserved in the extra mappings), and offers Copy/Download. Added to 19.2 (Development is now 29 entries, 181 pages) and `catalog/02-development.json`. 67 unit tests cover generation, validation, import/round trips and robustness. **Decisions:** no new dependencies; short port/volume syntax only in the form (long syntax belongs in the extra YAML); imported command/entrypoint lists are shell-joined with best-effort quoting. `tests/e2e/dev-tools.spec.ts` also covers multi-service editing, import and download. Verified: strict validator, typecheck, lint, 1011 unit tests, builds at `/` and `/tools/`, 228 e2e tests against preview at both base paths, 229 in the egress-less container at both base paths, the smoke test and the budget (84 pages, largest 75.6 KB gzip). |
 | 2026-10-24 | 2     | **Pins, curated groups and personal collections.** Text, Converter and Development tools now belong to a curated group (`meta.group`, required only for categories that define groups; the contract change was requested). The home page shows pins first and keeps the full catalog underneath, with category chips that jump on the page. Personal collections, including one level of sub-collections, live in localStorage (`collections`) beside pins (`favorites`, newest first, cap 48). A collections page creates, renames and deletes them and adds or removes tools. **Decisions:** categories with only a few tools stay flat; groups are one deep; personal collections are one deep; the home grid stays in the static HTML so it still works without JavaScript. Recents and search stay deferred to Phase 3. |
+| 2026-10-24 | 2     | **Network lookups, as an exception.** At the user's request, a tool may contact a named HTTPS service the way sharevb/it-tools does, without opening the rest of the site. `meta.network.hosts` must be a subset of `src/lib/network-allow.ts`. `networkFetch` is the only cross-origin `fetch`, and it is GET, credential-free, and does not follow a redirect. CSP `connect-src` lists those origins. The page notice and the Network badge name the hosts. Nothing is sent on load, so the end-to-end suite still fails on any external request. Added `ip-lookup` (ipify and ipwho.is), `dns-lookup` (Cloudflare DNS-over-HTTPS), `whois-lookup` (.com, .net, .org and ARIN RDAP) and `currency-converter` (Frankfurter, ECB rates; same-currency math stays local). Catalog is 185 pages. **Not taken from it-tools:** ping, port tests and the Docker image downloader, which need their companion containers; Plausible analytics; machine-translated i18n (D16); a runtime `BASE_URL` (Astro bakes asset paths); mounting a tool filter over the HTML catalog (pages would still be reachable); splitting merged tools (D6); copying GPL code. PWA stays in Phase 3. Verified: strict validator (72 tools), check, lint, 1064 unit tests, build with scan-dist clean and the largest page at 78.0 KB gzip, end-to-end tests for the four tools (axe, and no request while typing), and live lookups for example.com DNS and registration, USD to EUR, a same-currency conversion that stays local, and this connection's public IP. |

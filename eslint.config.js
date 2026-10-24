@@ -121,6 +121,11 @@ export default tseslint.config(
     rules: { 'no-restricted-globals': 'off' },
   },
   {
+    // The single sanctioned place for allowlisted cross-origin lookups.
+    files: ['src/lib/network.ts'],
+    rules: { 'no-restricted-globals': 'off' },
+  },
+  {
     // Node scripts and tests run outside the browser and may use the network
     // (e.g. Playwright, refresh-data) and Node globals.
     files: ['scripts/**/*.ts', 'tests/**/*.ts', '*.config.{js,ts}', 'eslint.config.js'],

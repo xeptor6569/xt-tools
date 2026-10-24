@@ -1,6 +1,6 @@
 # AGENTS.md
 
-xt-tools is a privacy-first, offline, self-hostable static browser toolbox (Astro 7 + Preact islands + Tailwind v4, served by nginx in Docker). Nothing may leave the browser: no network calls, no CDNs, no telemetry.
+xt-tools is a privacy-first, self-hostable static browser toolbox (Astro 7 + Preact islands + Tailwind v4, served by nginx in Docker). Nothing may leave the browser except a tool marked `network`, which may GET an origin listed in `src/lib/network-allow.ts` after the user runs it. No CDNs, no telemetry, and those requests carry no cookies.
 
 - `PLAN.md` is the authoritative spec. It covers the decisions D1–D18, the catalog in §19, the phases in §20 and the progress log in §22. Read the relevant section before starting a phase or batch. Append a progress-log row when a batch finishes, including any deviations from the plan.
 - `CONTRIBUTING.md` documents the tool contract and the scaffolder for humans.

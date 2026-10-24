@@ -2,6 +2,7 @@ import preact from '@astrojs/preact';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 import { createHash } from 'node:crypto';
+import { NETWORK_HOSTS } from './src/lib/network-allow.ts';
 import { PREVIEW_CSS } from './src/lib/preview-css.ts';
 import { themeBootstrapScript } from './src/lib/theme.ts';
 
@@ -24,7 +25,7 @@ const cspDirectives = [
   "img-src 'self' blob: data:",
   "media-src 'self' blob: data:",
   "font-src 'self' data:",
-  "connect-src 'self' blob: data:",
+  `connect-src 'self' blob: data: ${NETWORK_HOSTS.join(' ')}`,
   "worker-src 'self' blob:",
   "frame-src 'self' blob:",
   "manifest-src 'self'",

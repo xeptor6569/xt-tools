@@ -97,13 +97,13 @@ In `logic.ts`, throw `ToolInputError` (from `src/tools/types.ts`) for problems w
 - Errors are shown inline; nothing crashes.
 - Copy and download work where relevant, including over plain HTTP.
 - Keyboard-only use works and axe reports no violations in light and dark mode.
-- No network requests: the validator, `scan-dist` and the end-to-end suite all pass.
+- No network requests, unless `meta.network` lists allowlisted hosts. Those tools fetch only after the user runs them, and the end-to-end suite still passes because it never clicks the button. The validator and `scan-dist` pass either way.
 - `sensitive`, `requires`, `heavy` and legacy labels are set where they apply. Secure algorithms are the default.
 - At least one `examples` entry for text-in/text-out tools.
 
 ## Rules that CI enforces
 
-- **No network access.** `fetch`, `XMLHttpRequest`, `WebSocket`, `EventSource`, `sendBeacon` and WebRTC are banned by lint. Load bundled files with `loadLocalAsset()` from `src/lib/load-local-asset.ts`. The built site is scanned for external URLs, and the end-to-end suite fails on any request to another origin.
+- **No network access, with one gate.** `fetch`, `XMLHttpRequest`, `WebSocket`, `EventSource`, `sendBeacon` and WebRTC are banned by lint. Load bundled files with `loadLocalAsset()` from `src/lib/load-local-asset.ts`. A lookup tool calls `networkFetch()` from `src/lib/network.ts`, which allows only the HTTPS origins in `src/lib/network-allow.ts`. The built site is scanned for any other external URL, and the end-to-end suite fails on any request to another origin.
 - **Strict CSP.** No `eval`/`new Function`, no inline `style` attributes, no inline event handlers, no `innerHTML` or `dangerouslySetInnerHTML`. Untrusted HTML will be rendered in a sandboxed preview component (Phase 1).
 - **Base path.** Build internal links with `href()` from `src/lib/href.ts`, never `"/..."` literals.
 - **Randomness.** Use `crypto.getRandomValues`, never `Math.random`.

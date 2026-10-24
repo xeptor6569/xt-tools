@@ -16,6 +16,9 @@ const { tool } = Astro.props;
   <a href={toolHref(tool.id)} class="flex flex-1 flex-col gap-2 p-4 text-fg no-underline">
     <span class="flex items-center gap-2 font-semibold">
       <span>{tool.name}</span>
+      {tool.network && (
+        <span class="rounded-full border border-border px-2 py-0.5 text-xs font-medium text-muted">Network</span>
+      )}
       {isNew(tool) && (
         <span class="ml-auto rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-accent-fg">New</span>
       )}
