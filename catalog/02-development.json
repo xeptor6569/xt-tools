@@ -38,6 +38,13 @@
     "keywords": ["docker", "compose", "docker run", "docker-compose", "yaml", "container", "composerize"]
   },
   {
+    "id": "docker-compose-builder",
+    "name": "Docker Compose builder",
+    "category": "development",
+    "description": "Build a Docker Compose file with a form for services, ports, volumes, environment variables and networks.",
+    "keywords": ["docker", "compose", "builder", "compose.yaml", "docker-compose", "services", "generator"]
+  },
+  {
     "id": "xml-formatter",
     "name": "XML formatter",
     "category": "development",
