@@ -1,7 +1,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { categories } from '../../src/categories.ts';
-import { expect, expectAccessible, test } from './fixtures.ts';
+import { expect, expectAccessible, serviceWorkerAvailable, test } from './fixtures.ts';
 import { loadTools } from './registry.ts';
 
 const tools = await loadTools();
@@ -112,10 +112,23 @@ test('licenses page passes axe', async ({ page }) => {
 
 test('settings page offers offline download and passes axe', async ({ page }) => {
   await page.goto('settings/');
+  test.skip(!(await serviceWorkerAvailable(page)), 'plain HTTP other than localhost cannot register a service worker');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Settings');
   await expect(page.getByRole('button', { name: 'Download everything', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Clear all local data' })).toBeVisible();
   await expect(page.locator('[data-xt="offline-banner"]')).toBeHidden();
+  await expect(page.locator('[data-xt="update"]')).toBeHidden();
+  await expectAccessible(page);
+});
+
+test('settings page explains that offline mode needs HTTPS', async ({ page }) => {
+  await page.goto('settings/');
+  test.skip(await serviceWorkerAvailable(page), 'this origin can register a service worker');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Settings');
+  await expect(page.locator('[data-xt="offline-banner"]')).toHaveText('Offline mode needs HTTPS.');
+  await expect(page.locator('[data-xt="offline-needs-https"]')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Download everything', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Clear all local data' })).toBeVisible();
   await expect(page.locator('[data-xt="update"]')).toBeHidden();
   await expectAccessible(page);
 });

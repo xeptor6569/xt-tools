@@ -77,6 +77,14 @@ export async function waitForHydration(page: Page): Promise<void> {
   await expect(page.locator('astro-island[ssr]')).toHaveCount(0);
 }
 
+/**
+ * Service workers and Cache Storage exist only in a secure context.
+ * `http://localhost` is one. The container suite uses `http://site:8080`, which is not.
+ */
+export async function serviceWorkerAvailable(page: Page): Promise<boolean> {
+  return page.evaluate(() => globalThis.isSecureContext && 'serviceWorker' in navigator);
+}
+
 /** Runs axe in light and dark colour schemes and expects no violations. */
 export async function expectAccessible(page: Page): Promise<void> {
   for (const colorScheme of ['light', 'dark'] as const) {
