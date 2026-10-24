@@ -76,6 +76,7 @@ make up-https    # HTTPS via Caddy (Let's Encrypt, or an internal CA for LANs)
 - **Sub-path** (for example `https://example.com/tools/`): the base path is compiled into the site, so build the image yourself with `make build BASE_PATH=/tools/`.
 - **Air-gapped machines:** run `make export` on a connected machine, copy `xt-tools.tar.gz` across, then run `make import up`.
 - **Behind an existing reverse proxy:** examples for Traefik and nginx will be in `docs/reverse-proxy.md`.
+- **Continuous deployment from your own runner:** CI can build every green push to `main` on a self-hosted GitHub Actions runner and deploy it there with Docker Compose (port 3125 by default). See [docs/self-hosted-runner.md](docs/self-hosted-runner.md); `make deploy` does the same by hand.
 - **Any static host:** each release will include a zip of the built site, with ready-made header configs for nginx, Apache and Caddy.
 
 Image tags: `latest` is the newest release, `X.Y` and `X.Y.Z` pin a version, and `edge` follows `main`.

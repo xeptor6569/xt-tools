@@ -5,7 +5,7 @@
 
 services:
   tools:
-    image: ghcr.io/xeptor6569/xt-tools:${XT_TAG:-latest}
+    image: ${XT_IMAGE:-ghcr.io/xeptor6569/xt-tools}:${XT_TAG:-latest}
     build:
       context: .
       args:

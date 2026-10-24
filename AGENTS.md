@@ -22,7 +22,8 @@ Node 26 is required (`engine-strict`, `save-exact` in `.npmrc`). Scripts are run
 - E2E against the real image on a network with no internet access: `make test-e2e`, or `BASE_PATH=/tools/ make test-e2e`. This is the authoritative e2e run and takes a few minutes.
 - `make smoke`: smoke-tests the production image.
 - Run dev containers through `make` (`make dev`, `make shell`) so UID/GID are passed in. Don't call `docker compose -f compose.dev.yaml` directly.
-- CI order (`.github/workflows/ci.yml`): validate --strict, licenses, audit, check, lint, test, build at both base paths, then image build, smoke and container e2e.
+- CI order (`.github/workflows/ci.yml`): validate --strict, licenses, audit, check, lint, test, build at both base paths, then image build, smoke and container e2e, then (main only) `deploy`.
+- CI runs on self-hosted runners (`[self-hosted, linux, x64]`) except pull requests, which stay on `ubuntu-latest` because the repo is public. The `deploy` job runs `scripts/deploy.ts`: docker compose on the runner host, port 3125 by default, with rollback. Settings are repository variables; see `docs/self-hosted-runner.md`. Jobs must not assume an ephemeral VM: use unique container, image and project names, clean up with `if: always()`, keep files written by containers owned by the runner user, and don't install packages on the host.
 
 ## Tools: the contract is frozen
 

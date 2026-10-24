@@ -1,5 +1,15 @@
 name: CI
 
+# Pushes to main, tags and manual runs use the self-hosted runners. Pull
+# requests (including forks) stay on GitHub-hosted runners so outside code never
+# runs on our machines. See docs/self-hosted-runner.md.
+#
+# Repository variables (Settings → Secrets and variables → Actions → Variables):
+#   XT_RUNNER_LABELS  JSON array of runner labels   default ["self-hosted","linux","x64"]
+#   XT_DEPLOY_LABELS  runner labels for the deploy  default XT_RUNNER_LABELS
+#   XT_DEPLOY         set to "false" to skip deploys
+#   XT_PORT, XT_BIND, BASE_PATH, SITE_URL, XT_DEPLOY_DIR, XT_PROJECT (deploy settings)
+
 on:
   push:
     branches: [main]
@@ -21,7 +31,7 @@ env:
 jobs:
   checks:
     name: Validate, lint, test, build
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name == 'pull_request' && 'ubuntu-latest' || fromJSON(vars.XT_RUNNER_LABELS || '["self-hosted","linux","x64"]') }}
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -51,8 +61,12 @@ jobs:
 
   scaffold:
     name: Scaffolding loop
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
+    runs-on: ${{ github.event_name == 'pull_request' && 'ubuntu-latest' || fromJSON(vars.XT_RUNNER_LABELS || '["self-hosted","linux","x64"]') }}
+    timeout-minutes: 20
+    env:
+      # Unique names, so jobs sharing one Docker host never collide.
+      COMPOSE_PROJECT_NAME: xt-ci-${{ github.run_id }}-${{ github.run_attempt }}-scaffold
+      XT_SITE_IMAGE: xt-tools:ci-${{ github.run_id }}-${{ github.run_attempt }}-scaffold
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -81,33 +95,46 @@ jobs:
             grep -q "tools/$id/" dist/index.html
             grep -q "tools/$id/" dist/category/text/index.html
           done
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ hashFiles('package-lock.json') }}
+      # Runs in the Playwright image (built from this working tree, so it
+      # includes the new tools) instead of installing browsers on the host,
+      # which would need root on a self-hosted runner.
       - name: End-to-end tests cover the new tools
         run: |
-          npx playwright install --with-deps chromium
-          npx playwright test tests/e2e/tools.spec.ts
+          mkdir -p test-results playwright-report
+          docker compose -f compose.dev.yaml --profile test build site e2e
+          docker compose -f compose.dev.yaml --profile test run --rm e2e npx playwright test tests/e2e/tools.spec.ts
       - name: Remove them again
         run: |
           for id in $(ls src/tools | grep '^ci-'); do npm run remove-tool -- "$id" --yes; done
           test -z "$(ls src/tools | grep '^ci-')"
           test -z "$(ls src/pages/tools | grep '^ci-')"
           npm run validate-tools -- --strict
+      - name: Clean up containers, images and root-owned reports
+        if: always()
+        run: |
+          # Playwright runs as root in its container; give its reports back to
+          # the runner user so the next checkout can clean the workspace.
+          if [ -n "$(ls -A test-results playwright-report 2>/dev/null)" ]; then
+            docker compose -f compose.dev.yaml --profile test run --rm --no-deps --entrypoint chown e2e \
+              -R "$(id -u):$(id -g)" /app/test-results /app/playwright-report || true
+          fi
+          docker compose -f compose.dev.yaml --profile test down --volumes --remove-orphans --rmi local || true
+          docker image rm -f "$XT_SITE_IMAGE" || true
 
   image:
     name: Image (base ${{ matrix.base }})
     needs: checks
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
+    runs-on: ${{ github.event_name == 'pull_request' && 'ubuntu-latest' || fromJSON(vars.XT_RUNNER_LABELS || '["self-hosted","linux","x64"]') }}
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
         base: ['/', '/tools/']
     env:
       BASE_PATH: ${{ matrix.base }}
-      XT_SITE_IMAGE: xt-tools:ci
+      COMPOSE_PROJECT_NAME: xt-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ strategy.job-index }}
+      XT_SITE_IMAGE: xt-tools:ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ strategy.job-index }}
+      XT_LH_CONTAINER: xt-lh-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -119,7 +146,7 @@ jobs:
         with:
           context: .
           load: true
-          tags: xt-tools:ci
+          tags: ${{ env.XT_SITE_IMAGE }}
           build-args: |
             BASE_PATH=${{ matrix.base }}
             VERSION=ci-${{ github.sha }}
@@ -127,21 +154,32 @@ jobs:
           cache-from: type=gha,scope=image-${{ matrix.base == '/' && 'root' || 'subpath' }}
           cache-to: type=gha,mode=max,scope=image-${{ matrix.base == '/' && 'root' || 'subpath' }}
       - name: Smoke test (read-only, no capabilities)
-        run: node scripts/smoke-test.ts --image xt-tools:ci --base "$BASE_PATH"
+        run: node scripts/smoke-test.ts --image "$XT_SITE_IMAGE" --base "$BASE_PATH"
       - name: End-to-end tests on a network with no internet access
         run: |
+          mkdir -p test-results playwright-report
           docker compose -f compose.dev.yaml --profile test build e2e
           docker compose -f compose.dev.yaml --profile test run --rm e2e
       - name: Stop containers
         if: always()
         run: docker compose -f compose.dev.yaml --profile test down
+      # Lighthouse runs in the Playwright image (its Chromium, no browser on the
+      # host) and shares the site container's network namespace, so it audits
+      # http://localhost:8080 without publishing a port on the host.
       - name: Lighthouse (performance, accessibility, best practices)
         if: matrix.base == '/'
         run: |
-          docker run -d --rm --name xt-lh --read-only --tmpfs /tmp --cap-drop ALL \
-            --security-opt no-new-privileges -p 8080:8080 xt-tools:ci
-          for i in $(seq 1 30); do curl -sf http://localhost:8080/healthz && break; sleep 1; done
-          npx --yes @lhci/cli@0.15.1 autorun
+          docker run -d --rm --name "$XT_LH_CONTAINER" --read-only --tmpfs /tmp --cap-drop ALL \
+            --security-opt no-new-privileges "$XT_SITE_IMAGE"
+          for i in $(seq 1 30); do
+            [ "$(docker inspect -f '{{.State.Health.Status}}' "$XT_LH_CONTAINER")" = healthy ] && break
+            sleep 1
+          done
+          playwright_image=$(sed -n 's/^ARG PLAYWRIGHT_IMAGE=//p' Dockerfile)
+          docker run --rm --network "container:$XT_LH_CONTAINER" -v "$PWD:/work" -w /work \
+            --user "$(id -u):$(id -g)" -e HOME=/tmp -e CI=1 "$playwright_image" \
+            bash -c 'export CHROME_PATH=$(find /ms-playwright -type f -path "*chrome-linux*/chrome" | head -1)
+                     npx --yes @lhci/cli@0.15.1 autorun'
       - name: Upload Lighthouse reports
         if: always() && matrix.base == '/'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -151,6 +189,15 @@ jobs:
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 7
+      - name: Hand root-owned test reports back to the runner user
+        if: always()
+        run: |
+          # Playwright runs as root in its container; give its reports back to
+          # the runner user so the next checkout can clean the workspace.
+          if [ -n "$(ls -A test-results playwright-report 2>/dev/null)" ]; then
+            docker compose -f compose.dev.yaml --profile test run --rm --no-deps --entrypoint chown e2e \
+              -R "$(id -u):$(id -g)" /app/test-results /app/playwright-report || true
+          fi
       - name: Upload Playwright report
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -164,7 +211,46 @@ jobs:
         if: matrix.base == '/'
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          image-ref: xt-tools:ci
+          image-ref: ${{ env.XT_SITE_IMAGE }}
           severity: HIGH,CRITICAL
           ignore-unfixed: true
           exit-code: '1'
+      - name: Clean up containers and images
+        if: always()
+        run: |
+          docker rm -f "$XT_LH_CONTAINER" 2>/dev/null || true
+          docker compose -f compose.dev.yaml --profile test down --volumes --remove-orphans --rmi local || true
+          docker image rm -f "$XT_SITE_IMAGE" || true
+
+  deploy:
+    name: Deploy (docker compose)
+    needs: [checks, scaffold, image]
+    if: >-
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      github.ref == 'refs/heads/main' && vars.XT_DEPLOY != 'false'
+    runs-on: ${{ fromJSON(vars.XT_DEPLOY_LABELS || vars.XT_RUNNER_LABELS || '["self-hosted","linux","x64"]') }}
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.url }}
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    env:
+      XT_PORT: ${{ vars.XT_PORT || '3125' }}
+      XT_BIND: ${{ vars.XT_BIND || '0.0.0.0' }}
+      BASE_PATH: ${{ vars.BASE_PATH || '/' }}
+      SITE_URL: ${{ vars.SITE_URL || '' }}
+      XT_DEPLOY_DIR: ${{ vars.XT_DEPLOY_DIR || '' }}
+      XT_PROJECT: ${{ vars.XT_PROJECT || 'xt-tools-prod' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+      # Builds xt-tools:sha-<short> with the host's Docker (its layer cache
+      # persists between deploys), starts it with docker compose in
+      # XT_DEPLOY_DIR, checks it serves the site and rolls back if not.
+      - name: Build and deploy with docker compose
+        id: deploy
+        run: node scripts/deploy.ts

@@ -21,7 +21,7 @@ RUN_DEV := $(DEV) run --rm --service-ports=false dev
 
 .DEFAULT_GOAL := help
 .PHONY: help new-tool remove-tool list-tools dev shell validate lint test-unit test-e2e test \
-        build smoke up down logs export import clean
+        build smoke up down logs deploy export import clean
 
 help: ## Show this help
 	@grep -hE '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -86,6 +86,9 @@ down: ## Stop the site
 
 logs: ## Follow the site logs
 	$(PROD) logs -f
+
+deploy: ## Build and deploy with compose like the CI deploy job (port 3125, ~/xt-tools; needs Node 26)
+	node scripts/deploy.ts $(ARGS)
 
 ## ---- Air-gapped installs --------------------------------------------------
 
