@@ -1,0 +1,62 @@
+---
+import ThemeSwitch from '../components/site/ThemeSwitch.astro';
+import { buttonClass } from '../components/ui/Button.tsx';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Settings" description="Theme, offline downloads and the data this browser stores for xt-tools.">
+  <h1 class="mb-2 text-3xl font-bold">Settings</h1>
+  <p class="mb-8 text-muted">These choices stay in this browser.</p>
+
+  <section class="mb-8 flex flex-col gap-3" aria-labelledby="theme-heading">
+    <h2 id="theme-heading" class="text-xl font-semibold">
+      Theme
+    </h2>
+    <ThemeSwitch />
+  </section>
+
+  <section class="mb-8 flex flex-col gap-3" aria-labelledby="offline-heading">
+    <h2 id="offline-heading" class="text-xl font-semibold">
+      Offline
+    </h2>
+    <p class="text-sm text-muted">
+      Pages you open are saved for offline use. Download everything also saves the larger tools and datasets. A tool
+      that looks something up still needs a connection when you run it.
+    </p>
+    <p data-xt="offline-needs-https" hidden class="text-sm text-warning">
+      Offline mode needs HTTPS.
+    </p>
+    <div data-xt="offline-actions" hidden class="flex flex-col items-start gap-3">
+      <button type="button" class={buttonClass('primary')} data-xt="download">
+        Download everything
+      </button>
+      <p data-xt="download-status" class="text-sm text-muted" role="status"></p>
+      <p data-xt="storage-estimate" class="text-sm text-muted"></p>
+    </div>
+  </section>
+
+  <section class="flex flex-col items-start gap-3" aria-labelledby="data-heading">
+    <h2 id="data-heading" class="text-xl font-semibold">
+      Local data
+    </h2>
+    <p class="text-sm text-muted">Pins, collections, theme and saved tool state are stored on this device.</p>
+    <button type="button" class={buttonClass()} data-xt="clear">
+      Clear all local data
+    </button>
+    <div data-xt="clear-confirm" hidden class="flex flex-col items-start gap-3">
+      <p id="clear-warning" class="text-sm text-muted">
+        This removes pins, collections, theme, saved tool state, cached pages and offline files from this browser.
+      </p>
+      <button type="button" class={buttonClass('primary')} data-xt="clear-go" aria-describedby="clear-warning">
+        Delete data
+      </button>
+    </div>
+    <p data-xt="settings-error" class="text-sm text-danger" role="alert"></p>
+  </section>
+</BaseLayout>
+
+<script>
+  import { startSettings } from '../lib/settings.ts';
+
+  startSettings();
+</script>

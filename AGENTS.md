@@ -14,7 +14,7 @@ Node 26 is required (`engine-strict`, `save-exact` in `.npmrc`). Scripts are run
 - `npm test`: Vitest. Run one file with `npx vitest run src/tools/<id>/logic.test.ts`.
 - `npm run validate-tools -- --strict`: the contract validator, as CI runs it. The pre-commit hook runs it without `--strict`.
 - `npm run check-licenses`: run it after adding any dependency. Exceptions go in `scripts/licenses.allow.json`.
-- `npm run build`: `astro build` followed by `scripts/postbuild.ts`, which generates the CSP, scans `dist/` for URLs, checks the JS budget and precompresses. A build fails if any of these fail.
+- `npm run build`: `astro build` followed by `scripts/postbuild.ts`, which generates the service worker, the CSP, scans `dist/` for URLs, checks the JS budget and precompresses. A build fails if any of these fail.
 - Build with a base path: `BASE_PATH=/tools/ npm run build`. CI builds and tests both `/` and `/tools/`.
 - E2E against the current `dist/`: `npm run test:e2e`.
   - It serves `dist/` with `astro preview`, so build first, using the same `BASE_PATH` for both commands.

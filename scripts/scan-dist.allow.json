@@ -56,6 +56,10 @@
     {
       "prefix": "http://www.google.com/bot.html",
       "reason": "Part of the Googlebot user-agent string in faker's user-agent data (mock-data output text); never fetched."
+    },
+    {
+      "prefix": "https://bit.ly/wb-precache",
+      "reason": "Documentation link inside Workbox's console warning for precache URLs that have no revision. Every precache entry is revisioned, so the warning does not run and the URL is never fetched."
     }
   ]
 }

@@ -18,14 +18,16 @@
 
   const valid = (v: unknown): v is Theme => v === 'system' || v === 'light' || v === 'dark';
 
+  const publish = (theme: Theme): void => {
+    applyTheme(theme);
+    if (theme === 'system') removeKey(THEME_KEY);
+    else writeJson(THEME_KEY, theme);
+    for (const other of document.querySelectorAll<HTMLSelectElement>('select[data-xt-theme]')) other.value = theme;
+  };
+
   for (const select of document.querySelectorAll<HTMLSelectElement>('select[data-xt-theme]')) {
     const stored = readJson<unknown>(THEME_KEY);
     select.value = valid(stored) ? stored : 'system';
-    select.addEventListener('change', () => {
-      const theme = valid(select.value) ? select.value : 'system';
-      applyTheme(theme);
-      if (theme === 'system') removeKey(THEME_KEY);
-      else writeJson(THEME_KEY, theme);
-    });
+    select.addEventListener('change', () => publish(valid(select.value) ? select.value : 'system'));
   }
 </script>
