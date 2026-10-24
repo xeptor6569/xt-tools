@@ -51,6 +51,8 @@ describe('scan-dist', () => {
     expect(scanJs('new WebSocket(u)').join()).toMatch(/WebSocket/);
     expect(scanJs('const u = "https://tracker.example/p"').join()).toMatch(/tracker\.example/);
     expect(scanJs('const ns = "http://www.w3.org/2000/svg"')).toEqual([]);
+    expect(scanJs('const u = "https://api.ipify.org/?format=json"; fetch(u)')).toEqual([]);
+    expect(scanJs('fetch("https://api.ipify.org/")').join()).toMatch(/fetch/);
   });
 });
 

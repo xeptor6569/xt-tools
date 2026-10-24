@@ -1,0 +1,35 @@
+[
+  {
+    "id": "ip-lookup",
+    "name": "IP lookup",
+    "category": "network",
+    "description": "Show this connection's public IP address, or look up another IP and its approximate location.",
+    "keywords": ["ip", "address", "geolocation", "my ip", "public ip", "location"],
+    "network": ["https://api.ipify.org", "https://api64.ipify.org", "https://ipwho.is"]
+  },
+  {
+    "id": "dns-lookup",
+    "name": "DNS lookup",
+    "category": "network",
+    "description": "Look up DNS records for a hostname through Cloudflare DNS-over-HTTPS.",
+    "keywords": ["dns", "lookup", "dig", "doh", "mx", "nameserver", "txt"],
+    "network": ["https://cloudflare-dns.com"]
+  },
+  {
+    "id": "whois-lookup",
+    "name": "Whois lookup",
+    "category": "network",
+    "description": "Look up .com, .net, .org and ARIN registration data for a domain name or IP address.",
+    "keywords": ["whois", "rdap", "domain", "registrar", "arin"],
+    "network": ["https://rdap.verisign.com", "https://rdap.publicinterestregistry.org", "https://rdap.arin.net"]
+  },
+  {
+    "id": "currency-converter",
+    "name": "Currency converter",
+    "category": "converter",
+    "group": "units",
+    "description": "Convert an amount between currencies using the latest European Central Bank rates.",
+    "keywords": ["currency", "exchange", "fx", "ecb", "frankfurter", "convert"],
+    "network": ["https://api.frankfurter.dev"]
+  }
+]

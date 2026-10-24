@@ -3,6 +3,7 @@
 // section 9.2.
 import { readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { NETWORK_HOSTS } from '../src/lib/network-allow.ts';
 import { ROOT } from './lib/tools.ts';
 import { walk } from './lib/fs.ts';
 
@@ -16,7 +17,12 @@ interface AllowEntry {
 
 const allow = (
   JSON.parse(readFileSync(join(ROOT, 'scripts', 'scan-dist.allow.json'), 'utf8')) as { allow: AllowEntry[] }
-).allow;
+).allow.concat(
+  NETWORK_HOSTS.map((origin) => ({
+    prefix: origin,
+    reason: 'Allowlisted network-tool host. Fetched only by networkFetch after the user runs the tool.',
+  })),
+);
 const allowed = (url: string) => allow.some((a) => url.startsWith(a.prefix));
 
 /** Attributes that make the browser fetch something automatically. */

@@ -3,6 +3,7 @@
 // so plain Node can import it.
 import { categoryIds, groupIdsFor } from '../categories.ts';
 import { capabilityIds } from '../capabilities.ts';
+import { isNetworkHost } from '../lib/network-allow.ts';
 
 export const ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -25,6 +26,7 @@ export function validateMeta(meta: unknown, expectedId?: string, today = new Dat
     'requires',
     'heavy',
     'legacy',
+    'network',
     'examples',
   ]);
   for (const key of Object.keys(m)) {
@@ -89,6 +91,28 @@ export function validateMeta(meta: unknown, expectedId?: string, today = new Dat
 
   if (m.legacy !== undefined && (!isString(m.legacy) || m.legacy.trim().length < 10)) {
     problems.push('legacy must be warning text of at least 10 characters');
+  }
+
+  if (m.network !== undefined) {
+    const network = m.network as { hosts?: unknown } | null;
+    const hosts = network && typeof network === 'object' && !Array.isArray(network) ? network.hosts : undefined;
+    const extra =
+      network && typeof network === 'object' && !Array.isArray(network)
+        ? Object.keys(network).filter((key) => key !== 'hosts')
+        : [];
+    if (!network || typeof network !== 'object' || Array.isArray(network) || extra.length > 0) {
+      problems.push('network must be an object with a hosts array');
+    } else if (!Array.isArray(hosts) || hosts.length === 0) {
+      problems.push('network.hosts must list at least one allowlisted origin');
+    } else {
+      const seen = new Set<string>();
+      for (const host of hosts) {
+        if (!isString(host) || !isNetworkHost(host)) {
+          problems.push(`network.hosts: "${String(host)}" is not an allowlisted origin`);
+        } else if (seen.has(host)) problems.push(`network.hosts: "${host}" is duplicated`);
+        else seen.add(host);
+      }
+    }
   }
 
   if (m.requires !== undefined) {

@@ -55,7 +55,7 @@ export const categories = [
     id: 'network',
     label: 'Network',
     icon: 'network',
-    description: 'Subnets, IP addresses, MAC addresses and DNS records.',
+    description: 'Subnets, IP addresses, DNS records and lookups that name the service they contact.',
   },
   { id: 'math', label: 'Math', icon: 'calculator', description: 'Calculators, statistics, matrices and plots.' },
   { id: 'measurement', label: 'Measurement', icon: 'ruler', description: 'Timers, clocks, rulers and benchmarks.' },

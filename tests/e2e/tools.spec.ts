@@ -38,6 +38,20 @@ for (const tool of tools) {
       });
     }
 
+    if (tool.network) {
+      const hosts = tool.network.hosts;
+      test('names the services it contacts and does not call them while typing', async ({ page }) => {
+        const notice = page.locator('[data-xt="network"]');
+        await expect(notice).toBeVisible();
+        for (const host of hosts) await expect(notice).toContainText(new URL(host).host);
+        const input = page.locator('[data-xt="input"]').first();
+        if ((await input.count()) > 0) {
+          await input.fill('example.com');
+          await page.waitForTimeout(200);
+        }
+      });
+    }
+
     if (tool.sensitive) {
       test('does not store input or put it in the URL', async ({ page }) => {
         const url = page.url();

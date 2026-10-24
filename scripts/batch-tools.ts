@@ -5,7 +5,7 @@
 //
 // The spec is an array of objects:
 //   { "id", "name", "category", "description", "keywords": [], "template"?,
-//     "group"?, "requires"?: [], "sensitive"?, "heavy"?, "worker"? }
+//     "group"?, "requires"?: [], "sensitive"?, "heavy"?, "worker"?, "network"?: [] }
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -25,6 +25,7 @@ interface Entry {
   sensitive?: boolean;
   heavy?: boolean;
   worker?: boolean;
+  network?: string[];
 }
 
 const { values, positionals } = parseArgs({
@@ -90,6 +91,7 @@ for (const [i, e] of entries.entries()) {
     added: today,
   };
   if (e.requires?.length) meta.requires = e.requires;
+  if (e.network?.length) meta.network = { hosts: e.network };
   for (const p of validateMeta(meta, e.id)) problems.push(`${where}: ${p}`);
 
   const exists = typeof e.id === 'string' && (existsSync(toolDir(e.id)) || existsSync(pagePath(e.id)));
@@ -127,6 +129,7 @@ for (const e of toCreate) {
     '--yes',
     ...(e.requires?.length ? ['--requires', e.requires.join(',')] : []),
     ...(e.sensitive ? ['--sensitive'] : []),
+    ...(e.network?.length ? ['--network', e.network.join(',')] : []),
     ...(e.heavy ? ['--heavy'] : []),
     ...(e.worker ? ['--worker'] : []),
   ];

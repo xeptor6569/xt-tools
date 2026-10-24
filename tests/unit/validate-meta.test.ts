@@ -35,6 +35,9 @@ describe('validateMeta', () => {
     [{ sensitive: 'yes' }, /boolean/],
     [{ examples: [{ input: 'x' }] }, /examples\[0\]/],
     [{ extra: true }, /unknown field/],
+    [{ network: { hosts: ['https://evil.example'] } }, /not an allowlisted origin/],
+    [{ network: { hosts: [] } }, /at least one/],
+    [{ network: true }, /hosts array/],
   ])('rejects %j', (patch, message) => {
     const problems = validateMeta({ ...valid, ...patch }, 'demo-tool');
     expect(problems.join('\n')).toMatch(message);
@@ -42,6 +45,15 @@ describe('validateMeta', () => {
 
   it('rejects non-objects', () => {
     expect(validateMeta(null)).toEqual(['metadata must be an object']);
+  });
+
+  it('accepts an allowlisted network host', () => {
+    expect(
+      validateMeta(
+        { ...valid, category: 'network', group: undefined, network: { hosts: ['https://cloudflare-dns.com'] } },
+        'demo-tool',
+      ),
+    ).toEqual([]);
   });
 
   it('requires a group when the category defines them', () => {

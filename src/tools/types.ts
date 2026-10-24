@@ -33,6 +33,11 @@ export interface ToolMeta {
   heavy?: boolean;
   /** Tool-level legacy warning. Per-algorithm warnings live in the UI. */
   legacy?: string;
+  /**
+   * Contacts these HTTPS origins when the user runs the tool. Every origin
+   * must be listed in `src/lib/network-allow.ts`. Nothing is sent on page load.
+   */
+  network?: { hosts: string[] };
   examples?: ToolExample[];
 }
 

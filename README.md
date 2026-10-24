@@ -1,15 +1,15 @@
 # xt-tools
 
-> Your toolbox, your server, no internet required.
+> Your toolbox, on your server. Lookups ask before they leave.
 
-xt-tools is a self-hostable collection of 100+ privacy-first developer and everyday tools that run entirely in your browser. There's no tracking and no server-side processing, and the code makes no network calls. Host it with one Docker command, or put the static files on any web server, and it keeps working offline as an installable PWA.
+xt-tools is a self-hostable collection of privacy-first developer and everyday tools that run in your browser. There's no tracking and no server-side processing. A few tools look something up on the network, and only after you run them; every other tool stays on your device. Host it with one Docker command, or put the static files on any web server.
 
 > [!NOTE]
 > **Status: Phase 2 in progress (v0.1).** 43 tools work today: every Text and Converter tool from the catalog plus the Phase 1 pilots (hashing, JSON, regex, cron, QR codes, UUIDs, IPv4 subnets and more). The site, scaffolder, shared UI kit, Docker image and CI are in place. No image is published yet, so build it from source (see [Run it now](#run-it-now)). The full build plan is in **[PLAN.md](PLAN.md)**.
 
 ## Principles
 
-- **Nothing leaves your device.** No analytics, CDNs, remote fonts or telemetry. Six layers enforce this: lint rules, a validator, a scan of the built files, a strict Content Security Policy, end-to-end tests that fail on any external request, and tests run on a network with no internet access.
+- **Nothing leaves your device unless a tool says so.** No analytics, CDNs, remote fonts or telemetry. A tool marked Network names the services it contacts and sends a query only when you run it, with no cookies. Six layers still enforce this: lint rules, a validator, a scan of the built files, a strict Content Security Policy, end-to-end tests that fail on any external request, and tests run on a network with no internet access.
 - **Works offline.** After the first visit, the site keeps working without a connection. This needs HTTPS or `localhost` ([why](#https-and-secure-contexts)).
 - **Self-host anywhere.** The output is plain static files: nginx, Apache, Caddy, shared hosting or a NAS all work. The Docker image runs as a non-root user on a read-only filesystem.
 - **Small and fast.** Each page loads only its own code, at most 150 KB of gzipped JavaScript. Heavy tools (PDF, ffmpeg, SQLite, Argon2, OpenPGP) download their WASM only when you use them.
@@ -17,16 +17,16 @@ xt-tools is a self-hostable collection of 100+ privacy-first developer and every
 
 ## What's included (planned)
 
-About 180 tools in 13 categories:
+About 185 tools in 13 categories:
 
 | Category         | Examples                                                                                                                                                 |
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Crypto           | Hashing, AES-GCM text and file encryption, bcrypt and Argon2, JWT debugger, TOTP, BIP39, Shamir secret sharing, SSH/RSA/Ed25519 keys, X.509 and CSR, PGP |
-| Converter        | Date-time, base encoders, JSON/YAML/TOML/XML/CSV/.env, colors, units, time zones, Morse code                                                             |
+| Converter        | Date-time, base encoders, JSON/YAML/TOML/XML/CSV/.env, colors, units, time zones, Morse code, currency rates                                             |
 | Web              | URL and HTML encoders, CSP builder, security headers, cURL converter, user-agent parser, minifiers, email header analyser                                |
 | Images and media | QR codes (create and read), image convert/resize/compress, EXIF viewer, screen, camera and audio recorders, video to GIF                                 |
 | Development      | JSON tools, regex tester, cron, SQL formatter, JSON Schema, JSON to types, SQLite browser, cheatsheets                                                   |
-| Network          | IPv4/IPv6 subnet calculators, CIDR tools, MAC vendor lookup, DNS record builder, WireGuard config generator                                              |
+| Network          | IPv4/IPv6 subnet calculators, CIDR tools, MAC vendor lookup, DNS record builder, WireGuard config, and live IP, DNS and registration lookups             |
 | Math             | Expression evaluator, statistics, matrices, loans, date differences, graph plotter                                                                       |
 | Measurement      | Chronometer, timers and Pomodoro, world clock, metronome, screen ruler                                                                                   |
 | Text             | Diff, statistics, case and Unicode tools, Markdown editor, invisible character detector, text to speech                                                  |
