@@ -109,8 +109,10 @@ describe('formatYaml', () => {
     );
     const start = performance.now();
     expect(fmt(big).split('\n')).toHaveLength(30_001);
-    expect(performance.now() - start).toBeLessThan(2000);
-  });
+    // The duplicate-key walk is linear. A shared image-build runner has taken
+    // just over 2s for this input, so the cap only rejects a pathological blow-up.
+    expect(performance.now() - start).toBeLessThan(15_000);
+  }, 20_000);
 
   it('runs the meta examples', () => {
     for (const { input, expect: expected } of meta.examples ?? []) expect(fmt(input)).toContain(expected);
