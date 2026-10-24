@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'NATO alphabet',
   description: 'Spell text out with the NATO phonetic alphabet, or turn code words back into letters.',
   category: 'converter',
+  group: 'signals',
   keywords: ['nato', 'phonetic', 'alphabet', 'spelling', 'alfa bravo charlie', 'radio'],
   examples: [
     { input: 'XT 42', expect: 'X-ray Tango / Four Two' },

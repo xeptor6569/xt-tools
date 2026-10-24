@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description:
     'Convert Unix file permissions between octal, symbolic and chmod notation, with a checkbox grid and umask.',
   category: 'development',
+  group: 'utilities',
   keywords: [
     'chmod',
     'permissions',

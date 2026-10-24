@@ -22,7 +22,7 @@ test('category pages list their tools', async ({ page }) => {
     expect(response?.status()).toBe(200);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(category.label);
     for (const tool of tools.filter((t) => t.category === category.id)) {
-      await expect(page.getByRole('link', { name: new RegExp(tool.name) })).toBeVisible();
+      await expect(page.getByRole('link', { name: new RegExp(tool.name) }).first()).toBeVisible();
     }
   }
 });
@@ -54,6 +54,50 @@ test('theme choice applies immediately and survives a reload', async ({ page }) 
   await expectAccessible(page);
   await page.locator('select[data-xt-theme]').selectOption('system');
   await expect(page.locator('html')).not.toHaveAttribute('data-theme', /.*/);
+});
+
+test('text category shows its curated groups', async ({ page }) => {
+  await page.goto('category/text/');
+  await expect(page.getByRole('heading', { level: 2, name: 'Transform' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 2, name: 'Analyze' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Text cleanup' }).first()).toBeVisible();
+  await expectAccessible(page);
+});
+
+test('pins stay on this device and lead the home page', async ({ page }) => {
+  await page.goto('');
+  await expect(page.locator('html')).toHaveAttribute('data-xt-pins', 'ready');
+  await page.locator('[data-xt="tool-grid"] button[data-xt-pin="tool:slugify"]').click();
+  const pinned = page.locator('[data-xt="pinned"]');
+  await expect(pinned.getByRole('link', { name: 'Slugify' })).toBeVisible();
+  await page.locator('button[data-xt-pin="category:text"]').click();
+  await expect(pinned.getByRole('link', { name: /^Category Text/ })).toBeVisible();
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-xt-pins', 'ready');
+  await expect(page.locator('[data-xt="pinned"]').getByRole('link', { name: 'Slugify' })).toBeVisible();
+  await expect(page.locator('[data-xt="pinned"]').getByRole('link', { name: 'Text' })).toBeVisible();
+  await page.locator('[data-xt="pinned"] button[data-xt-pin="tool:slugify"]').click();
+  await expect(page.locator('[data-xt="pinned"]').getByRole('link', { name: 'Slugify' })).toHaveCount(0);
+  await expectAccessible(page);
+});
+
+test('personal collections and sub-collections stay on this device', async ({ page }) => {
+  await page.goto('collections/#add-slugify');
+  await expect(page.getByRole('button', { name: 'Create collection' })).toBeVisible();
+  await page.getByLabel('New collection').fill('Daily');
+  await page.getByRole('button', { name: 'Create collection' }).click();
+  await expect(page.getByRole('heading', { level: 2, name: 'Daily' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Slugify' })).toBeVisible();
+  await page.getByLabel('New sub-collection in Daily').fill('Encoders');
+  await page.getByRole('button', { name: 'Add sub-collection' }).click();
+  await expect(page.getByRole('heading', { level: 3, name: 'Encoders' })).toBeVisible();
+  await page.getByRole('button', { name: 'Pin the Daily collection' }).click();
+  await page.goto('');
+  await expect(page.locator('html')).toHaveAttribute('data-xt-pins', 'ready');
+  await expect(page.locator('[data-xt="pinned"]').getByRole('link', { name: 'Daily' })).toBeVisible();
+  await expect(page.locator('[data-xt="collection-list"]').getByRole('link', { name: /Daily/ })).toBeVisible();
+  await page.reload();
+  await expect(page.locator('[data-xt="collection-list"]').getByRole('link', { name: /Daily/ })).toBeVisible();
 });
 
 test('licenses page passes axe', async ({ page }) => {

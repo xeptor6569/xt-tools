@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description:
     'Searchable reference of regular expression syntax: character classes, anchors, groups, lookarounds and flags.',
   category: 'development',
+  group: 'cheatsheets',
   keywords: [
     'regex',
     'regexp',

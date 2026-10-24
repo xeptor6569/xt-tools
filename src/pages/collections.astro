@@ -1,0 +1,31 @@
+---
+import CollectionsApp from '../components/site/CollectionsApp.tsx';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { href } from '../lib/href.ts';
+---
+
+<BaseLayout
+  title="Collections"
+  description="Group tools into collections and sub-collections that stay in this browser."
+>
+  <nav aria-label="Breadcrumb" class="mb-4 text-sm">
+    <ol class="flex items-center gap-1 text-muted">
+      <li>
+        <a href={href()}>Home</a>
+      </li>
+      <li aria-hidden="true">›</li>
+      <li aria-current="page" class="text-fg">
+        Collections
+      </li>
+    </ol>
+  </nav>
+  <h1 class="mb-2 text-3xl font-bold">Your collections</h1>
+  <p class="mb-6 text-muted">
+    Group tools into collections, and add a sub-collection when a collection needs one. Pins and collections stay in
+    this browser. Nothing is uploaded.
+  </p>
+  <noscript>
+    <p class="mb-4 text-sm">Creating and editing collections needs JavaScript.</p>
+  </noscript>
+  <CollectionsApp client:load />
+</BaseLayout>

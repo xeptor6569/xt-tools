@@ -6,6 +6,7 @@ const valid = {
   name: 'Demo tool',
   description: 'Demo tool used to prove the scaffolding loop.',
   category: 'text',
+  group: 'transform',
   keywords: ['demo'],
   added: '2026-01-01',
 };
@@ -23,6 +24,8 @@ describe('validateMeta', () => {
     [{ description: 'No period at the end of this description' }, /ending with a period/],
     [{ description: 'First sentence here. Second sentence too.' }, /single sentence/],
     [{ category: 'nope' }, /category must be one of/],
+    [{ group: 'nope' }, /group must be one of/],
+    [{ category: 'web', group: 'transform' }, /has no groups/],
     [{ keywords: [] }, /non-empty array/],
     [{ keywords: ['Upper'] }, /lowercase/],
     [{ keywords: ['a', 'a'] }, /duplicated/],
@@ -39,5 +42,11 @@ describe('validateMeta', () => {
 
   it('rejects non-objects', () => {
     expect(validateMeta(null)).toEqual(['metadata must be an object']);
+  });
+
+  it('requires a group when the category defines them', () => {
+    const { group, ...rest } = valid;
+    expect(group).toBe('transform');
+    expect(validateMeta(rest, 'demo-tool').join('\n')).toMatch(/group must be one of/);
   });
 });

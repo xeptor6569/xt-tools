@@ -1,0 +1,25 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  kind: 'tool' | 'category' | 'group' | 'collection';
+  id: string;
+  /** Noun phrase used in the button name, e.g. "Slugify" or "the Text category". */
+  label: string;
+}
+
+const { kind, id, label } = Astro.props;
+const name = `Pin ${label}`;
+---
+
+<button
+  type="button"
+  class="inline-flex size-8 shrink-0 items-center justify-center rounded-md text-muted hover:bg-bg hover:text-fg"
+  data-xt-pin={`${kind}:${id}`}
+  data-xt-pin-label={label}
+  aria-pressed="false"
+  aria-label={name}
+  title={name}
+>
+  <Icon name="star" class="size-4" />
+</button>

@@ -1,6 +1,8 @@
 ---
-import { getCategory } from '../categories.ts';
+import { getCategory, getGroup } from '../categories.ts';
 import Icon from '../components/site/Icon.astro';
+import PinButton from '../components/site/PinButton.astro';
+import SaveTool from '../components/site/SaveTool.astro';
 import CapabilityNotice from '../components/ui/CapabilityNotice.tsx';
 import LegacyWarning from '../components/ui/LegacyWarning.astro';
 import { categoryHref, href } from '../lib/href.ts';
@@ -13,6 +15,7 @@ interface Props {
 
 const { meta } = Astro.props;
 const category = getCategory(meta.category);
+const group = meta.group && category ? getGroup(category.id, meta.group) : undefined;
 const requires = meta.requires ?? [];
 ---
 
@@ -31,6 +34,14 @@ const requires = meta.requires ?? [];
           <li aria-hidden="true">›</li>
         </>
       )}
+      {category && group && (
+        <>
+          <li>
+            <a href={`${categoryHref(category.id)}#${group.id}`}>{group.label}</a>
+          </li>
+          <li aria-hidden="true">›</li>
+        </>
+      )}
       <li aria-current="page" class="text-fg">
         {meta.name}
       </li>
@@ -38,7 +49,11 @@ const requires = meta.requires ?? [];
   </nav>
 
   <header class="mb-6 flex flex-col gap-2">
-    <h1 class="text-2xl font-bold">{meta.name}</h1>
+    <div class="flex flex-wrap items-center gap-2">
+      <h1 class="text-2xl font-bold">{meta.name}</h1>
+      <PinButton kind="tool" id={meta.id} label={meta.name} />
+      <SaveTool id={meta.id} name={meta.name} labelled />
+    </div>
     <p class="text-muted">{meta.description}</p>
   </header>
 

@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'tmux cheatsheet',
   description: 'Searchable reference of tmux sessions, windows, panes, copy mode, key bindings and config snippets.',
   category: 'development',
+  group: 'cheatsheets',
   keywords: ['tmux', 'terminal', 'multiplexer', 'cheatsheet', 'panes', 'sessions', 'shortcuts', 'prefix', 'reference'],
   added: '2026-10-24',
   examples: [{ input: 'detach', expect: 'Ctrl-b d' }],

@@ -77,10 +77,10 @@ jobs:
       - name: Scaffold one tool per template, plus one with a worker
         run: |
           for t in two-pane text-transform generator file-processor diff reference-table; do
-            npm run new-tool -- "ci-$t" --name "CI $t" --category text \
+            npm run new-tool -- "ci-$t" --name "CI $t" --category text --group transform \
               --description "Temporary tool created by CI to test the $t template." --template "$t" --yes
           done
-          npm run new-tool -- ci-worker --name "CI worker" --category text \
+          npm run new-tool -- ci-worker --name "CI worker" --category text --group transform \
             --description "Temporary tool created by CI to test the worker template." --worker --yes
       - name: The new tools pass every check without other edits
         run: |

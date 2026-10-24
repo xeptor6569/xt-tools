@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'Semver calculator',
   description: 'Sort and compare semantic versions, test them against npm-style ranges and compute the next version.',
   category: 'development',
+  group: 'utilities',
   keywords: [
     'semver',
     'semantic versioning',

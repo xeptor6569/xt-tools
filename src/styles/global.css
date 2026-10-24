@@ -82,6 +82,15 @@
     text-underline-offset: 2px;
   }
 
+  /* Pinned stars pick up the accent once the button has been pressed. */
+  button[data-xt-pin][aria-pressed='true'] {
+    color: var(--color-accent);
+  }
+
+  button[data-xt-pin][aria-pressed='true'] svg {
+    fill: currentColor;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

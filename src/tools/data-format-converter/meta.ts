@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'Data format converter',
   description: 'Convert between JSON, YAML, TOML, XML, CSV, .env, INI and Java properties.',
   category: 'converter',
+  group: 'formats',
   keywords: [
     'json',
     'yaml',

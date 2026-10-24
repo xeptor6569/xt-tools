@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description:
     'Normalize email addresses by lowercasing them, stripping plus tags and Gmail dots, and removing duplicates.',
   category: 'development',
+  group: 'utilities',
   keywords: [
     'email',
     'normalize',

@@ -1,0 +1,49 @@
+---
+import type { Category } from '../../categories.ts';
+import { groupTools } from '../../lib/groups.ts';
+import type { ToolMeta } from '../../tools/types.ts';
+import PinButton from './PinButton.astro';
+import ToolCard from './ToolCard.astro';
+
+interface Props {
+  category: Category;
+  tools: ToolMeta[];
+  /** Anchor each group at `#groupId` so pinned groups can land on it. */
+  anchorGroups?: boolean;
+  /** Show the one-line group description. Category pages use this; the home page does not. */
+  describe?: boolean;
+  /** Home nests groups under a category h2, so they are h3. A category page uses h2. */
+  level?: 2 | 3;
+}
+
+const { category, tools, anchorGroups = false, describe = false, level = 3 } = Astro.props;
+const Heading = level === 2 ? 'h2' : 'h3';
+const sections = groupTools(category, tools);
+---
+
+{sections.map((section) => {
+  const anchor = anchorGroups && section.id && section.id !== 'other' ? section.id : undefined;
+  return (
+    <section class="mb-6 scroll-mt-24" id={anchor} aria-labelledby={anchor ? `${anchor}-title` : undefined}>
+      {section.label && (
+        <div class="mb-3">
+          <div class="flex items-center gap-2">
+            <Heading id={anchor ? `${anchor}-title` : undefined} class="text-lg font-semibold">
+              {section.label}
+              <span class="ml-2 text-sm font-normal text-muted">({section.tools.length})</span>
+            </Heading>
+            {section.id && section.id !== 'other' && (
+              <PinButton kind="group" id={`${category.id}/${section.id}`} label={`the ${section.label} group`} />
+            )}
+          </div>
+          {describe && section.description && <p class="mt-1 text-sm text-muted">{section.description}</p>}
+        </div>
+      )}
+      <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" data-xt="tool-grid">
+        {section.tools.map((tool) => (
+          <ToolCard tool={tool} />
+        ))}
+      </ul>
+    </section>
+  );
+})}

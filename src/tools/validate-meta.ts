@@ -1,7 +1,7 @@
 // Validates a tool's metadata against the contract. Shared by the registry
 // (fails the Astro build) and scripts/validate-tools.ts. Keep it dependency-free
 // so plain Node can import it.
-import { categoryIds } from '../categories.ts';
+import { categoryIds, groupIdsFor } from '../categories.ts';
 import { capabilityIds } from '../capabilities.ts';
 
 export const ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -18,6 +18,7 @@ export function validateMeta(meta: unknown, expectedId?: string, today = new Dat
     'name',
     'description',
     'category',
+    'group',
     'keywords',
     'added',
     'sensitive',
@@ -53,6 +54,15 @@ export function validateMeta(meta: unknown, expectedId?: string, today = new Dat
 
   if (!isString(m.category) || !categoryIds.includes(m.category)) {
     problems.push(`category must be one of: ${categoryIds.join(', ')}`);
+  } else {
+    const groups = groupIdsFor(m.category);
+    if (groups) {
+      if (!isString(m.group) || !groups.includes(m.group)) {
+        problems.push(`group must be one of: ${groups.join(', ')}`);
+      }
+    } else if (m.group !== undefined) {
+      problems.push('this category has no groups');
+    }
   }
 
   if (!Array.isArray(m.keywords) || m.keywords.length === 0) {

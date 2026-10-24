@@ -192,7 +192,8 @@ Versions were current on 2026-10-14. Pin exact versions (`save-exact=true`) and 
 
 - All keys go through `src/lib/storage.ts` and are namespaced as `xt:<BASE_PATH>:<key>`, so two instances on one domain don't collide.
 - Stored keys:
-  - `favorites`
+  - `favorites` (pins: tools, categories, curated groups and personal collections)
+  - `collections` (personal collections and one level of sub-collections)
   - `recent` (maximum 12)
   - `theme`
   - `tool:<id>:state`, only for non-sensitive tools where the user has turned persistence on
@@ -219,6 +220,7 @@ export interface ToolMeta {
   name: string; // display name, 2–40 chars
   description: string; // one sentence, 20–160 chars; used on cards and in <meta>
   category: CategoryId; // must exist in categories.ts
+  group?: string; // curated sub-collection; required when that category defines groups
   keywords: string[]; // ≥1, lowercase; old names of merged tools go here
   added: string; // ISO date YYYY-MM-DD; drives the "New" badge
   sensitive?: boolean; // handles secrets: no URL state, no persistence by default, private inputs
@@ -286,7 +288,7 @@ All scripts use Node built-ins only and run as `node scripts/<name>.ts` (D17).
 ### 6.1 `npm run new-tool`
 
 ```
-npm run new-tool -- [id] --name "My Tool" --category text --description "…" \
+npm run new-tool -- [id] --name "My Tool" --category text --group transform --description "…" \
   --keywords "a,b,c" [--requires camera,microphone] [--sensitive] [--heavy] \
   [--worker] [--template two-pane|text-transform|file-processor|generator|diff|reference-table] [--yes]
 ```
@@ -403,13 +405,16 @@ Build this in Phase 1, before the pilot tools. Components live in `src/component
 
 - **Home page:**
   - A tool grid rendered statically, so it works without JavaScript.
-  - Category filter chips.
-  - Favorites and recently used tools shown first, when present.
+  - Category chips that jump to that category on the page. The category heading links to its page.
+  - Curated groups inside categories that define them (Text, Converter, Development).
+  - Pinned tools, groups, categories and personal collections shown first, when present.
+  - Personal collections, with one level of sub-collections, stored on this device.
 - **Search:**
   - Opened with Ctrl+K, Cmd+K or `/`.
   - An accessible dialog. Fuse.js and `search-index.json` load only the first time it opens.
-- **Category pages:** one per category.
-- **Favorites and recents:** stored in localStorage only.
+- **Category pages:** one per category, with curated groups and a pin control for the category and each group.
+- **Collections page:** create, rename and delete personal collections and sub-collections, and add or remove tools. A link from a tool opens it with that tool ready to add.
+- **Pins:** tools, curated groups, categories and personal collections. Stored in localStorage only, newest first, up to 48. Recents stay in localStorage too.
 - **Themes:** dark, light and system.
   - A tiny inline bootstrap script prevents a flash of the wrong theme. It must be covered by the CSP hash; if Astro doesn't hash it, add its hash through `security.csp.scriptDirective.hashes`.
   - `<meta name="color-scheme">`.
@@ -435,7 +440,7 @@ Build this in Phase 1, before the pilot tools. Components live in `src/component
 
 - The code we ship makes no network requests other than same-origin requests for the site's own files.
 - Tool input stays in the tab.
-- localStorage is written only for favorites, recents, theme and per-tool state the user has opted into (never for sensitive tools).
+- localStorage is written only for favorites, collections, recents, theme and per-tool state the user has opted into (never for sensitive tools).
 - Anyone can verify this through the CSP in devtools and an offline test.
 
 ### 9.2 Enforcement layers
@@ -1295,3 +1300,4 @@ Every phase ends with the full check set from [13.3](#133-commands-per-phase) pa
 | 2026-10-24 | 2.2   | **Batch 2 (Development) done.** Added `catalog/02-development.json`; 24 new tools, so every Development entry in 19.2 except `sqlite-browser` (P5) now exists (67 tools in total): six searchable cheatsheets (Git, regex, Docker, Kubernetes, Vim, tmux), `random-port`, `chmod-calculator`, `email-normalizer`, `string-escaper`, `semver`, `xml-formatter`, `yaml-formatter`, `sql-formatter`, `json-schema`, `json-to-types`, `json-query` (JSONPath), `docker-compose-converter`, `dockerfile-linter`, `patch-applier`, `gitignore-generator`, `k8s-manifest`, `mock-data` and `code-to-image`. New dependencies: sql-formatter, @faker-js/faker, @cfworker/json-schema, jsonpath-plus, semver, prismjs. First bundled datasets, with `scripts/refresh-data.ts` dispatching to `scripts/datasets/<name>.ts`, `docs/datasets.md`, and credits on the licenses page: `gitignore-0e5d690.json` (github/gitignore, CC0, 312 templates, 57 KB gzip) and `k8s-v1.37.1.json` (28 kinds derived from the Kubernetes OpenAPI spec, Apache-2.0, 10.5 KB gzip). New `tests/e2e/dev-tools.spec.ts` covers the worker and dataset paths that `meta.examples` can't (mock-data, code-to-image, gitignore-generator). Verified: strict validator, licenses, audit, typecheck, lint, 944 unit tests, builds at `/` and `/tools/`, e2e against preview at both base paths (224) and in the egress-less container at both base paths (225), smoke test, and the budget (largest page is still data-format-converter at 75.6 KB gzip; the largest new one is docker-compose-converter at 57.1 KB). **Decisions:** `argparse` (Python-2.0; used only by sql-formatter's CLI and never bundled) is a user-approved license exception. `scan-dist.allow.json` gained never-fetched strings: the @cfworker/json-schema fallback base URI, Prism's @license/@author comment, and faker's error texts, image-module URL templates and Googlebot UA string. faker always bundles its image module, but mock-data offers no image, avatar or URL fields. Libraries run only where the CSP allows: jsonpath-plus always uses `eval: 'safe'`, Prism uses `tokenize` only (never HTML output) with `manual` set before core loads, and its main bundle is avoided because it includes a network-loading plugin. `mock-data` and `code-to-image` run faker and Prism in workers (not tagged W in 19.2): this keeps them out of the page bundle and makes slow grammars and large schemas stoppable. mock-data always seeds from `crypto.getRandomValues` or the user's seed, and adds a "dates relative to" field so a seed reproduces the same data. sql-formatter is a lazy chunk (about 74 KB gzip) and the formatter is passed into `logic.ts`. yaml-formatter replaces yaml's quadratic duplicate-key check with a linear one. k8s schemas reject unknown fields (`additionalProperties: false`) and YAML is read with 1.1 rules, as Kubernetes does. The Dockerfile linter uses its own rule IDs and wording (hadolint is GPL-3.0). Tool names: "Docker run to Compose" (`docker-compose-converter`) and "JSONPath playground" (`json-query`). Batch 2 has no ᴹ merge candidates. **Deferred:** jq for `json-query` (P5) and `sqlite-browser` (P5); `json-schema` validates on the main thread, so a catastrophic user `pattern` could freeze the tab, and moving it to a worker is open; sql-formatter has no safe minify mode. |
 | 2026-10-24 | CI    | **CI moved to self-hosted runners, with continuous deployment.** At the user's request, `ci.yml` runs on `[self-hosted, linux, x64]` (override with the `XT_RUNNER_LABELS` repository variable) for pushes to `main` and manual runs. Pull requests stay on `ubuntu-latest` because the repository is public. A new `deploy` job runs after every green push to `main` (and on manual runs on `main`): `scripts/deploy.ts` builds `xt-tools:sha-<short>` with the host's Docker, writes `compose.yaml` and `.env` into `XT_DEPLOY_DIR` (default `~/xt-tools`), runs `docker compose -p xt-tools-prod up -d --wait`, checks `/healthz` and the base path on the host port, and rolls back to the previous image on failure. It keeps the live and previous images and removes older ones. Defaults: port 3125 and base `/`, changeable with the repository variables `XT_PORT`, `XT_BIND`, `BASE_PATH` and `SITE_URL`. The job uses the `production` environment and the `deploy-production` concurrency group; `make deploy` does the same by hand. **Changes for a shared, non-ephemeral host:** each job uses unique Compose project, image and container names and cleans up with `if: always()`. Reports written by the root-run Playwright container are handed back to the runner user. The scaffolding job's e2e run now uses the Compose test profile (Playwright image) instead of `playwright install --with-deps`, which needs root; its test image sets `XT_VALIDATE_STRICT=0` because the temporary `ci-*` tools intentionally keep their `XT-TODO` placeholders (production builds stay strict). Lighthouse runs in the Playwright image in the site container's network namespace, so it still audits `http://localhost:8080` without a host browser or a published port. `compose.yaml` gained an `XT_IMAGE` variable (default unchanged). The deploy script is Node `.ts` (D17), so the deploy job sets up Node. Verified locally: actionlint (only the earlier shellcheck style warnings remain), the containerised Lighthouse run (all assertions pass), and deploy, redeploy, rollback and setting validation with `scripts/deploy.ts`. Documented in `docs/self-hosted-runner.md`. |
 | 2026-10-24 | 2     | **Added `docker-compose-builder` at the user's request (68 tools).** A form-based Compose file builder, separate from `docker-compose-converter`: service tabs (add, duplicate, remove), image/build, container name, restart policy, ports, expose, volumes, environment rows, env files, command/entrypoint, working directory, user, hostname, dependencies with conditions, network attachments, declared volumes/networks (external, driver), and per-service/top-level "extra" YAML mappings for every other Compose key. It generates YAML 1.1 with quoted ports, auto-declares referenced named volumes and networks with warnings, imports an existing compose.yaml (unrecognized keys are preserved in the extra mappings), and offers Copy/Download. Added to 19.2 (Development is now 29 entries, 181 pages) and `catalog/02-development.json`. 67 unit tests cover generation, validation, import/round trips and robustness. **Decisions:** no new dependencies; short port/volume syntax only in the form (long syntax belongs in the extra YAML); imported command/entrypoint lists are shell-joined with best-effort quoting. `tests/e2e/dev-tools.spec.ts` also covers multi-service editing, import and download. Verified: strict validator, typecheck, lint, 1011 unit tests, builds at `/` and `/tools/`, 228 e2e tests against preview at both base paths, 229 in the egress-less container at both base paths, the smoke test and the budget (84 pages, largest 75.6 KB gzip). |
+| 2026-10-24 | 2     | **Pins, curated groups and personal collections.** Text, Converter and Development tools now belong to a curated group (`meta.group`, required only for categories that define groups; the contract change was requested). The home page shows pins first and keeps the full catalog underneath, with category chips that jump on the page. Personal collections, including one level of sub-collections, live in localStorage (`collections`) beside pins (`favorites`, newest first, cap 48). A collections page creates, renames and deletes them and adds or removes tools. **Decisions:** categories with only a few tools stay flat; groups are one deep; personal collections are one deep; the home grid stays in the static HTML so it still works without JavaScript. Recents and search stay deferred to Phase 3. |

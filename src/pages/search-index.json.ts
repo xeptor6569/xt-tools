@@ -3,11 +3,12 @@ import type { APIRoute } from 'astro';
 import { allTools } from '../tools/registry.ts';
 
 export const GET: APIRoute = () => {
-  const index = allTools().map(({ id, name, description, category, keywords, added }) => ({
+  const index = allTools().map(({ id, name, description, category, group, keywords, added }) => ({
     id,
     name,
     description,
     category,
+    ...(group ? { group } : {}),
     keywords,
     added,
   }));

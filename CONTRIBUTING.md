@@ -80,6 +80,7 @@ The new tool appears on the home page, its category page, the search index and t
 | `name`        | 2–40 characters; also the page heading                                                 |
 | `description` | one sentence, 20–160 characters, ending with a period                                  |
 | `category`    | an id from `src/categories.ts`                                                         |
+| `group`       | curated sub-collection; required when that category lists groups, otherwise omit       |
 | `keywords`    | lowercase search terms                                                                 |
 | `added`       | `YYYY-MM-DD`; tools added in the last 30 days get a "New" badge                        |
 | `sensitive`   | the tool handles secrets: nothing is stored or put in the URL                          |

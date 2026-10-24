@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'Text to binary',
   description: 'Convert text to binary, octal, decimal or hex byte values and back.',
   category: 'converter',
+  group: 'encodings',
   keywords: ['binary', 'ascii', 'bytes', 'text to binary', 'bits', 'utf-8'],
   examples: [{ input: 'Hi', expect: '01001000 01101001' }],
   added: '2026-10-18',

@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'Unit converter',
   description: 'Convert length, mass, temperature, data size (KB vs KiB), time, speed and more.',
   category: 'converter',
+  group: 'units',
   keywords: [
     'unit',
     'convert',

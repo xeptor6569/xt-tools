@@ -1,8 +1,9 @@
 ---
 import Icon from '../components/site/Icon.astro';
-import ToolCard from '../components/site/ToolCard.astro';
+import PinButton from '../components/site/PinButton.astro';
+import ToolGroups from '../components/site/ToolGroups.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { categoryHref } from '../lib/href.ts';
+import { categoryHref, collectionsHref } from '../lib/href.ts';
 import { allTools, toolsByCategory } from '../tools/registry.ts';
 
 const groups = toolsByCategory().filter((g) => g.tools.length > 0);
@@ -16,16 +17,35 @@ const total = allTools().length;
   <h1 class="mb-2 text-3xl font-bold">Tools</h1>
   <p class="mb-6 text-muted">
     {total}
-    {total === 1 ? 'tool' : 'tools'} that run entirely in your browser. Nothing you enter leaves this device.
+    {total === 1 ? 'tool' : 'tools'} that run entirely in your browser. Nothing you enter leaves this device. Pin a
+    tool, group or category to keep it at the top of this page.
   </p>
 
-  <nav aria-label="Filter by category" class="mb-8">
+  <div data-xt="pinned"></div>
+
+  <section aria-labelledby="your-collections" class="mb-8">
+    <div class="mb-2 flex flex-wrap items-center gap-3">
+      <h2 id="your-collections" class="text-xl font-semibold">
+        Your collections
+      </h2>
+      <a href={collectionsHref()} class="text-sm">
+        Manage
+      </a>
+    </div>
+    <ul data-xt="collection-list" class="mb-2 flex flex-wrap gap-2 empty:hidden"></ul>
+    <p class="text-sm text-muted">
+      Collections and sub-collections you create stay on this device.
+      <a href={collectionsHref()}>Create one</a>
+    </p>
+  </section>
+
+  <nav aria-label="Jump to a category" class="sticky top-0 z-10 -mx-4 mb-8 border-b border-border bg-bg px-4 py-3">
     <ul class="flex flex-wrap gap-2">
       {groups.map(({ category, tools }) => (
         <li>
           <a
-            href={categoryHref(category.id)}
-            class="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-sm text-fg no-underline hover:border-accent"
+            href={`#cat-${category.id}`}
+            class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-fg no-underline hover:border-accent"
           >
             <Icon name={category.icon} class="size-4" />
             {category.label}
@@ -37,16 +57,26 @@ const total = allTools().length;
   </nav>
 
   {groups.map(({ category, tools }) => (
-    <section class="mb-8" aria-labelledby={`cat-${category.id}`}>
-      <h2 id={`cat-${category.id}`} class="mb-3 flex items-center gap-2 text-xl font-semibold">
-        <Icon name={category.icon} />
-        {category.label}
-      </h2>
-      <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" data-xt="tool-grid">
-        {tools.map((tool) => (
-          <ToolCard tool={tool} />
-        ))}
-      </ul>
+    <section class="mb-10 scroll-mt-24" id={`cat-${category.id}`} aria-labelledby={`cat-${category.id}-title`}>
+      <div class="mb-3 flex items-center gap-2">
+        <h2 id={`cat-${category.id}-title`} class="flex items-center gap-2 text-xl font-semibold">
+          <a
+            href={categoryHref(category.id)}
+            class="inline-flex items-center gap-2 text-fg no-underline hover:text-accent"
+          >
+            <Icon name={category.icon} />
+            {category.label}
+          </a>
+        </h2>
+        <PinButton kind="category" id={category.id} label={`the ${category.label} category`} />
+      </div>
+      <ToolGroups category={category} tools={tools} />
     </section>
   ))}
+
+  <script>
+    import { mountHomePersonal } from '../components/site/mount-home.ts';
+
+    mountHomePersonal();
+  </script>
 </BaseLayout>

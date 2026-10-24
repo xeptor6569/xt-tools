@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'HTML to Markdown',
   description: 'Convert HTML into clean Markdown.',
   category: 'converter',
+  group: 'formats',
   keywords: ['html', 'markdown', 'convert', 'turndown'],
   examples: [{ input: '<h2>Notes</h2><p>Some <strong>bold</strong> text.</p>', expect: '## Notes' }],
   added: '2026-10-18',

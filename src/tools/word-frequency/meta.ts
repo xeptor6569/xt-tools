@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'Word frequency counter',
   description: 'Count how often each word appears in a text.',
   category: 'text',
+  group: 'analyze',
   keywords: ['word', 'frequency', 'count', 'occurrences', 'keyword density'],
   examples: [{ input: 'The cat and the hat. The cat sat.', expect: '37.50%' }],
   added: '2026-10-18',

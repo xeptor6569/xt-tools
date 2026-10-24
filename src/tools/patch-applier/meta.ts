@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'Patch applier',
   description: 'Apply a unified diff patch to text and see the patched result, or which hunks failed and why.',
   category: 'development',
+  group: 'utilities',
   keywords: ['patch', 'diff', 'unified diff', 'apply', 'git diff', 'git apply', 'hunk', 'reverse patch'],
   added: '2026-10-24',
   examples: [

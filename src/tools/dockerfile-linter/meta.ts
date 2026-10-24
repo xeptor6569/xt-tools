@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'Dockerfile linter',
   description: 'Check a Dockerfile for common mistakes and best-practice issues, with an explanation for each finding.',
   category: 'development',
+  group: 'formatters',
   keywords: ['dockerfile', 'docker', 'lint', 'linter', 'best practices', 'container', 'hadolint', 'buildkit'],
   added: '2026-10-24',
   examples: [
