@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description:
     'Pretty-print or minify XML and check that it is well-formed, keeping comments, CDATA and entities intact.',
   category: 'development',
+  group: 'formatters',
   keywords: ['xml', 'format', 'prettify', 'beautify', 'minify', 'validate', 'indent', 'well-formed', 'pretty print'],
   added: '2026-10-24',
   examples: [

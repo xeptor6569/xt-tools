@@ -1,9 +1,10 @@
 ---
 import '../styles/global.css';
 import { categories } from '../categories.ts';
-import { categoryHref, href } from '../lib/href.ts';
-import { themeBootstrapScript } from '../lib/theme.ts';
+import Pins from '../components/site/Pins.astro';
 import ThemeSwitch from '../components/site/ThemeSwitch.astro';
+import { categoryHref, collectionsHref, href } from '../lib/href.ts';
+import { themeBootstrapScript } from '../lib/theme.ts';
 
 interface Props {
   title: string;
@@ -43,10 +44,13 @@ const version = __XT_VERSION__;
         <a href={href()} class="text-lg font-bold text-fg no-underline">
           xt-tools
         </a>
-        <span class="hidden text-sm text-muted md:inline">Your toolbox, your server, no internet required.</span>
-        <div class="ml-auto">
+        <span class="hidden text-sm text-muted lg:inline">Your toolbox, your server, no internet required.</span>
+        <nav aria-label="Site" class="ml-auto flex items-center gap-4">
+          <a href={collectionsHref()} class="text-sm text-fg no-underline hover:underline">
+            Collections
+          </a>
           <ThemeSwitch />
-        </div>
+        </nav>
       </div>
     </header>
     <main id="main" class="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
@@ -65,10 +69,11 @@ const version = __XT_VERSION__;
         </nav>
         <p>
           Everything runs in your browser. Nothing you enter leaves this device. ·{' '}
-          <a href={href('licenses/')}>Licenses</a> · v{version}
+          <a href={collectionsHref()}>Collections</a> · <a href={href('licenses/')}>Licenses</a> · v{version}
         </p>
       </div>
     </footer>
+    <Pins />
     <noscript>
       <p class="mx-auto max-w-6xl px-4 pb-4 text-sm">
         The tools on this site need JavaScript. The pages still list what each tool does.

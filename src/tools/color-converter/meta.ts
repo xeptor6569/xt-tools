@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'Color converter',
   description: 'Convert any CSS color between hex, RGB, HSL, HWB, Lab, LCH and OKLCH.',
   category: 'converter',
+  group: 'units',
   keywords: ['color', 'colour', 'hex', 'rgb', 'hsl', 'hwb', 'lab', 'lch', 'oklch', 'oklab', 'css'],
   examples: [
     { input: 'rebeccapurple', expect: '#663399' },

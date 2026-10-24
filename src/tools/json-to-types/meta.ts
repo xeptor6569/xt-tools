@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'JSON to types',
   description: 'Generate TypeScript, Go, Rust or Python type definitions from a sample JSON document.',
   category: 'development',
+  group: 'generators',
   keywords: [
     'json',
     'typescript',

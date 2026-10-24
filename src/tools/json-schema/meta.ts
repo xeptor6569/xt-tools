@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description:
     'Validate JSON against a JSON Schema (drafts 4 to 2020-12), or generate a starting schema from sample JSON.',
   category: 'development',
+  group: 'formatters',
   keywords: [
     'json',
     'schema',

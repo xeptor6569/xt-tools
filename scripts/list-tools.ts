@@ -17,7 +17,7 @@ for (const c of categories) {
   const inCategory = tools.filter((t) => t.category === c.id);
   console.log(`\n${c.label} (${inCategory.length})`);
   for (const t of inCategory) {
-    const flags = [t.sensitive && 'sensitive', t.heavy && 'heavy', ...(t.requires ?? [])].filter(Boolean);
+    const flags = [t.group, t.sensitive && 'sensitive', t.heavy && 'heavy', ...(t.requires ?? [])].filter(Boolean);
     console.log(`  ${t.id.padEnd(28)} ${t.name}${flags.length ? `  [${flags.join(', ')}]` : ''}`);
   }
 }

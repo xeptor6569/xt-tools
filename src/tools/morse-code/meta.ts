@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'Morse code',
   description: 'Translate text to Morse code and back, and play it as audio.',
   category: 'converter',
+  group: 'signals',
   keywords: ['morse', 'code', 'telegraph', 'audio', 'dots and dashes'],
   examples: [
     { input: 'SOS', expect: '... --- ...' },

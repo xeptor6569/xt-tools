@@ -5,7 +5,7 @@
 //
 // The spec is an array of objects:
 //   { "id", "name", "category", "description", "keywords": [], "template"?,
-//     "requires"?: [], "sensitive"?, "heavy"?, "worker"? }
+//     "group"?, "requires"?: [], "sensitive"?, "heavy"?, "worker"? }
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -17,6 +17,7 @@ interface Entry {
   id: string;
   name: string;
   category: string;
+  group?: string;
   description: string;
   keywords: string[];
   template?: string;
@@ -84,6 +85,7 @@ for (const [i, e] of entries.entries()) {
     name: e.name,
     description: e.description,
     category: e.category,
+    ...(e.group ? { group: e.group } : {}),
     keywords: e.keywords,
     added: today,
   };
@@ -115,6 +117,7 @@ for (const e of toCreate) {
     e.name,
     '--category',
     e.category,
+    ...(e.group ? ['--group', e.group] : []),
     '--description',
     e.description,
     '--keywords',

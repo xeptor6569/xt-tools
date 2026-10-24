@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description:
     'Validate multi-document Kubernetes YAML against the official API schemas, with best-practice hints and starter templates.',
   category: 'development',
+  group: 'generators',
   keywords: [
     'kubernetes',
     'k8s',

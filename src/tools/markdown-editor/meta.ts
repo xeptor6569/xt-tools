@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'Markdown editor',
   description: 'Write Markdown with a live preview, then copy the HTML or print it to PDF.',
   category: 'text',
+  group: 'write',
   keywords: ['markdown', 'md', 'preview', 'html', 'markdown to html', 'pdf', 'editor'],
   added: '2026-10-18',
 };

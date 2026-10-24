@@ -17,6 +17,11 @@ export interface ToolMeta {
   /** One sentence, 20–160 chars, ending with a period. Used on cards and in <meta>. */
   description: string;
   category: CategoryId;
+  /**
+   * Curated sub-collection. Required when the category defines groups, and
+   * forbidden otherwise. See `groups` in `src/categories.ts`.
+   */
+  group?: string;
   /** At least one, lowercase. Old names of merged tools go here. */
   keywords: string[];
   /** ISO date (YYYY-MM-DD). Drives the "New" badge. */

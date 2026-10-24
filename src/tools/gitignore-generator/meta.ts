@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description:
     'Build a .gitignore file by combining templates for languages, frameworks, editors and operating systems.',
   category: 'development',
+  group: 'generators',
   keywords: ['gitignore', 'git', 'ignore', 'template', 'github'],
   added: '2026-10-24',
 };

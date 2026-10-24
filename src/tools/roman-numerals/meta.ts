@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'Roman numeral converter',
   description: 'Convert numbers to Roman numerals and back.',
   category: 'converter',
+  group: 'numbers',
   keywords: ['roman', 'numerals', 'number', 'latin'],
   examples: [{ input: '1994\nMMXXVI', expect: 'MCMXCIV\n2026' }],
   added: '2026-10-18',

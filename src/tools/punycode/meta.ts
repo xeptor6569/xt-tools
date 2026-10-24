@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'Punycode converter',
   description: 'Convert internationalized domain names to Punycode and back.',
   category: 'converter',
+  group: 'encodings',
   keywords: ['punycode', 'idn', 'domain', 'xn--', 'unicode domain'],
   examples: [
     { input: 'münchen.de', expect: 'xn--mnchen-3ya.de' },

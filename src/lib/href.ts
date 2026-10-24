@@ -15,3 +15,9 @@ export function toolHref(id: string): string {
 export function categoryHref(id: string): string {
   return href(`category/${id}/`);
 }
+
+/** Personal collections page. `hash` is added without a leading `#`. */
+export function collectionsHref(hash = ''): string {
+  const path = href('collections/');
+  return hash ? `${path}#${hash}` : path;
+}

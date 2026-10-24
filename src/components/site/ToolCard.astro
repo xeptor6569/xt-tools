@@ -1,25 +1,20 @@
 ---
-import { getCategory } from '../../categories.ts';
 import { toolHref } from '../../lib/href.ts';
 import { isNew } from '../../tools/registry.ts';
 import type { ToolMeta } from '../../tools/types.ts';
-import Icon from './Icon.astro';
+import PinButton from './PinButton.astro';
+import SaveTool from './SaveTool.astro';
 
 interface Props {
   tool: ToolMeta;
 }
 
 const { tool } = Astro.props;
-const category = getCategory(tool.category);
 ---
 
-<li>
-  <a
-    href={toolHref(tool.id)}
-    class="flex h-full flex-col gap-2 rounded-lg border border-border bg-surface p-4 text-fg no-underline hover:border-accent"
-  >
+<li class="flex h-full flex-col rounded-lg border border-border bg-surface hover:border-accent">
+  <a href={toolHref(tool.id)} class="flex flex-1 flex-col gap-2 p-4 text-fg no-underline">
     <span class="flex items-center gap-2 font-semibold">
-      {category && <Icon name={category.icon} class="size-4 shrink-0 text-muted" />}
       <span>{tool.name}</span>
       {isNew(tool) && (
         <span class="ml-auto rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-accent-fg">New</span>
@@ -27,4 +22,8 @@ const category = getCategory(tool.category);
     </span>
     <span class="text-sm text-muted">{tool.description}</span>
   </a>
+  <div class="flex items-center gap-1 border-t border-border px-2 py-1">
+    <PinButton kind="tool" id={tool.id} label={tool.name} />
+    <SaveTool id={tool.id} name={tool.name} />
+  </div>
 </li>

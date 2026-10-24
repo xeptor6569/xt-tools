@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'Mock data generator',
   description: 'Generate seeded fake names, emails, addresses and other test data as JSON, NDJSON, CSV or SQL inserts.',
   category: 'development',
+  group: 'generators',
   keywords: [
     'mock',
     'fake',

@@ -5,7 +5,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { dirname, join } from 'node:path';
 import { createInterface } from 'node:readline/promises';
 import { parseArgs } from 'node:util';
-import { categories, categoryIds } from '../src/categories.ts';
+import { categories, categoryIds, getCategory, groupIdsFor } from '../src/categories.ts';
 import { capabilityIds } from '../src/capabilities.ts';
 import { ID_PATTERN, validateMeta } from '../src/tools/validate-meta.ts';
 import { ROOT, TEMPLATES_DIR, pagePath, rel, slugify, toCamelCase, toPascalCase, toolDir } from './lib/tools.ts';
@@ -18,6 +18,7 @@ Usage:
 Options:
   --name <text>          Display name (default: derived from the id)
   --category <id>        One of: ${categoryIds.join(', ')}
+  --group <id>           Curated sub-collection. Required when the category defines groups
   --description <text>   One sentence, 20–160 characters, ending with a period
   --keywords <a,b,c>     Comma-separated search keywords (default: words of the name)
   --requires <a,b>       Capabilities: ${capabilityIds.join(', ')}
@@ -47,6 +48,7 @@ try {
     options: {
       name: { type: 'string' },
       category: { type: 'string' },
+      group: { type: 'string' },
       description: { type: 'string' },
       keywords: { type: 'string' },
       requires: { type: 'string' },
@@ -132,6 +134,24 @@ if (!category) fail(`--category is required. Valid categories: ${categoryIds.joi
 if (!categoryIds.includes(category))
   fail(`unknown category "${category}". Valid categories: ${categoryIds.join(', ')}`);
 
+let group = opts.group;
+const groups = groupIdsFor(category);
+if (groups) {
+  if (!group && interactive) {
+    console.log('\nGroups:');
+    for (const item of getCategory(category)?.groups ?? []) {
+      console.log(`  ${item.id.padEnd(14)} ${item.label}`);
+    }
+    group = await ask('Group');
+  }
+  if (!group) fail(`--group is required for ${category}. Valid groups: ${groups.join(', ')}`);
+  if (!groups.includes(group)) {
+    fail(`unknown group "${group}" for ${category}. Valid groups: ${groups.join(', ')}`);
+  }
+} else if (group) {
+  fail(`category "${category}" has no groups`);
+}
+
 let description = opts.description;
 if (!description && interactive) description = await ask('One-sentence description (20–160 characters)');
 if (!description) description = `${name}: XT-TODO describe what this tool does.`;
@@ -163,7 +183,15 @@ const toolName = name;
 // ---- Build files -----------------------------------------------------------
 
 const added = new Date().toISOString().slice(0, 10);
-const meta: Record<string, unknown> = { id: toolId, name: toolName, description, category, keywords, added };
+const meta: Record<string, unknown> = {
+  id: toolId,
+  name: toolName,
+  description,
+  category,
+  ...(group ? { group } : {}),
+  keywords,
+  added,
+};
 if (opts.sensitive) meta.sensitive = true;
 if (requires.length > 0) meta.requires = requires;
 if (opts.heavy) meta.heavy = true;

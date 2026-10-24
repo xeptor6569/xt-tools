@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description:
     'Format and indent SQL for PostgreSQL, MySQL, SQLite, SQL Server, Oracle and 15 other dialects, with keyword case options.',
   category: 'development',
+  group: 'formatters',
   keywords: [
     'sql',
     'format',

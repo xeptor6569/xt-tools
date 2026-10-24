@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description:
     'Escape and unescape strings for JSON, JavaScript, C, SQL, shell, PowerShell, regular expressions, CSV and XML.',
   category: 'development',
+  group: 'formatters',
   keywords: [
     'escape',
     'unescape',

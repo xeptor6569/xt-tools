@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'Case converter',
   description: 'Convert text between camelCase, snake_case, kebab-case, Title Case and more.',
   category: 'converter',
+  group: 'formats',
   keywords: [
     'case',
     'camelcase',

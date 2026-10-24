@@ -1,7 +1,8 @@
 ---
 import { categories } from '../../categories.ts';
 import Icon from '../../components/site/Icon.astro';
-import ToolCard from '../../components/site/ToolCard.astro';
+import PinButton from '../../components/site/PinButton.astro';
+import ToolGroups from '../../components/site/ToolGroups.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { href } from '../../lib/href.ts';
 import { toolsInCategory } from '../../tools/registry.ts';
@@ -26,17 +27,16 @@ const tools = toolsInCategory(category.id);
       </li>
     </ol>
   </nav>
-  <h1 class="mb-2 flex items-center gap-2 text-3xl font-bold">
-    <Icon name={category.icon} class="size-7" />
-    {category.label}
-  </h1>
+  <div class="mb-2 flex flex-wrap items-center gap-2">
+    <h1 class="flex items-center gap-2 text-3xl font-bold">
+      <Icon name={category.icon} class="size-7" />
+      {category.label}
+    </h1>
+    <PinButton kind="category" id={category.id} label={`the ${category.label} category`} />
+  </div>
   <p class="mb-6 text-muted">{category.description}</p>
   {tools.length > 0 ? (
-    <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" data-xt="tool-grid">
-      {tools.map((tool) => (
-        <ToolCard tool={tool} />
-      ))}
-    </ul>
+    <ToolGroups category={category} tools={tools} anchorGroups describe level={2} />
   ) : (
     <p>No tools in this category yet.</p>
   )}

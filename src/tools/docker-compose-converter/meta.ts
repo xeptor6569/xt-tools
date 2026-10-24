@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'Docker run to Compose',
   description: 'Convert docker run commands to Docker Compose YAML, and Compose services back to docker run.',
   category: 'development',
+  group: 'utilities',
   keywords: ['docker', 'compose', 'docker run', 'docker-compose', 'yaml', 'container', 'composerize', 'decomposerize'],
   added: '2026-10-24',
   examples: [

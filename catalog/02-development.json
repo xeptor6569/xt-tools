@@ -5,7 +5,8 @@
     "category": "development",
     "template": "reference-table",
     "description": "Searchable reference of everyday Git commands, from setup and branching to undoing mistakes.",
-    "keywords": ["git", "cheatsheet", "commands", "branch", "rebase", "commit", "reference"]
+    "keywords": ["git", "cheatsheet", "commands", "branch", "rebase", "commit", "reference"],
+    "group": "cheatsheets"
   },
   {
     "id": "random-port",
@@ -13,7 +14,8 @@
     "category": "development",
     "template": "generator",
     "description": "Pick random TCP/UDP port numbers from the registered or dynamic range, skipping well-known services.",
-    "keywords": ["port", "random", "tcp", "udp", "ephemeral", "dynamic port", "free port"]
+    "keywords": ["port", "random", "tcp", "udp", "ephemeral", "dynamic port", "free port"],
+    "group": "generators"
   },
   {
     "id": "sql-formatter",
@@ -21,49 +23,56 @@
     "category": "development",
     "description": "Format and indent SQL queries for PostgreSQL, MySQL, SQLite, SQL Server and other dialects.",
     "keywords": ["sql", "format", "beautify", "prettify", "postgresql", "mysql", "sqlite", "t-sql", "query"],
-    "heavy": true
+    "heavy": true,
+    "group": "formatters"
   },
   {
     "id": "chmod-calculator",
     "name": "Chmod calculator",
     "category": "development",
     "description": "Convert Unix file permissions between octal and symbolic notation, with a checkbox grid.",
-    "keywords": ["chmod", "permissions", "unix", "linux", "octal", "rwx", "umask", "file mode"]
+    "keywords": ["chmod", "permissions", "unix", "linux", "octal", "rwx", "umask", "file mode"],
+    "group": "utilities"
   },
   {
     "id": "docker-compose-converter",
     "name": "Docker run to Compose",
     "category": "development",
     "description": "Convert docker run commands to Docker Compose YAML, and Compose services back to docker run.",
-    "keywords": ["docker", "compose", "docker run", "docker-compose", "yaml", "container", "composerize"]
+    "keywords": ["docker", "compose", "docker run", "docker-compose", "yaml", "container", "composerize"],
+    "group": "utilities"
   },
   {
     "id": "docker-compose-builder",
     "name": "Docker Compose builder",
     "category": "development",
     "description": "Build a Docker Compose file with a form for services, ports, volumes, environment variables and networks.",
-    "keywords": ["docker", "compose", "builder", "compose.yaml", "docker-compose", "services", "generator"]
+    "keywords": ["docker", "compose", "builder", "compose.yaml", "docker-compose", "services", "generator"],
+    "group": "generators"
   },
   {
     "id": "xml-formatter",
     "name": "XML formatter",
     "category": "development",
     "description": "Pretty-print or minify XML, check that it is well-formed, and choose the indentation.",
-    "keywords": ["xml", "format", "prettify", "beautify", "minify", "validate", "indent"]
+    "keywords": ["xml", "format", "prettify", "beautify", "minify", "validate", "indent"],
+    "group": "formatters"
   },
   {
     "id": "yaml-formatter",
     "name": "YAML formatter",
     "category": "development",
     "description": "Format and validate YAML documents, with indentation, key sorting and line width options.",
-    "keywords": ["yaml", "yml", "format", "prettify", "validate", "lint", "indent"]
+    "keywords": ["yaml", "yml", "format", "prettify", "validate", "lint", "indent"],
+    "group": "formatters"
   },
   {
     "id": "email-normalizer",
     "name": "Email normalizer",
     "category": "development",
     "description": "Normalize email addresses by lowercasing them, stripping plus tags and Gmail dots, and removing duplicates.",
-    "keywords": ["email", "normalize", "gmail", "plus addressing", "dedupe", "canonical", "address"]
+    "keywords": ["email", "normalize", "gmail", "plus addressing", "dedupe", "canonical", "address"],
+    "group": "utilities"
   },
   {
     "id": "regex-cheatsheet",
@@ -71,21 +80,24 @@
     "category": "development",
     "template": "reference-table",
     "description": "Searchable reference of regular expression syntax: character classes, anchors, groups, lookarounds and flags.",
-    "keywords": ["regex", "regexp", "regular expression", "cheatsheet", "pattern", "reference"]
+    "keywords": ["regex", "regexp", "regular expression", "cheatsheet", "pattern", "reference"],
+    "group": "cheatsheets"
   },
   {
     "id": "json-schema",
     "name": "JSON Schema validator",
     "category": "development",
     "description": "Validate JSON against a JSON Schema, or generate a starting schema from sample JSON.",
-    "keywords": ["json", "schema", "validate", "validator", "generate", "draft 2020-12", "json schema generator"]
+    "keywords": ["json", "schema", "validate", "validator", "generate", "draft 2020-12", "json schema generator"],
+    "group": "formatters"
   },
   {
     "id": "json-to-types",
     "name": "JSON to types",
     "category": "development",
     "description": "Generate TypeScript, Go, Rust or Python type definitions from a sample JSON document.",
-    "keywords": ["json", "typescript", "go", "rust", "python", "types", "interface", "struct", "json to typescript"]
+    "keywords": ["json", "typescript", "go", "rust", "python", "types", "interface", "struct", "json to typescript"],
+    "group": "generators"
   },
   {
     "id": "json-query",
@@ -93,35 +105,40 @@
     "category": "development",
     "description": "Query JSON documents with JSONPath expressions and see each matching value and its path.",
     "keywords": ["json", "jsonpath", "query", "filter", "jq", "playground", "select"],
-    "worker": true
+    "worker": true,
+    "group": "utilities"
   },
   {
     "id": "patch-applier",
     "name": "Patch applier",
     "category": "development",
     "description": "Apply a unified diff patch to text and see the patched result, or which hunks failed and why.",
-    "keywords": ["patch", "diff", "unified diff", "apply", "git diff", "hunk"]
+    "keywords": ["patch", "diff", "unified diff", "apply", "git diff", "hunk"],
+    "group": "utilities"
   },
   {
     "id": "semver",
     "name": "Semver calculator",
     "category": "development",
     "description": "Compare and sort semantic versions, and test which versions satisfy an npm-style range.",
-    "keywords": ["semver", "semantic versioning", "version", "range", "compare", "npm", "caret", "tilde"]
+    "keywords": ["semver", "semantic versioning", "version", "range", "compare", "npm", "caret", "tilde"],
+    "group": "utilities"
   },
   {
     "id": "gitignore-generator",
     "name": ".gitignore generator",
     "category": "development",
     "description": "Build a .gitignore file by combining templates for languages, frameworks, editors and operating systems.",
-    "keywords": ["gitignore", "git", "ignore", "template", "github"]
+    "keywords": ["gitignore", "git", "ignore", "template", "github"],
+    "group": "generators"
   },
   {
     "id": "dockerfile-linter",
     "name": "Dockerfile linter",
     "category": "development",
     "description": "Check a Dockerfile for common mistakes and best-practice issues, with an explanation for each finding.",
-    "keywords": ["dockerfile", "docker", "lint", "linter", "best practices", "container", "hadolint"]
+    "keywords": ["dockerfile", "docker", "lint", "linter", "best practices", "container", "hadolint"],
+    "group": "formatters"
   },
   {
     "id": "k8s-manifest",
@@ -129,7 +146,8 @@
     "category": "development",
     "description": "Validate Kubernetes YAML manifests against the official API schemas, or start from a template.",
     "keywords": ["kubernetes", "k8s", "manifest", "yaml", "validate", "deployment", "kubeval", "kubeconform"],
-    "heavy": true
+    "heavy": true,
+    "group": "generators"
   },
   {
     "id": "mock-data",
@@ -137,21 +155,24 @@
     "category": "development",
     "description": "Generate fake names, emails, addresses and other test data as JSON, CSV or SQL inserts.",
     "keywords": ["mock", "fake", "test data", "faker", "random", "seed", "json", "csv", "sql"],
-    "heavy": true
+    "heavy": true,
+    "group": "generators"
   },
   {
     "id": "code-to-image",
     "name": "Code to image",
     "category": "development",
     "description": "Turn a code snippet into a syntax-highlighted PNG image, with themes, padding and line numbers.",
-    "keywords": ["code", "image", "screenshot", "png", "syntax highlighting", "carbon", "snippet"]
+    "keywords": ["code", "image", "screenshot", "png", "syntax highlighting", "carbon", "snippet"],
+    "group": "generators"
   },
   {
     "id": "string-escaper",
     "name": "String escaper",
     "category": "development",
     "description": "Escape and unescape strings for JSON, JavaScript, SQL, shell, regular expressions, CSV and XML.",
-    "keywords": ["escape", "unescape", "string", "json", "sql", "shell", "regex", "quote", "backslash"]
+    "keywords": ["escape", "unescape", "string", "json", "sql", "shell", "regex", "quote", "backslash"],
+    "group": "formatters"
   },
   {
     "id": "docker-cheatsheet",
@@ -159,7 +180,8 @@
     "category": "development",
     "template": "reference-table",
     "description": "Searchable reference of Docker and Docker Compose commands for images, containers, volumes and networks.",
-    "keywords": ["docker", "cheatsheet", "container", "image", "compose", "commands", "reference"]
+    "keywords": ["docker", "cheatsheet", "container", "image", "compose", "commands", "reference"],
+    "group": "cheatsheets"
   },
   {
     "id": "kubernetes-cheatsheet",
@@ -167,7 +189,8 @@
     "category": "development",
     "template": "reference-table",
     "description": "Searchable reference of kubectl commands for pods, deployments, services, logs and debugging.",
-    "keywords": ["kubernetes", "k8s", "kubectl", "cheatsheet", "pods", "commands", "reference"]
+    "keywords": ["kubernetes", "k8s", "kubectl", "cheatsheet", "pods", "commands", "reference"],
+    "group": "cheatsheets"
   },
   {
     "id": "vim-cheatsheet",
@@ -175,7 +198,8 @@
     "category": "development",
     "template": "reference-table",
     "description": "Searchable reference of Vim motions, editing commands, search, registers, windows and buffers.",
-    "keywords": ["vim", "vi", "neovim", "cheatsheet", "keys", "shortcuts", "editor", "reference"]
+    "keywords": ["vim", "vi", "neovim", "cheatsheet", "keys", "shortcuts", "editor", "reference"],
+    "group": "cheatsheets"
   },
   {
     "id": "tmux-cheatsheet",
@@ -183,6 +207,7 @@
     "category": "development",
     "template": "reference-table",
     "description": "Searchable reference of tmux sessions, windows, panes, copy mode and key bindings.",
-    "keywords": ["tmux", "terminal", "multiplexer", "cheatsheet", "panes", "sessions", "shortcuts", "reference"]
+    "keywords": ["tmux", "terminal", "multiplexer", "cheatsheet", "panes", "sessions", "shortcuts", "reference"],
+    "group": "cheatsheets"
   }
 ]

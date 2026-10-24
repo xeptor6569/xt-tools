@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description:
     'Format and validate YAML streams, keeping comments, with indentation, key sorting, quoting and line width options.',
   category: 'development',
+  group: 'formatters',
   keywords: ['yaml', 'yml', 'format', 'prettify', 'validate', 'lint', 'indent', 'sort keys', 'multi-document'],
   added: '2026-10-24',
   examples: [

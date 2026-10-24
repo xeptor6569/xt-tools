@@ -1,0 +1,24 @@
+---
+// Pin buttons are plain HTML. This script records clicks and reflects what is
+// stored, including buttons that appear after the page has loaded.
+import Icon from './Icon.astro';
+---
+
+<p data-xt="pin-status" class="sr-only" aria-live="polite"></p>
+<template id="xt-pin-button">
+  <button
+    type="button"
+    class="inline-flex size-8 shrink-0 items-center justify-center rounded-md text-muted hover:bg-bg hover:text-fg"
+    data-xt-pin=""
+    data-xt-pin-label=""
+    aria-pressed="false"
+    aria-label="Unpin"
+  >
+    <Icon name="star" class="size-4" />
+  </button>
+</template>
+<script>
+  import { installPins } from './pins-client.ts';
+
+  installPins();
+</script>

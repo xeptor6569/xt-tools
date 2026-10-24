@@ -5,6 +5,7 @@ const meta: ToolMeta = {
   name: 'Fancy text',
   description: 'Turn text into bold, italic, script, double-struck and other Unicode styles.',
   category: 'text',
+  group: 'transform',
   keywords: ['fancy', 'unicode', 'bold', 'italic', 'font', 'cursive', 'styled text'],
   examples: [{ input: 'Hello', expect: '𝐇𝐞𝐥𝐥𝐨' }],
   added: '2026-10-18',

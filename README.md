@@ -99,7 +99,7 @@ The HTTPS Compose overlay sets this up for both public domains and LANs.
 You only need Docker. Local Node 26 is optional.
 
 ```sh
-make new-tool                     # 1. scaffold (interactive), or pass ARGS="my-tool --name 'My Tool' --category text"
+make new-tool                     # 1. scaffold (interactive), or pass ARGS="my-tool --name 'My Tool' --category text --group transform"
 make dev                          # 2. develop with hot reload at http://localhost:4321
 make test                         # 3. validator, unit and end-to-end tests
 make build up                     # 4. rebuild and redeploy; the new tool appears automatically
