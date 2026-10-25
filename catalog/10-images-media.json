@@ -1,0 +1,123 @@
+[
+  {
+    "id": "wifi-qr",
+    "name": "WiFi QR code",
+    "category": "images-media",
+    "description": "Build a WiFi QR code from an SSID and password.",
+    "keywords": ["wifi", "qr", "ssid", "password", "wpa"],
+    "template": "two-pane",
+    "sensitive": true
+  },
+  {
+    "id": "svg-placeholder",
+    "name": "SVG placeholder",
+    "category": "images-media",
+    "description": "Generate a sized SVG placeholder with a label.",
+    "keywords": ["svg", "placeholder", "image", "dummy"],
+    "template": "generator"
+  },
+  {
+    "id": "camera-recorder",
+    "name": "Camera recorder",
+    "category": "images-media",
+    "description": "Record the camera and microphone and download the clip.",
+    "keywords": ["camera", "record", "video", "microphone"],
+    "template": "generator",
+    "requires": ["camera", "microphone"]
+  },
+  {
+    "id": "image-converter",
+    "name": "Image converter",
+    "category": "images-media",
+    "description": "Resize, crop, compress and convert an image in the browser.",
+    "keywords": ["image", "resize", "crop", "compress", "convert", "png", "jpeg"],
+    "template": "two-pane",
+    "worker": true
+  },
+  {
+    "id": "exif-viewer",
+    "name": "EXIF viewer",
+    "category": "images-media",
+    "description": "Read EXIF fields from an image without uploading it.",
+    "keywords": ["exif", "metadata", "photo", "gps"],
+    "template": "two-pane",
+    "heavy": true
+  },
+  {
+    "id": "palette-extractor",
+    "name": "Palette extractor",
+    "category": "images-media",
+    "description": "Extract a small color palette from an image.",
+    "keywords": ["palette", "color", "image", "extract"],
+    "template": "two-pane"
+  },
+  {
+    "id": "qr-reader",
+    "name": "QR reader",
+    "category": "images-media",
+    "description": "Read a QR code from an image file or the camera.",
+    "keywords": ["qr", "scan", "camera", "decode"],
+    "template": "two-pane",
+    "heavy": true,
+    "requires": ["camera"]
+  },
+  {
+    "id": "barcode-generator",
+    "name": "Barcode generator",
+    "category": "images-media",
+    "description": "Draw a Code 128 or EAN-13 barcode on a canvas.",
+    "keywords": ["barcode", "code128", "ean", "upc"],
+    "template": "two-pane"
+  },
+  {
+    "id": "svg-optimizer",
+    "name": "SVG optimizer",
+    "category": "images-media",
+    "description": "Clean an SVG and preview the sanitized result.",
+    "keywords": ["svg", "optimize", "minify", "svgo"],
+    "template": "two-pane",
+    "heavy": true
+  },
+  {
+    "id": "screen-recorder",
+    "name": "Screen recorder",
+    "category": "images-media",
+    "description": "Record the screen and download the clip.",
+    "keywords": ["screen", "record", "capture", "video"],
+    "template": "generator",
+    "requires": ["display-capture"]
+  },
+  {
+    "id": "audio-recorder",
+    "name": "Audio recorder",
+    "category": "images-media",
+    "description": "Record the microphone and show a live waveform.",
+    "keywords": ["audio", "record", "microphone", "waveform"],
+    "template": "generator",
+    "requires": ["microphone"]
+  },
+  {
+    "id": "sprite-splitter",
+    "name": "Sprite splitter",
+    "category": "images-media",
+    "description": "Split a sprite sheet into equal frames and download them.",
+    "keywords": ["sprite", "sheet", "split", "frames"],
+    "template": "two-pane"
+  },
+  {
+    "id": "hue-variants",
+    "name": "Hue variants",
+    "category": "images-media",
+    "description": "Shift an image through several hues and download the set.",
+    "keywords": ["hue", "color", "variants", "image"],
+    "template": "two-pane"
+  },
+  {
+    "id": "aspect-ratio",
+    "name": "Aspect ratio",
+    "category": "images-media",
+    "description": "Calculate a missing width or height from an aspect ratio.",
+    "keywords": ["aspect", "ratio", "width", "height", "16:9"],
+    "template": "two-pane"
+  }
+]

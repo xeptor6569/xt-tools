@@ -1,0 +1,43 @@
+[
+  {
+    "id": "gradient-generator",
+    "name": "Gradient generator",
+    "category": "design",
+    "description": "Build a CSS linear or radial gradient and copy the declaration.",
+    "keywords": ["gradient", "css", "linear", "radial"],
+    "template": "generator"
+  },
+  {
+    "id": "box-shadow",
+    "name": "Box shadow",
+    "category": "design",
+    "description": "Build a CSS box-shadow and preview it on a sample box.",
+    "keywords": ["box-shadow", "css", "shadow", "preview"],
+    "template": "generator"
+  },
+  {
+    "id": "css-clamp",
+    "name": "CSS clamp",
+    "category": "design",
+    "description": "Calculate a CSS clamp() for a size between two viewport widths.",
+    "keywords": ["clamp", "css", "fluid", "viewport", "typography"],
+    "template": "two-pane"
+  },
+  {
+    "id": "contrast-checker",
+    "name": "Contrast checker",
+    "category": "design",
+    "description": "Check a foreground and background pair against WCAG contrast.",
+    "keywords": ["contrast", "wcag", "color", "aa", "aaa"],
+    "template": "two-pane"
+  },
+  {
+    "id": "font-pairing",
+    "name": "Font pairing",
+    "category": "design",
+    "description": "Preview a heading and body font from local and system fonts.",
+    "keywords": ["font", "pairing", "typography", "local"],
+    "template": "generator",
+    "requires": ["local-fonts"]
+  }
+]

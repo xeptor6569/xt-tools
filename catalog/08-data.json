@@ -1,0 +1,69 @@
+[
+  {
+    "id": "phone-parser",
+    "name": "Phone parser",
+    "category": "data",
+    "description": "Parse a phone number and show its country and national format.",
+    "keywords": ["phone", "e164", "libphonenumber", "country"],
+    "template": "two-pane",
+    "heavy": true
+  },
+  {
+    "id": "iban-validator",
+    "name": "IBAN validator",
+    "category": "data",
+    "description": "Check an IBAN checksum and format it in groups.",
+    "keywords": ["iban", "bank", "checksum", "validate"],
+    "template": "two-pane"
+  },
+  {
+    "id": "luhn-validator",
+    "name": "Luhn validator",
+    "category": "data",
+    "description": "Check a number with the Luhn algorithm, for test numbers only.",
+    "keywords": ["luhn", "credit card", "checksum", "test number"],
+    "template": "two-pane",
+    "sensitive": true
+  },
+  {
+    "id": "isbn-ean-validator",
+    "name": "ISBN and EAN",
+    "category": "data",
+    "description": "Validate ISBN, EAN-13 and UPC-A check digits.",
+    "keywords": ["isbn", "ean", "upc", "barcode", "checksum"],
+    "template": "two-pane"
+  },
+  {
+    "id": "vat-validator",
+    "name": "VAT validator",
+    "category": "data",
+    "description": "Check a VAT number's format only, with no registry lookup.",
+    "keywords": ["vat", "tax", "format", "eu"],
+    "template": "two-pane"
+  },
+  {
+    "id": "iso-codes",
+    "name": "ISO codes",
+    "category": "data",
+    "description": "Look up countries, currencies and languages from Intl data.",
+    "keywords": ["iso", "country", "currency", "language", "intl"],
+    "template": "two-pane"
+  },
+  {
+    "id": "geo-converter",
+    "name": "Geo converter",
+    "category": "data",
+    "description": "Convert coordinates between decimal degrees, DMS and geohash.",
+    "keywords": ["geohash", "latitude", "longitude", "coordinates", "dms"],
+    "template": "two-pane"
+  },
+  {
+    "id": "csv-editor",
+    "name": "CSV editor",
+    "category": "data",
+    "description": "View and edit a CSV table, then export CSV or JSON.",
+    "keywords": ["csv", "table", "editor", "tsv", "json"],
+    "template": "two-pane",
+    "worker": true
+  }
+]

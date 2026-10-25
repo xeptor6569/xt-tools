@@ -60,6 +60,38 @@
     {
       "prefix": "https://bit.ly/wb-precache",
       "reason": "Documentation link inside Workbox's console warning for precache URLs that have no revision. Every precache entry is revisioned, so the warning does not run and the URL is never fetched."
+    },
+    {
+      "prefix": "https://example.com",
+      "reason": "Sample http(s) URLs in web-tool examples and generated snippets (Open Graph, cURL, HTTP snippet, robots, Safe Links). Nothing is fetched."
+    },
+    {
+      "prefix": "http://example.com",
+      "reason": "Sample http URL in web-tool examples. Nothing is fetched."
+    },
+    {
+      "prefix": "https://eur01.safelinks.protection.outlook.com/",
+      "reason": "Sample Outlook Safe Links URL in the safe-links decoder example. It is decoded locally and never fetched."
+    },
+    {
+      "prefix": "http://www.sitemaps.org/",
+      "reason": "XML namespace identifier written into generated sitemap documents. Never fetched."
+    },
+    {
+      "prefix": "http://ns.adobe.com/",
+      "reason": "XMP namespace identifiers compared as strings inside exifr (exif-viewer). Never fetched."
+    },
+    {
+      "prefix": "https://github.com/MikeKovarik/exifr",
+      "reason": "Text of an exifr error message (exif-viewer). Never fetched."
+    },
+    {
+      "prefix": "http://en.wikipedia.org/wiki/Bresenham",
+      "reason": "Comment inside jsqr (qr-reader) describing Bresenham's line algorithm. Never fetched."
+    },
+    {
+      "prefix": "https://rolldown.rs/in-depth/bundling-cjs",
+      "reason": "Text of Rolldown's CJS interop error, thrown only if bundled code calls require() and the browser has no require. Nothing is fetched."
     }
   ]
 }

@@ -1,7 +1,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { categories } from '../../src/categories.ts';
-import { expect, expectAccessible, serviceWorkerAvailable, test } from './fixtures.ts';
+import { expect, expectAccessible, serviceWorkerAvailable, test, waitForHydration } from './fixtures.ts';
 import { loadTools } from './registry.ts';
 
 const tools = await loadTools();
@@ -86,6 +86,7 @@ test('pins stay on this device and lead the home page', async ({ page }) => {
 
 test('personal collections and sub-collections stay on this device', async ({ page }) => {
   await page.goto('collections/#add-slugify');
+  await waitForHydration(page);
   await expect(page.getByRole('button', { name: 'Create collection' })).toBeVisible();
   await page.getByLabel('New collection').fill('Daily');
   await page.getByRole('button', { name: 'Create collection' }).click();

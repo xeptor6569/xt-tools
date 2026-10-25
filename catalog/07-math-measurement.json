@@ -1,0 +1,142 @@
+[
+  {
+    "id": "math-evaluator",
+    "name": "Math evaluator",
+    "category": "math",
+    "description": "Evaluate arithmetic and common functions without running arbitrary code.",
+    "keywords": ["math", "calculator", "expression", "evaluate"],
+    "template": "two-pane",
+    "heavy": true,
+    "worker": true
+  },
+  {
+    "id": "eta-calculator",
+    "name": "ETA calculator",
+    "category": "math",
+    "description": "Estimate a finish time from a start time, progress and speed.",
+    "keywords": ["eta", "time", "progress", "estimate"],
+    "template": "two-pane"
+  },
+  {
+    "id": "percentage-calculator",
+    "name": "Percentage calculator",
+    "category": "math",
+    "description": "Calculate a percentage of a value, a change, and a reverse percentage.",
+    "keywords": ["percentage", "percent", "ratio", "change"],
+    "template": "two-pane"
+  },
+  {
+    "id": "unit-calculator",
+    "name": "Unit calculator",
+    "category": "math",
+    "description": "Evaluate an expression that mixes compatible units.",
+    "keywords": ["unit", "calculator", "convert", "expression"],
+    "template": "two-pane",
+    "heavy": true
+  },
+  {
+    "id": "statistics",
+    "name": "Statistics",
+    "category": "math",
+    "description": "Summarize a list of numbers with mean, median, spread and quartiles.",
+    "keywords": ["statistics", "mean", "median", "stdev", "quartile"],
+    "template": "two-pane"
+  },
+  {
+    "id": "matrix-calculator",
+    "name": "Matrix calculator",
+    "category": "math",
+    "description": "Add, multiply, transpose and invert small numeric matrices.",
+    "keywords": ["matrix", "determinant", "inverse", "multiply"],
+    "template": "two-pane"
+  },
+  {
+    "id": "number-theory",
+    "name": "Number theory",
+    "category": "math",
+    "description": "Factor a number and compute primes, GCD and LCM.",
+    "keywords": ["prime", "factor", "gcd", "lcm", "number theory"],
+    "template": "two-pane",
+    "worker": true
+  },
+  {
+    "id": "random-numbers",
+    "name": "Random numbers",
+    "category": "math",
+    "description": "Draw seeded numbers, dice and a shuffled list.",
+    "keywords": ["random", "dice", "shuffle", "seed", "prng"],
+    "template": "generator"
+  },
+  {
+    "id": "loan-calculator",
+    "name": "Loan calculator",
+    "category": "math",
+    "description": "Calculate a loan payment and compound interest.",
+    "keywords": ["loan", "interest", "amortization", "compound", "payment"],
+    "template": "two-pane"
+  },
+  {
+    "id": "date-difference",
+    "name": "Date difference",
+    "category": "math",
+    "description": "Count days between two dates, including business days.",
+    "keywords": ["date", "difference", "business days", "calendar"],
+    "template": "two-pane"
+  },
+  {
+    "id": "graph-plotter",
+    "name": "Graph plotter",
+    "category": "math",
+    "description": "Plot a function of x on a canvas from a safe expression.",
+    "keywords": ["graph", "plot", "function", "canvas"],
+    "template": "two-pane"
+  },
+  {
+    "id": "chronometer",
+    "name": "Chronometer",
+    "category": "measurement",
+    "description": "Time an interval with lap splits, entirely in this browser.",
+    "keywords": ["stopwatch", "chronometer", "lap", "timer"],
+    "template": "generator"
+  },
+  {
+    "id": "benchmark-builder",
+    "name": "Benchmark builder",
+    "category": "measurement",
+    "description": "Compare measurements you type in, and never run any user code.",
+    "keywords": ["benchmark", "compare", "timing", "measurement"],
+    "template": "two-pane"
+  },
+  {
+    "id": "timer",
+    "name": "Timer",
+    "category": "measurement",
+    "description": "Count down a duration, with a Pomodoro preset.",
+    "keywords": ["timer", "countdown", "pomodoro", "alarm"],
+    "template": "generator"
+  },
+  {
+    "id": "world-clock",
+    "name": "World clock",
+    "category": "measurement",
+    "description": "Show the current time in several time zones.",
+    "keywords": ["clock", "timezone", "world", "time"],
+    "template": "generator"
+  },
+  {
+    "id": "metronome",
+    "name": "Metronome",
+    "category": "measurement",
+    "description": "Click a steady tempo and play a tone with WebAudio.",
+    "keywords": ["metronome", "tempo", "bpm", "tone"],
+    "template": "generator"
+  },
+  {
+    "id": "screen-ruler",
+    "name": "Screen ruler",
+    "category": "measurement",
+    "description": "Measure CSS pixels and estimate DPI from a known length.",
+    "keywords": ["ruler", "dpi", "pixels", "screen"],
+    "template": "generator"
+  }
+]
