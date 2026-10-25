@@ -1,0 +1,29 @@
+import { useMemo, useState } from 'preact/hooks';
+import Input from '../../components/ui/Input.tsx';
+import OutputRegion from '../../components/ui/OutputRegion.tsx';
+import ResultTable from '../../components/ui/ResultTable.tsx';
+import { rows, type Row } from './data.ts';
+import { httpStatusCodes } from './logic.ts';
+
+const COLUMNS = [
+  { key: 'name', label: 'Name' },
+  { key: 'value', label: 'Value', mono: true },
+  { key: 'description', label: 'Description' },
+] as const satisfies ReadonlyArray<{ key: keyof Row & string; label: string; mono?: boolean }>;
+
+export default function HttpStatusCodesTool() {
+  const [query, setQuery] = useState('');
+  const matches = useMemo(() => httpStatusCodes(rows, query), [query]);
+
+  return (
+    <div class="flex flex-col gap-4">
+      <Input label="Search" type="search" value={query} onValue={setQuery} data-xt="input" />
+      <OutputRegion label="Matches">
+        <p class="text-sm text-muted">
+          {matches.length} of {rows.length} entries
+        </p>
+        <ResultTable caption="HTTP status codes" columns={COLUMNS} rows={matches} empty="No matches." />
+      </OutputRegion>
+    </div>
+  );
+}

@@ -1,0 +1,117 @@
+[
+  {
+    "id": "ipv4-converter",
+    "name": "IPv4 converter",
+    "category": "network",
+    "description": "Convert an IPv4 address between dotted decimal, integer, hex and binary.",
+    "keywords": ["ipv4", "address", "integer", "hex", "binary", "convert"],
+    "template": "two-pane"
+  },
+  {
+    "id": "ipv4-range-expander",
+    "name": "IPv4 range expander",
+    "category": "network",
+    "description": "Expand an IPv4 start and end address into the covering CIDR blocks.",
+    "keywords": ["ipv4", "range", "cidr", "expand", "subnet"],
+    "template": "two-pane"
+  },
+  {
+    "id": "mac-vendor",
+    "name": "MAC vendor lookup",
+    "category": "network",
+    "description": "Look up a MAC address vendor from the bundled IEEE OUI list.",
+    "keywords": ["mac", "oui", "vendor", "ieee", "address"],
+    "template": "two-pane",
+    "heavy": true
+  },
+  {
+    "id": "mac-generator",
+    "name": "MAC generator",
+    "category": "network",
+    "description": "Generate random or locally administered MAC addresses.",
+    "keywords": ["mac", "address", "random", "locally administered"],
+    "template": "generator"
+  },
+  {
+    "id": "ipv6-ula",
+    "name": "IPv6 ULA generator",
+    "category": "network",
+    "description": "Generate a random IPv6 unique local address prefix.",
+    "keywords": ["ipv6", "ula", "fc00", "fd00", "prefix"],
+    "template": "generator"
+  },
+  {
+    "id": "ipv6-subnet",
+    "name": "IPv6 subnet",
+    "category": "network",
+    "description": "Expand, compress and split an IPv6 address or prefix.",
+    "keywords": ["ipv6", "subnet", "cidr", "compress", "expand"],
+    "template": "two-pane"
+  },
+  {
+    "id": "cidr-tools",
+    "name": "CIDR tools",
+    "category": "network",
+    "description": "Aggregate CIDR prefixes and report which ones overlap.",
+    "keywords": ["cidr", "aggregate", "overlap", "supernet", "prefix"],
+    "template": "two-pane"
+  },
+  {
+    "id": "ip-in-range",
+    "name": "IP in range",
+    "category": "network",
+    "description": "Check whether an IP address falls inside a list of ranges.",
+    "keywords": ["ip", "cidr", "range", "contains", "match"],
+    "template": "two-pane"
+  },
+  {
+    "id": "wildcard-mask",
+    "name": "Wildcard mask",
+    "category": "network",
+    "description": "Convert between a subnet mask, a prefix length and a wildcard mask.",
+    "keywords": ["wildcard", "netmask", "cidr", "acl", "inverse"],
+    "template": "two-pane"
+  },
+  {
+    "id": "port-reference",
+    "name": "Port reference",
+    "category": "network",
+    "description": "Look up common TCP and UDP port numbers.",
+    "keywords": ["port", "tcp", "udp", "iana", "service"],
+    "template": "reference-table"
+  },
+  {
+    "id": "dns-records",
+    "name": "DNS record builder",
+    "category": "network",
+    "description": "Build SPF, DMARC, DKIM, CAA and SRV records from a form.",
+    "keywords": ["dns", "spf", "dmarc", "dkim", "caa", "srv"],
+    "template": "generator"
+  },
+  {
+    "id": "wireguard",
+    "name": "WireGuard config",
+    "category": "network",
+    "description": "Generate a WireGuard key pair and a starter configuration.",
+    "keywords": ["wireguard", "vpn", "x25519", "config", "key"],
+    "template": "generator",
+    "sensitive": true
+  },
+  {
+    "id": "transfer-time",
+    "name": "Transfer time",
+    "category": "network",
+    "description": "Estimate how long a transfer takes at a given bandwidth.",
+    "keywords": ["bandwidth", "transfer", "time", "download", "throughput"],
+    "template": "generator"
+  },
+  {
+    "id": "hosts-merger",
+    "name": "Hosts merger",
+    "category": "network",
+    "description": "Merge hosts files and adblock lists and drop duplicate rules.",
+    "keywords": ["hosts", "adblock", "blocklist", "merge", "dedupe"],
+    "template": "two-pane",
+    "worker": true
+  }
+]

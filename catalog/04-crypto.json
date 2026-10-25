@@ -1,0 +1,168 @@
+[
+  {
+    "id": "token-generator",
+    "name": "Token generator",
+    "category": "crypto",
+    "description": "Generate cryptographically random tokens as hex or base64.",
+    "keywords": ["token", "secret", "random", "hex", "base64", "api key"],
+    "template": "generator",
+    "sensitive": true
+  },
+  {
+    "id": "file-checksum",
+    "name": "File checksum",
+    "category": "crypto",
+    "description": "Hash a file and compare it with an expected checksum.",
+    "keywords": ["checksum", "hash", "file", "sha256", "blake3", "verify"],
+    "template": "two-pane",
+    "worker": true
+  },
+  {
+    "id": "bcrypt",
+    "name": "Bcrypt",
+    "category": "crypto",
+    "description": "Hash a password with bcrypt and check a hash against a password.",
+    "keywords": ["bcrypt", "password", "hash", "compare", "kdf"],
+    "template": "two-pane",
+    "sensitive": true,
+    "worker": true
+  },
+  {
+    "id": "ulid-generator",
+    "name": "ULID generator",
+    "category": "crypto",
+    "description": "Generate Universally Unique Lexicographically Sortable Identifiers.",
+    "keywords": ["ulid", "identifier", "sortable", "uuid"],
+    "template": "generator"
+  },
+  {
+    "id": "text-encrypt",
+    "name": "Text encrypt",
+    "category": "crypto",
+    "description": "Encrypt and decrypt text with AES-GCM, and decrypt legacy ciphers only.",
+    "keywords": ["encrypt", "decrypt", "aes", "aes-gcm", "tripledes", "rabbit", "rc4"],
+    "template": "two-pane",
+    "sensitive": true
+  },
+  {
+    "id": "bip39",
+    "name": "BIP39 mnemonic",
+    "category": "crypto",
+    "description": "Create or recover a BIP39 mnemonic and its seed.",
+    "keywords": ["bip39", "mnemonic", "seed", "wallet", "passphrase"],
+    "template": "two-pane",
+    "sensitive": true
+  },
+  {
+    "id": "hmac-generator",
+    "name": "HMAC generator",
+    "category": "crypto",
+    "description": "Compute an HMAC over text with a secret key.",
+    "keywords": ["hmac", "mac", "sha256", "authentication", "key"],
+    "template": "two-pane",
+    "sensitive": true
+  },
+  {
+    "id": "rsa-keygen",
+    "name": "RSA key generator",
+    "category": "crypto",
+    "description": "Generate an RSA key pair and export it as PEM.",
+    "keywords": ["rsa", "key", "pem", "pkcs8", "spki"],
+    "template": "generator",
+    "sensitive": true,
+    "requires": ["webcrypto"]
+  },
+  {
+    "id": "password-strength",
+    "name": "Password strength",
+    "category": "crypto",
+    "description": "Estimate how guessable a password is, without sending it anywhere.",
+    "keywords": ["password", "strength", "zxcvbn", "entropy", "guesses"],
+    "template": "two-pane",
+    "sensitive": true,
+    "heavy": true
+  },
+  {
+    "id": "ec-keygen",
+    "name": "EC key generator",
+    "category": "crypto",
+    "description": "Generate an Ed25519 or ECDSA key pair on this device.",
+    "keywords": ["ed25519", "ecdsa", "p256", "key", "elliptic"],
+    "template": "generator",
+    "sensitive": true
+  },
+  {
+    "id": "ssh-keygen",
+    "name": "SSH key generator",
+    "category": "crypto",
+    "description": "Generate an SSH key and show its fingerprint.",
+    "keywords": ["ssh", "ed25519", "rsa", "fingerprint", "openssh"],
+    "template": "generator",
+    "sensitive": true
+  },
+  {
+    "id": "x509-decoder",
+    "name": "X.509 decoder",
+    "category": "crypto",
+    "description": "Decode a PEM X.509 certificate and list its fields.",
+    "keywords": ["x509", "certificate", "pem", "tls", "decode"],
+    "template": "two-pane"
+  },
+  {
+    "id": "csr-tool",
+    "name": "CSR tool",
+    "category": "crypto",
+    "description": "Decode a certificate signing request, or build one with WebCrypto.",
+    "keywords": ["csr", "pkcs10", "certificate", "pem", "request"],
+    "template": "two-pane",
+    "sensitive": true,
+    "requires": ["webcrypto"]
+  },
+  {
+    "id": "jwt-debugger",
+    "name": "JWT debugger",
+    "category": "crypto",
+    "description": "Decode, sign and verify a JWT, and flag the none algorithm.",
+    "keywords": ["jwt", "jws", "token", "hs256", "rs256", "none"],
+    "template": "two-pane",
+    "sensitive": true
+  },
+  {
+    "id": "file-encrypt",
+    "name": "File encrypt",
+    "category": "crypto",
+    "description": "Encrypt and decrypt a file with AES-GCM in chunks.",
+    "keywords": ["file", "encrypt", "decrypt", "aes-gcm", "chunk"],
+    "template": "two-pane",
+    "sensitive": true,
+    "worker": true
+  },
+  {
+    "id": "diceware",
+    "name": "Diceware",
+    "category": "crypto",
+    "description": "Generate a Diceware passphrase from the EFF wordlist.",
+    "keywords": ["diceware", "passphrase", "eff", "words", "password"],
+    "template": "generator",
+    "sensitive": true,
+    "heavy": true
+  },
+  {
+    "id": "shamir",
+    "name": "Shamir sharing",
+    "category": "crypto",
+    "description": "Split a secret into shares and recover it from enough of them.",
+    "keywords": ["shamir", "secret sharing", "split", "recover", "threshold"],
+    "template": "two-pane",
+    "sensitive": true
+  },
+  {
+    "id": "totp",
+    "name": "TOTP",
+    "category": "crypto",
+    "description": "Generate and check a TOTP code from a Base32 secret.",
+    "keywords": ["totp", "otp", "2fa", "authenticator", "rfc6238"],
+    "template": "two-pane",
+    "sensitive": true
+  }
+]

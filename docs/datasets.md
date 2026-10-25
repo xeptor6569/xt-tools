@@ -45,3 +45,21 @@ To refresh a dataset:
 
 Draft-4 JSON Schemas for 28 built-in kinds (Pod, Deployment, StatefulSet, DaemonSet, ReplicaSet, Job, CronJob, Service, Ingress, IngressClass, ConfigMap, Secret, PersistentVolume, PersistentVolumeClaim, StorageClass, Namespace, ServiceAccount, Role, RoleBinding, ClusterRole, ClusterRoleBinding, NetworkPolicy, HorizontalPodAutoscaler, PodDisruptionBudget, LimitRange, ResourceQuota, PriorityClass, EndpointSlice), reduced to the definitions they reference. Descriptions and formats are stripped, IntOrString and Quantity become string-or-number, objects with declared properties reject unknown fields, and each kind has a `.root` schema that requires its apiVersion and kind.
 <!-- /dataset:k8s -->
+
+<!-- dataset:oui -->
+
+### oui
+
+| Field     | Value                                                                      |
+| --------- | -------------------------------------------------------------------------- |
+| Tool      | `mac-vendor`                                                               |
+| File      | `public/data/oui-2026-10.json`                                             |
+| Source    | IEEE Registration Authority (<https://standards-oui.ieee.org/oui/oui.csv>) |
+| Version   | 2026-10                                                                    |
+| License   | IEEE public registry data                                                  |
+| Retrieved | 2026-10-24                                                                 |
+| SHA-256   | `a5d279b01545cc0803231e60a91600a871e96b4bc2994e414c111dd26591fbd9`         |
+| Refresh   | `node scripts/refresh-data.ts oui`                                         |
+
+54289 prefixes: MA-L, MA-M and MA-S assignment lists. Lookup uses the longest matching prefix, so a 28-bit or 36-bit assignment wins over the 24-bit block it was carved from. The site loads this file through `loadLocalAsset` and never requests the IEEE URLs.
+<!-- /dataset:oui -->

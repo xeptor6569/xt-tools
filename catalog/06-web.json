@@ -1,0 +1,215 @@
+[
+  {
+    "id": "url-encoder",
+    "name": "URL encoder",
+    "category": "web",
+    "description": "Encode and decode URL components and full URLs.",
+    "keywords": ["url", "encode", "decode", "percent", "uri"],
+    "template": "text-transform"
+  },
+  {
+    "id": "html-entities",
+    "name": "HTML entities",
+    "category": "web",
+    "description": "Escape and unescape HTML entities in text.",
+    "keywords": ["html", "entities", "escape", "unescape", "amp"],
+    "template": "text-transform"
+  },
+  {
+    "id": "url-parser",
+    "name": "URL parser",
+    "category": "web",
+    "description": "Split a URL into its origin, path, query and fragment.",
+    "keywords": ["url", "parse", "query", "origin", "fragment"],
+    "template": "two-pane"
+  },
+  {
+    "id": "device-info",
+    "name": "Device info",
+    "category": "web",
+    "description": "Show what this browser reports about the device, with no network lookup.",
+    "keywords": ["device", "browser", "screen", "language", "user agent"],
+    "template": "generator"
+  },
+  {
+    "id": "basic-auth",
+    "name": "Basic auth",
+    "category": "web",
+    "description": "Build an HTTP Basic Authorization header from a username and password.",
+    "keywords": ["basic", "auth", "authorization", "header", "base64"],
+    "template": "two-pane",
+    "sensitive": true
+  },
+  {
+    "id": "og-meta-generator",
+    "name": "Open Graph meta",
+    "category": "web",
+    "description": "Build Open Graph and Twitter card meta tags.",
+    "keywords": ["open graph", "og", "twitter", "meta", "seo"],
+    "template": "generator"
+  },
+  {
+    "id": "mime-types",
+    "name": "MIME types",
+    "category": "web",
+    "description": "Look up a MIME type from an extension, or the extensions for a type.",
+    "keywords": ["mime", "content-type", "extension", "media type"],
+    "template": "two-pane",
+    "heavy": true
+  },
+  {
+    "id": "keycode-info",
+    "name": "Keycode info",
+    "category": "web",
+    "description": "Show the key, code and modifiers for a key you press.",
+    "keywords": ["keycode", "keyboard", "key", "code", "which"],
+    "template": "generator"
+  },
+  {
+    "id": "html-editor",
+    "name": "HTML editor",
+    "category": "web",
+    "description": "Edit HTML and preview the sanitized result in a sandbox.",
+    "keywords": ["html", "editor", "preview", "wysiwyg", "sanitize"],
+    "template": "two-pane",
+    "heavy": true
+  },
+  {
+    "id": "user-agent-parser",
+    "name": "User-agent parser",
+    "category": "web",
+    "description": "Parse a user-agent string into browser, engine and OS fields.",
+    "keywords": ["user-agent", "browser", "os", "parse", "ua"],
+    "template": "two-pane"
+  },
+  {
+    "id": "http-status-codes",
+    "name": "HTTP status codes",
+    "category": "web",
+    "description": "Look up HTTP status codes and their standard meanings.",
+    "keywords": ["http", "status", "404", "500", "code"],
+    "template": "reference-table"
+  },
+  {
+    "id": "json-diff",
+    "name": "JSON diff",
+    "category": "web",
+    "description": "Compare two JSON values and show the added, removed and changed paths.",
+    "keywords": ["json", "diff", "compare", "patch"],
+    "template": "diff"
+  },
+  {
+    "id": "safe-links-decoder",
+    "name": "Safe Links decoder",
+    "category": "web",
+    "description": "Unwrap an Outlook Safe Links URL to the original address.",
+    "keywords": ["safelinks", "outlook", "url", "decode", "protection.outlook.com"],
+    "template": "two-pane"
+  },
+  {
+    "id": "csp-builder",
+    "name": "CSP builder",
+    "category": "web",
+    "description": "Build a Content-Security-Policy and point out risky sources.",
+    "keywords": ["csp", "content-security-policy", "header", "script-src"],
+    "template": "two-pane"
+  },
+  {
+    "id": "security-headers",
+    "name": "Security headers",
+    "category": "web",
+    "description": "Generate a starter set of HTTP security headers.",
+    "keywords": ["security", "headers", "hsts", "csp", "referrer"],
+    "template": "generator"
+  },
+  {
+    "id": "curl-converter",
+    "name": "cURL converter",
+    "category": "web",
+    "description": "Turn a cURL command into fetch, Python or Go.",
+    "keywords": ["curl", "fetch", "python", "go", "http"],
+    "template": "two-pane"
+  },
+  {
+    "id": "http-snippet",
+    "name": "HTTP snippet",
+    "category": "web",
+    "description": "Build an offline HTTP request snippet for fetch, Python or Go.",
+    "keywords": ["http", "snippet", "fetch", "request", "offline"],
+    "template": "generator"
+  },
+  {
+    "id": "cookie-parser",
+    "name": "Cookie parser",
+    "category": "web",
+    "description": "Parse a Cookie or Set-Cookie header into names and attributes.",
+    "keywords": ["cookie", "set-cookie", "parse", "header"],
+    "template": "two-pane"
+  },
+  {
+    "id": "robots-sitemap",
+    "name": "Robots and sitemap",
+    "category": "web",
+    "description": "Generate a robots.txt and a simple XML sitemap.",
+    "keywords": ["robots.txt", "sitemap", "seo", "crawl"],
+    "template": "generator"
+  },
+  {
+    "id": "redirect-generator",
+    "name": "Redirect generator",
+    "category": "web",
+    "description": "Generate nginx and Apache redirect rules from a from/to pair.",
+    "keywords": ["redirect", "nginx", "htaccess", "rewrite", "301"],
+    "template": "two-pane"
+  },
+  {
+    "id": "favicon-generator",
+    "name": "Favicon generator",
+    "category": "web",
+    "description": "Draw a letter favicon and download it as PNG or ICO.",
+    "keywords": ["favicon", "ico", "png", "icon"],
+    "template": "generator"
+  },
+  {
+    "id": "social-preview",
+    "name": "Social preview",
+    "category": "web",
+    "description": "Preview a sanitized title, description and image as a social card.",
+    "keywords": ["social", "preview", "og", "card", "seo"],
+    "template": "two-pane"
+  },
+  {
+    "id": "data-uri",
+    "name": "Data URI",
+    "category": "web",
+    "description": "Encode text or a file as a data URI, and decode one back.",
+    "keywords": ["data uri", "base64", "data url", "encode"],
+    "template": "two-pane"
+  },
+  {
+    "id": "query-string-json",
+    "name": "Query string JSON",
+    "category": "web",
+    "description": "Convert a query string to JSON and JSON back to a query string.",
+    "keywords": ["query string", "json", "search params", "url"],
+    "template": "two-pane"
+  },
+  {
+    "id": "code-minifier",
+    "name": "Code minifier",
+    "category": "web",
+    "description": "Minify and beautify HTML, CSS and JavaScript without running it.",
+    "keywords": ["minify", "beautify", "html", "css", "javascript"],
+    "template": "two-pane",
+    "heavy": true,
+    "worker": true
+  },
+  {
+    "id": "email-headers",
+    "name": "Email headers",
+    "category": "web",
+    "description": "Parse email headers and unfold them, without any DNS lookup.",
+    "keywords": ["email", "headers", "received", "parse", "unfold"],
+    "template": "two-pane"
+  }
+]
