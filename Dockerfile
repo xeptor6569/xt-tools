@@ -27,6 +27,9 @@ RUN --mount=type=cache,target=/root/.npm npm ci --no-audit
 # ---------------------------------------------------------------------------
 # build: validate, test and build. A broken tool can never produce an image.
 FROM deps AS build
+# csr-tool and ssh-keygen check the PEM they generate with the real CLIs.
+# These packages stay in this stage; the runtime image does not copy them.
+RUN apk add --no-cache openssl openssh-client
 ARG BASE_PATH=/
 ARG SITE_URL=
 ARG VERSION=dev
