@@ -91,6 +91,11 @@
     fill: currentColor;
   }
 
+  /* The search dialog is top-layer only while open. */
+  dialog[data-xt='search-dialog']:not([open]) {
+    display: none;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

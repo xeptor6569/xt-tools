@@ -60,7 +60,17 @@ const version = __XT_VERSION__;
           xt-tools
         </a>
         <span class="hidden text-sm text-muted lg:inline">Your toolbox, your server, no internet required.</span>
-        <nav aria-label="Site" class="ml-auto flex items-center gap-4">
+        <nav aria-label="Site" class="ml-auto flex flex-wrap items-center justify-end gap-4">
+          <button
+            type="button"
+            data-xt="search-open"
+            class={buttonClass()}
+            aria-haspopup="dialog"
+            aria-keyshortcuts="Control+K Meta+K /"
+          >
+            Search
+            <kbd class="hidden rounded border border-border px-1.5 font-mono text-xs sm:inline">Ctrl K</kbd>
+          </button>
           <a href={collectionsHref()} class="text-sm text-fg no-underline hover:underline">
             Collections
           </a>
@@ -92,10 +102,45 @@ const version = __XT_VERSION__;
         </p>
       </div>
     </footer>
+    <dialog
+      data-xt="search-dialog"
+      aria-labelledby="xt-search-title"
+      class="w-[min(36rem,calc(100vw-2rem))] rounded-lg border border-border bg-bg p-4 text-fg backdrop:bg-fg/40"
+    >
+      <div class="mb-3 flex items-center gap-3">
+        <h2 id="xt-search-title" class="text-lg font-semibold">
+          Search tools
+        </h2>
+        <button type="button" data-xt="search-close" class={`${buttonClass()} ml-auto`}>
+          Close
+        </button>
+      </div>
+      <label for="xt-search-input" class="sr-only">
+        Search tools
+      </label>
+      <input
+        id="xt-search-input"
+        data-xt="search-input"
+        type="search"
+        role="combobox"
+        autocomplete="off"
+        spellcheck="false"
+        aria-autocomplete="list"
+        aria-expanded="false"
+        aria-controls="xt-search-results"
+        placeholder="Name, keyword or description"
+        class="min-h-11 w-full rounded-md border border-border bg-bg px-3 text-fg"
+      />
+      <p data-xt="search-status" class="sr-only" aria-live="polite"></p>
+      <p data-xt="search-hint" class="mt-3 text-sm text-muted"></p>
+      <ul id="xt-search-results" role="listbox" data-xt="search-results" class="mt-2 flex flex-col gap-1"></ul>
+    </dialog>
     <Pins />
     <script>
+      import { installSearch } from '../components/site/search-boot.ts';
       import { startShell } from '../lib/pwa.ts';
 
+      installSearch();
       startShell();
     </script>
     <noscript>

@@ -12,6 +12,8 @@ if (!basePath.startsWith('/') || !basePath.endsWith('/')) {
 }
 const siteUrl = process.env.SITE_URL?.trim() || undefined;
 const version = process.env.VERSION?.trim() || 'dev';
+const built = new Date();
+const buildDate = `${built.getFullYear()}-${String(built.getMonth() + 1).padStart(2, '0')}-${String(built.getDate()).padStart(2, '0')}`;
 
 // Astro doesn't hash `is:inline` scripts, so hash the theme bootstrap here.
 const sha256 = (text: string) => `sha256-${createHash('sha256').update(text).digest('base64')}` as const;
@@ -20,6 +22,11 @@ const previewStyleHash = sha256(PREVIEW_CSS);
 
 // One policy for every page. scripts/gen-csp.ts copies it (plus frame-ancestors)
 // into the nginx header, so keep both in sync by only editing it here.
+// Trusted Types stays off. `require-trusted-types-for 'script'` also covers HTML
+// sinks such as innerHTML. DOMPurify (used by the sandboxed preview) writes
+// those sinks, and satisfying it needs a named policy (`trusted-types …`),
+// which is a CSP change. A policy that returns the string unchanged would not
+// add protection. First-party code already cannot call eval or `new Function`.
 const cspDirectives = [
   "default-src 'self'",
   "img-src 'self' blob: data:",
@@ -57,6 +64,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
     define: {
       __XT_VERSION__: JSON.stringify(version),
+      __XT_BUILD_DATE__: JSON.stringify(buildDate),
     },
     server: {
       watch: process.env.WATCH_POLL === '1' ? { usePolling: true, interval: 300 } : {},

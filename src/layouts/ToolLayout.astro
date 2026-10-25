@@ -76,7 +76,13 @@ const requires = meta.requires ?? [];
   </div>
 
   {/* min-h-screen keeps the footer below the fold, so output that appears after hydration doesn't shift it (CLS). */}
-  <section aria-label="Tool" translate="no" class="min-h-screen">
+  <section aria-label="Tool" translate="no" class="min-h-screen" data-xt-tool={meta.id}>
     <slot />
   </section>
+  <script>
+    import { recordStoredRecent } from '../lib/recents-store.ts';
+
+    const id = document.querySelector('[data-xt-tool]')?.getAttribute('data-xt-tool');
+    if (id) recordStoredRecent(id);
+  </script>
 </BaseLayout>

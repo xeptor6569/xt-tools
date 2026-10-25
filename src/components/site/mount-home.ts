@@ -6,14 +6,17 @@ import { href } from '../../lib/href.ts';
 import { pinAttr, type Pin } from '../../lib/library.ts';
 import { LIBRARY_EVENT, loadCollections, loadPins, pruneStoredPins } from '../../lib/library-store.ts';
 import { collectionChips, pinCards, type CatalogTool } from '../../lib/library-view.ts';
+import { isNew } from '../../lib/new-badge.ts';
+import { RECENTS_EVENT, loadRecents } from '../../lib/recents-store.ts';
 import { allTools } from '../../tools/registry.ts';
 
 function catalogTools(): CatalogTool[] {
-  return allTools().map(({ id, name, description, category, group }) => ({
+  return allTools().map(({ id, name, description, category, group, added }) => ({
     id,
     name,
     description,
     category,
+    added,
     ...(group ? { group } : {}),
   }));
 }
@@ -102,6 +105,42 @@ function renderPinned(root: HTMLElement, pins: Pin[], tools: CatalogTool[]): voi
   root.append(section);
 }
 
+function renderRecents(section: HTMLElement, list: HTMLElement, tools: CatalogTool[]): void {
+  clear(list);
+  const known = new Set(tools.map((tool) => tool.id));
+  const recent = loadRecents(known);
+  section.hidden = recent.length === 0;
+  for (const id of recent) {
+    const tool = tools.find((item) => item.id === id);
+    if (!tool) continue;
+    const item = document.createElement('li');
+    item.className = 'rounded-lg border border-border bg-surface';
+
+    const link = document.createElement('a');
+    link.href = href(`tools/${tool.id}/`);
+    link.className = 'flex flex-col gap-1 p-4 text-fg no-underline';
+
+    const title = document.createElement('span');
+    title.className = 'flex items-center gap-2 font-semibold';
+    const name = document.createElement('span');
+    name.textContent = tool.name;
+    title.append(name);
+    if (tool.added && isNew({ added: tool.added })) {
+      const badge = document.createElement('span');
+      badge.className = 'rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-accent-fg';
+      badge.textContent = 'New';
+      title.append(badge);
+    }
+
+    const detail = document.createElement('span');
+    detail.className = 'text-sm text-muted';
+    detail.textContent = tool.description;
+    link.append(title, detail);
+    item.append(link);
+    list.append(item);
+  }
+}
+
 function renderCollections(list: HTMLElement): void {
   clear(list);
   const pins = loadPins();
@@ -139,7 +178,9 @@ function renderCollections(list: HTMLElement): void {
 export function mountHomePersonal(): void {
   const pinned = document.querySelector<HTMLElement>('[data-xt="pinned"]');
   const collections = document.querySelector<HTMLElement>('[data-xt="collection-list"]');
-  if (!pinned || !collections) return;
+  const recent = document.querySelector<HTMLElement>('[data-xt="recent"]');
+  const recentList = document.querySelector<HTMLElement>('[data-xt="recent-list"]');
+  if (!pinned || !collections || !recent || !recentList) return;
 
   let rendering = false;
   const render = (): void => {
@@ -153,6 +194,7 @@ export function mountHomePersonal(): void {
         collectionsNow.map((collection) => collection.id),
       );
       renderPinned(pinned, pins, tools);
+      renderRecents(recent, recentList, tools);
       renderCollections(collections);
     } finally {
       rendering = false;
@@ -161,4 +203,5 @@ export function mountHomePersonal(): void {
 
   render();
   window.addEventListener(LIBRARY_EVENT, render);
+  window.addEventListener(RECENTS_EVENT, render);
 }

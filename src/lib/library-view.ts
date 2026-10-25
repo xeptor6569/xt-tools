@@ -10,6 +10,7 @@ export interface CatalogTool {
   description: string;
   category: string;
   group?: string;
+  added?: string;
 }
 
 export interface PinCard {

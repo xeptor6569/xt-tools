@@ -1,5 +1,6 @@
 // Static search index consumed by the Ctrl+K search (Phase 3).
 import type { APIRoute } from 'astro';
+import { getCategory } from '../categories.ts';
 import { allTools } from '../tools/registry.ts';
 
 export const GET: APIRoute = () => {
@@ -8,6 +9,7 @@ export const GET: APIRoute = () => {
     name,
     description,
     category,
+    categoryLabel: getCategory(category)?.label ?? category,
     ...(group ? { group } : {}),
     keywords,
     added,
