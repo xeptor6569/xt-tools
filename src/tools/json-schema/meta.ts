@@ -18,6 +18,7 @@ const meta: ToolMeta = {
     'json schema generator',
     'infer schema',
   ],
+  tags: ['json', 'validate'],
   examples: [{ input: '{"name":"Ada","age":36}', expect: '"type": "object"' }],
   added: '2026-10-24',
 };

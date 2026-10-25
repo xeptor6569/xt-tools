@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'development',
   group: 'formatters',
   keywords: ['dockerfile', 'docker', 'lint', 'linter', 'best practices', 'container', 'hadolint', 'buildkit'],
+  tags: ['docker', 'lint'],
   added: '2026-10-24',
   examples: [
     { input: 'FROM ubuntu:latest\nRUN apt-get install curl', expect: 'uses the latest tag' },

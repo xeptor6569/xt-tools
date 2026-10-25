@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'development',
   group: 'utilities',
   keywords: ['docker', 'compose', 'docker run', 'docker-compose', 'yaml', 'container', 'composerize', 'decomposerize'],
+  tags: ['docker', 'compose'],
   added: '2026-10-24',
   examples: [
     { input: 'docker run -d -p 8080:80 --name web nginx:1.27', expect: 'image: nginx:1.27' },

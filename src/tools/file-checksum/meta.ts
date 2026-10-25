@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Hash a file and compare it with an expected checksum.',
   category: 'crypto',
   keywords: ['checksum', 'hash', 'file', 'sha256', 'blake3', 'verify'],
+  tags: ['hash', 'file'],
   examples: [
     { input: 'abc', expect: 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad' },
     {

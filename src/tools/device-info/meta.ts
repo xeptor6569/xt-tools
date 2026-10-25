@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Show what this browser reports about the device, with no network lookup.',
   category: 'web',
   keywords: ['device', 'browser', 'screen', 'language', 'user agent'],
+  tags: ['browser', 'device'],
   added: '2026-10-24',
 };
 

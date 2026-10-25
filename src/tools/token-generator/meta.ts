@@ -2,10 +2,11 @@ import type { ToolMeta } from '../types.ts';
 
 const meta: ToolMeta = {
   id: 'token-generator',
-  name: 'Token generator',
-  description: 'Generate cryptographically random tokens as hex or base64.',
+  name: 'Random bytes',
+  description: 'Generate random bytes locally, like openssl rand, as hex, base64 or a raw file.',
   category: 'crypto',
-  keywords: ['token', 'secret', 'random', 'hex', 'base64', 'api key'],
+  keywords: ['random', 'bytes', 'openssl', 'rand', 'hex', 'base64', 'binary', 'token'],
+  tags: ['random', 'token'],
   added: '2026-10-24',
   sensitive: true,
 };

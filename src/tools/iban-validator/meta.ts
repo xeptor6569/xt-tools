@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Check an IBAN checksum and format it in groups.',
   category: 'data',
   keywords: ['iban', 'bank', 'checksum', 'validate'],
+  tags: ['checksum', 'bank'],
   added: '2026-10-24',
   examples: [{ input: 'GB82WEST12345698765432', expect: 'GB82 WEST' }],
 };

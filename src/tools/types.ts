@@ -24,6 +24,11 @@ export interface ToolMeta {
   group?: string;
   /** At least one, lowercase. Old names of merged tools go here. */
   keywords: string[];
+  /**
+   * Public labels, 1–4, lowercase. Shown on the card and matched by search.
+   * Keywords stay the longer alias list; tags are the words a person would browse by.
+   */
+  tags: string[];
   /** ISO date (YYYY-MM-DD). Drives the "New" badge. */
   added: string;
   /** Handles secrets: no URL state, no persistence, private inputs. */

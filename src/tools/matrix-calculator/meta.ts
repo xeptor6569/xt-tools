@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Add, multiply, transpose and invert small numeric matrices.',
   category: 'math',
   keywords: ['matrix', 'determinant', 'inverse', 'multiply'],
+  tags: ['math', 'calculator'],
   added: '2026-10-24',
   examples: [
     { input: 'det\n1 2\n3 4', expect: '-2' },

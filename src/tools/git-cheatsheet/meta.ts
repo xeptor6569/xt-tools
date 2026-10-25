@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'development',
   group: 'cheatsheets',
   keywords: ['git', 'cheatsheet', 'commands', 'branch', 'rebase', 'commit', 'stash', 'switch', 'restore', 'reference'],
+  tags: ['git', 'cheatsheet'],
   added: '2026-10-24',
   examples: [{ input: 'stash pop', expect: 'git stash pop' }],
 };

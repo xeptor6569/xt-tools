@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'text',
   group: 'transform',
   keywords: ['unicode', 'normalize', 'nfc', 'nfd', 'nfkc', 'nfkd', 'combining'],
+  tags: ['unicode', 'text'],
   examples: [{ input: 'ﬁnal café', expect: 'final café' }],
   added: '2026-10-18',
 };

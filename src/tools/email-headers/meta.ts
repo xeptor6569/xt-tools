@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Parse email headers and unfold them, without any DNS lookup.',
   category: 'web',
   keywords: ['email', 'headers', 'received', 'parse', 'unfold'],
+  tags: ['email', 'http'],
   examples: [{ input: 'Subject: Hello\n world', expect: 'Subject: Hello world' }],
   added: '2026-10-24',
 };

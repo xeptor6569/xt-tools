@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Show the key, code and modifiers for a key you press.',
   category: 'web',
   keywords: ['keycode', 'keyboard', 'key', 'code', 'which'],
+  tags: ['keyboard', 'browser'],
   added: '2026-10-24',
 };
 

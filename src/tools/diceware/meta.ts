@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Generate a Diceware passphrase from the EFF wordlist.',
   category: 'crypto',
   keywords: ['diceware', 'passphrase', 'eff', 'words', 'password'],
+  tags: ['password', 'passphrase'],
   added: '2026-10-24',
   sensitive: true,
   heavy: true,

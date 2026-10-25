@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'text',
   group: 'transform',
   keywords: ['dedupe', 'duplicate lines', 'trim', 'blank lines', 'whitespace', 'clean', 'remove'],
+  tags: ['text', 'cleanup'],
   examples: [{ input: '  first   line  \n\n\n\nsecond line   ', expect: 'first line\n\nsecond line' }],
   added: '2026-10-18',
 };

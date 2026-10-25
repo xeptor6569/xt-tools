@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Split a secret into shares and recover it from enough of them.',
   category: 'crypto',
   keywords: ['shamir', 'secret sharing', 'split', 'recover', 'threshold'],
+  tags: ['secret', 'key'],
   examples: [
     {
       input: 'mode: join\n1: 6869\n2: 6869',

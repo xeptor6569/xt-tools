@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Check whether an IP address falls inside a list of ranges.',
   category: 'network',
   keywords: ['ip', 'cidr', 'range', 'contains', 'match'],
+  tags: ['ip', 'network'],
   examples: [
     {
       input: '192.168.1.50\n192.168.1.0/24\n10.0.0.0/8\n',

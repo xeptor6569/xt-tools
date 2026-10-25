@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Decode a PEM X.509 certificate and list its fields.',
   category: 'crypto',
   keywords: ['x509', 'certificate', 'pem', 'tls', 'decode'],
+  tags: ['certificate', 'tls'],
   examples: [
     {
       input: `-----BEGIN CERTIFICATE-----

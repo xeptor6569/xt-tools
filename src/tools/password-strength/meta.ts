@@ -6,8 +6,9 @@ const meta: ToolMeta = {
   description: 'Estimate how guessable a password is, without sending it anywhere.',
   category: 'crypto',
   keywords: ['password', 'strength', 'zxcvbn', 'entropy', 'guesses'],
+  tags: ['password', 'security'],
   examples: [
-    { input: 'password', expect: 'score: 0/4' },
+    { input: 'password', expect: 'common' },
     { input: 'correct horse battery staple', expect: 'score: 4/4' },
   ],
   added: '2026-10-24',

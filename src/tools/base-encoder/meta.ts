@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'converter',
   group: 'encodings',
   keywords: ['base64', 'base64url', 'base32', 'base58', 'base85', 'ascii85', 'hex', 'encode', 'decode'],
+  tags: ['base64', 'encoding'],
   examples: [{ input: 'Hello, World!', expect: 'SGVsbG8sIFdvcmxkIQ==' }],
   added: '2026-10-18',
 };

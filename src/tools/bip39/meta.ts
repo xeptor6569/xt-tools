@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Create or recover a BIP39 mnemonic and its seed.',
   category: 'crypto',
   keywords: ['bip39', 'mnemonic', 'seed', 'wallet', 'passphrase'],
+  tags: ['passphrase', 'key'],
   examples: [
     {
       input: 'mode: mnemonic\nentropy-hex: 00000000000000000000000000000000',

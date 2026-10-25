@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'View and edit a CSV table, then export CSV or JSON.',
   category: 'data',
   keywords: ['csv', 'table', 'editor', 'tsv', 'json'],
+  tags: ['csv', 'table'],
   added: '2026-10-24',
   examples: [{ input: 'a,b\n1,2', expect: 'a,b' }],
 };

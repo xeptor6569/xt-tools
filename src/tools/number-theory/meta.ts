@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Factor a number and compute primes, GCD and LCM.',
   category: 'math',
   keywords: ['prime', 'factor', 'gcd', 'lcm', 'number theory'],
+  tags: ['math', 'number'],
   added: '2026-10-24',
   examples: [
     { input: 'factor 84', expect: '2^2 × 3 × 7' },

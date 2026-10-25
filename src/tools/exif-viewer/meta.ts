@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Read EXIF fields from an image without uploading it.',
   category: 'images-media',
   keywords: ['exif', 'metadata', 'photo', 'gps'],
+  tags: ['image', 'metadata'],
   added: '2026-10-24',
   heavy: true,
   examples: [{ input: '{"Make":"Canon"}', expect: 'Make: Canon' }],

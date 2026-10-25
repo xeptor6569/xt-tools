@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Evaluate an expression that mixes compatible units.',
   category: 'math',
   keywords: ['unit', 'calculator', 'convert', 'expression'],
+  tags: ['unit', 'math'],
   added: '2026-10-24',
   heavy: true,
   examples: [

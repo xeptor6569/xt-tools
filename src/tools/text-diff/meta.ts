@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'text',
   group: 'analyze',
   keywords: ['diff', 'compare', 'difference', 'changes'],
+  tags: ['text', 'diff'],
   added: '2026-10-18',
 };
 

@@ -8,6 +8,7 @@ const meta: ToolMeta = {
   category: 'development',
   group: 'generators',
   keywords: ['docker', 'compose', 'builder', 'compose.yaml', 'docker-compose', 'services', 'generator'],
+  tags: ['docker', 'compose'],
   added: '2026-10-24',
   examples: [{ input: 'nginx:1.27', expect: 'image: nginx:1.27' }],
 };

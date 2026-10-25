@@ -74,20 +74,21 @@ The new tool appears on the home page, its category page, the search index and t
 
 `meta.ts` declares `const meta: ToolMeta = { … }` and default-exports it (`src/tools/types.ts`). Use only `import type` in it, so plain Node can load it.
 
-| Field         | Rule                                                                                   |
-| ------------- | -------------------------------------------------------------------------------------- |
-| `id`          | kebab-case, equals the folder name                                                     |
-| `name`        | 2–40 characters; also the page heading                                                 |
-| `description` | one sentence, 20–160 characters, ending with a period                                  |
-| `category`    | an id from `src/categories.ts`                                                         |
-| `group`       | curated sub-collection; required when that category lists groups, otherwise omit       |
-| `keywords`    | lowercase search terms                                                                 |
-| `added`       | `YYYY-MM-DD`; tools added in the last 30 days get a "New" badge                        |
-| `sensitive`   | the tool handles secrets: nothing is stored or put in the URL                          |
-| `requires`    | capabilities from `src/capabilities.ts`, e.g. `camera`, `webcrypto`                    |
-| `heavy`       | the tool lazy-loads WASM or large data                                                 |
-| `legacy`      | warning text when the whole tool is legacy                                             |
-| `examples`    | `{ input, expect }` pairs; the end-to-end suite types each input and checks the output |
+| Field         | Rule                                                                                    |
+| ------------- | --------------------------------------------------------------------------------------- |
+| `id`          | kebab-case, equals the folder name                                                      |
+| `name`        | 2–40 characters; also the page heading                                                  |
+| `description` | one sentence, 20–160 characters, ending with a period                                   |
+| `category`    | an id from `src/categories.ts`                                                          |
+| `group`       | curated sub-collection; required when that category lists groups, otherwise omit        |
+| `keywords`    | lowercase search terms, including old names of merged tools                             |
+| `tags`        | 1–4 public labels (lowercase, hyphens allowed), shown on the card and matched by search |
+| `added`       | `YYYY-MM-DD`; tools added in the last 30 days get a "New" badge                         |
+| `sensitive`   | the tool handles secrets: nothing is stored or put in the URL                           |
+| `requires`    | capabilities from `src/capabilities.ts`, e.g. `camera`, `webcrypto`                     |
+| `heavy`       | the tool lazy-loads WASM or large data                                                  |
+| `legacy`      | warning text when the whole tool is legacy                                              |
+| `examples`    | `{ input, expect }` pairs; the end-to-end suite types each input and checks the output  |
 
 In `logic.ts`, throw `ToolInputError` (from `src/tools/types.ts`) for problems with the user's input; the UI shows its message inline. Any other exception is treated as a bug.
 

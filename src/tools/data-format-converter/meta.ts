@@ -19,6 +19,7 @@ const meta: ToolMeta = {
     'yaml to json',
     'json to csv',
   ],
+  tags: ['json', 'yaml'],
   examples: [{ input: '{"name":"xt-tools","tags":["privacy","offline"]}', expect: 'name: xt-tools' }],
   added: '2026-10-18',
 };

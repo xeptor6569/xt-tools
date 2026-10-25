@@ -24,6 +24,7 @@ const meta: ToolMeta = {
     'quote',
     'backslash',
   ],
+  tags: ['text', 'encoding'],
   added: '2026-10-24',
   examples: [{ input: 'He said "hi"', expect: 'He said \\"hi\\"' }],
 };

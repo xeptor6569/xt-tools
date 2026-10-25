@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'converter',
   group: 'formats',
   keywords: ['list', 'lines', 'join', 'split', 'sort', 'comma separated', 'quote'],
+  tags: ['text', 'list'],
   examples: [{ input: 'apple\nbanana\ncherry', expect: 'apple, banana, cherry' }],
   added: '2026-10-18',
 };

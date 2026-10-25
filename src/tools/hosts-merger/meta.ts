@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Merge hosts files and adblock lists and drop duplicate rules.',
   category: 'network',
   keywords: ['hosts', 'adblock', 'blocklist', 'merge', 'dedupe'],
+  tags: ['network', 'dns'],
   examples: [
     {
       input: '127.0.0.1 localhost\n||ads.example^\n0.0.0.0 ads.example\n# comment\n',

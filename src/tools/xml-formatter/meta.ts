@@ -8,6 +8,7 @@ const meta: ToolMeta = {
   category: 'development',
   group: 'formatters',
   keywords: ['xml', 'format', 'prettify', 'beautify', 'minify', 'validate', 'indent', 'well-formed', 'pretty print'],
+  tags: ['xml', 'format'],
   added: '2026-10-24',
   examples: [
     { input: '<a><b>1</b></a>', expect: '  <b>1</b>' },

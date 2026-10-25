@@ -8,6 +8,7 @@ const meta: ToolMeta = {
   category: 'development',
   group: 'cheatsheets',
   keywords: ['docker', 'cheatsheet', 'container', 'image', 'compose', 'buildx', 'commands', 'reference'],
+  tags: ['docker', 'cheatsheet'],
   added: '2026-10-24',
   examples: [{ input: 'system prune', expect: 'docker system prune' }],
 };
