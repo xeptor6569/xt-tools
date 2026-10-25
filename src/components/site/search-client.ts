@@ -2,7 +2,8 @@
 // someone types, focuses with a query, or clicks a tag.
 import { toolHref } from '../../lib/href.ts';
 import { loadLocalAsset } from '../../lib/load-local-asset.ts';
-import { highlight, searchTools, type SearchDocument, type SearchHit } from '../../lib/search.ts';
+import { highlight } from '../../lib/search-highlight.ts';
+import { searchTools, type SearchDocument, type SearchHit } from '../../lib/search.ts';
 
 let catalog: Promise<SearchDocument[]> | undefined;
 let hits: SearchHit[] = [];
@@ -145,7 +146,7 @@ export function installSearch(): void {
       const docs = await loadCatalog();
       if (ticket !== request) return;
       for (const doc of docs) byId.set(doc.id, doc);
-      const result = searchTools(docs, trimmed);
+      const result = await searchTools(docs, trimmed);
       hits = result.hits;
       active = result.hits.length > 0 ? 0 : -1;
       render(trimmed, 'No tools match that search.');

@@ -87,31 +87,30 @@ const docs: SearchDocument[] = [
 ];
 
 describe('searchTools', () => {
-  it('ranks an exact title above a tag or keyword', () => {
-    expect(searchTools(docs, 'slugify').hits[0]?.id).toBe('slugify');
-    expect(
-      searchTools(docs, 'password')
-        .hits.map((hit) => hit.id)
-        .slice(0, 2),
-    ).toEqual(['password-generator', 'password-strength']);
+  it('ranks an exact title above a tag or keyword', async () => {
+    expect((await searchTools(docs, 'slugify')).hits[0]?.id).toBe('slugify');
+    expect((await searchTools(docs, 'password')).hits.map((hit) => hit.id).slice(0, 2)).toEqual([
+      'password-generator',
+      'password-strength',
+    ]);
   });
 
-  it('matches keywords, tags and the description', () => {
-    expect(searchTools(docs, 'permalink').hits.map((hit) => hit.id)).toEqual(['slugify']);
-    expect(searchTools(docs, 'sha256').hits[0]?.id).toBe('hash-text');
-    expect(searchTools(docs, 'url-friendly').hits[0]?.id).toBe('slugify');
-    expect(searchTools(docs, 'business days').hits.map((hit) => hit.id)).toEqual(['date-difference']);
+  it('matches keywords, tags and the description', async () => {
+    expect((await searchTools(docs, 'permalink')).hits.map((hit) => hit.id)).toEqual(['slugify']);
+    expect((await searchTools(docs, 'sha256')).hits[0]?.id).toBe('hash-text');
+    expect((await searchTools(docs, 'url-friendly')).hits[0]?.id).toBe('slugify');
+    expect((await searchTools(docs, 'business days')).hits.map((hit) => hit.id)).toEqual(['date-difference']);
   });
 
-  it('requires every word and still forgives a typo in a longer word', () => {
-    expect(searchTools(docs, 'json violin').hits).toEqual([]);
-    expect(searchTools(docs, 'json yaml').hits[0]?.id).toBe('data-format-converter');
-    expect(searchTools(docs, 'passwrod').hits.map((hit) => hit.id)).toContain('password-generator');
-    expect(searchTools(docs, 'sluggify').hits[0]?.id).toBe('slugify');
+  it('requires every word and still forgives a typo in a longer word', async () => {
+    expect((await searchTools(docs, 'json violin')).hits).toEqual([]);
+    expect((await searchTools(docs, 'json yaml')).hits[0]?.id).toBe('data-format-converter');
+    expect((await searchTools(docs, 'passwrod')).hits.map((hit) => hit.id)).toContain('password-generator');
+    expect((await searchTools(docs, 'sluggify')).hits[0]?.id).toBe('slugify');
   });
 
-  it('returns nothing for a blank query and reports how many matched', () => {
-    expect(searchTools(docs, '   ')).toEqual({ hits: [], total: 0 });
+  it('returns nothing for a blank query and reports how many matched', async () => {
+    expect(await searchTools(docs, '   ')).toEqual({ hits: [], total: 0 });
     const many = Array.from({ length: 10 }, (_, index) => ({
       id: `hash-${index}`,
       name: `Hash ${index}`,
@@ -121,13 +120,13 @@ describe('searchTools', () => {
       keywords: ['digest'],
       tags: ['hash'],
     }));
-    const result = searchTools(many, 'hash');
+    const result = await searchTools(many, 'hash');
     expect(result.total).toBe(10);
     expect(result.hits).toHaveLength(8);
   });
 
-  it('does not fuzzy-match a short query into unrelated tools', () => {
-    expect(searchTools(docs, 'ip').hits).toEqual([]);
+  it('does not fuzzy-match a short query into unrelated tools', async () => {
+    expect((await searchTools(docs, 'ip')).hits).toEqual([]);
   });
 });
 
