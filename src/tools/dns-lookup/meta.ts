@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Look up DNS records for a hostname through Cloudflare DNS-over-HTTPS.',
   category: 'network',
   keywords: ['dns', 'lookup', 'dig', 'doh', 'mx', 'nameserver', 'txt'],
+  tags: ['dns', 'network'],
   added: '2026-10-24',
   network: { hosts: ['https://cloudflare-dns.com'] },
 };

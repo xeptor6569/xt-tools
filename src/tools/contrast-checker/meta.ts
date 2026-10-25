@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Check a foreground and background pair against WCAG contrast.',
   category: 'design',
   keywords: ['contrast', 'wcag', 'color', 'aa', 'aaa'],
+  tags: ['color', 'css'],
   added: '2026-10-24',
   examples: [{ input: '#000000 #ffffff', expect: '21' }],
 };

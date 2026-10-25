@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: "Show this connection's public IP address, or look up another IP and its approximate location.",
   category: 'network',
   keywords: ['ip', 'address', 'geolocation', 'my ip', 'public ip', 'location'],
+  tags: ['ip', 'network'],
   added: '2026-10-24',
   network: { hosts: ['https://api.ipify.org', 'https://api64.ipify.org', 'https://ipwho.is'] },
 };

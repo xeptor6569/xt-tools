@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Encrypt and decrypt a file with AES-GCM in chunks.',
   category: 'crypto',
   keywords: ['file', 'encrypt', 'decrypt', 'aes-gcm', 'chunk'],
+  tags: ['encrypt', 'file'],
   examples: [
     {
       input:

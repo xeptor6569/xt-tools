@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Look up countries, currencies and languages from Intl data.',
   category: 'data',
   keywords: ['iso', 'country', 'currency', 'language', 'intl'],
+  tags: ['reference', 'country'],
   added: '2026-10-24',
   examples: [{ input: 'US', expect: 'United States' }],
 };

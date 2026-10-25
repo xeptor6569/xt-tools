@@ -23,6 +23,7 @@ const meta: ToolMeta = {
     'snowflake',
     'pretty print',
   ],
+  tags: ['sql', 'format'],
   added: '2026-10-24',
   heavy: true,
   examples: [

@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Generate random or locally administered MAC addresses.',
   category: 'network',
   keywords: ['mac', 'address', 'random', 'locally administered'],
+  tags: ['network', 'mac'],
   added: '2026-10-24',
 };
 

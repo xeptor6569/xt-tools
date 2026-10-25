@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'development',
   group: 'cheatsheets',
   keywords: ['tmux', 'terminal', 'multiplexer', 'cheatsheet', 'panes', 'sessions', 'shortcuts', 'prefix', 'reference'],
+  tags: ['terminal', 'cheatsheet'],
   added: '2026-10-24',
   examples: [{ input: 'detach', expect: 'Ctrl-b d' }],
 };

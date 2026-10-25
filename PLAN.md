@@ -170,7 +170,7 @@ Versions were current on 2026-10-14. Pin exact versions (`save-exact=true`) and 
 - `src/pages/tools/<id>.astro` is a thin generated page. One page per tool is required because Astro must import hydrated components statically. This also gives each page its own code bundle.
 - The page imports `meta` and `ui`, wraps them in `ToolLayout`, and hydrates the UI with `client:load`. Heavy tools may use `client:visible`.
 - `src/pages/category/[id].astro` builds category pages with `getStaticPaths()` from `categories.ts`.
-- `src/pages/search-index.json.ts` emits `{ id, name, description, category, keywords, added }[]` at build time.
+- `src/pages/search-index.json.ts` emits `{ id, name, description, category, categoryLabel, groupLabel?, keywords, tags, added }[]` at build time.
 
 ### 4.4 Layouts
 
@@ -222,6 +222,7 @@ export interface ToolMeta {
   category: CategoryId; // must exist in categories.ts
   group?: string; // curated sub-collection; required when that category defines groups
   keywords: string[]; // ≥1, lowercase; old names of merged tools go here
+  tags: string[]; // 1–4 public labels, lowercase; shown on the card and matched by search
   added: string; // ISO date YYYY-MM-DD; drives the "New" badge
   sensitive?: boolean; // handles secrets: no URL state, no persistence by default, private inputs
   requires?: Capability[]; // e.g. ['camera'], ['display-capture'], ['webcrypto']
@@ -328,6 +329,7 @@ This runs in pre-commit, CI and the Docker build. It lists every problem it find
   - the category and capabilities are valid
   - `added` is a valid date and not in the future
   - keywords are lowercase and unique
+  - tags are 1–4 lowercase labels of letters, digits and hyphens
   - examples have the correct shape
 - `logic.ts` does not import `preact`, `.tsx` files or anything under `components/`.
 - Sensitive tools do not import `useShareableState`.
@@ -411,8 +413,11 @@ Build this in Phase 1, before the pilot tools. Components live in `src/component
   - Pinned tools, groups, categories and personal collections shown first, when present.
   - Personal collections, with one level of sub-collections, stored on this device.
 - **Search:**
-  - Opened with Ctrl+K, Cmd+K or `/`.
-  - An accessible dialog. Fuse.js and `search-index.json` load only the first time it opens.
+  - A search bar in the header on every page, including the 404 page.
+  - Matches the title, the description, tags and keywords. Every query word has to match. A longer word can miss by one or two edits.
+  - Focused with Ctrl+K, Cmd+K or `/`.
+  - An accessible combobox. `search-index.json` loads the first time the bar is used.
+  - A tag on a card or a tool page fills the bar with that tag.
 - **Category pages:** one per category, with curated groups and a pin control for the category and each group.
 - **Collections page:** create, rename and delete personal collections and sub-collections, and add or remove tools. A link from a tool opens it with that tool ready to add.
 - **Pins:** tools, curated groups, categories and personal collections. Stored in localStorage only, newest first, up to 48. Recents stay in localStorage too.
@@ -1313,3 +1318,4 @@ Every phase ends with the full check set from [13.3](#133-commands-per-phase) pa
 | 2026-10-24 | 2     | **Phase 2 lightweight catalog done (174 tools).** Batches 3–9 add Lightweight Crypto, the rest of Network, Web, Math, Measurement, Data, Design, and canvas-only Images and media. Specs are `catalog/04-crypto.json` through `catalog/10-images-media.json` (102 new tools). Every untagged page in 19.2 now exists. Still deferred to Phase 5: `password-hash`, `pgp`, `pdf-signature`, `sqlite-browser`, `video-to-gif`, `pdf-tools`, `pdf-image-extractor`, `pdf-to-images`, jq WASM and image WASM codecs. Still deferred to Phase 6: `metadata-remover`, `secure-note` and `password-export-viewer`. **ᴹ candidates kept as separate pages:** `curl-converter` and `http-snippet`, `math-evaluator` and `unit-calculator`, `qr-generator` and `wifi-qr`. **Decisions:** AES-GCM uses `@noble/ciphers`, so text and file encryption work on plain HTTP; RSA, CSR generation and other WebCrypto-only paths declare `requires`. TripleDES, Rabbit and RC4 are decrypt-only. Bcrypt (bcryptjs, in a worker) accepts cost 4–12 and defaults to 10. Diceware loads the EFF large wordlist with a dynamic import and is flagged `heavy` even though 19.2 did not mark it H, so the list stays out of the static graph. `image-converter` draws on the main-thread canvas and does not ship a worker; WASM codecs stay in Phase 5. `svg-optimizer` is a small hand-written cleaner, with no SVGO, and stays flagged heavy. MAC vendors use the IEEE MA-L, MA-M and MA-S lists (`public/data/oui-2026-10.json`, 54,289 prefixes, `scripts/datasets/oui.ts`), not a GPL manuf file. Math, the unit calculator and the graph plotter share `src/lib/safe-expr.ts` and never call eval. No new network hosts. Camera, microphone and display capture start only from a button. New exact dependencies, all on the license allowlist: `@noble/ciphers`, `@noble/curves`, `@scure/bip39`, `bcryptjs`, `@zxcvbn-ts/core` with its English dictionaries, `libphonenumber-js`, `bowser`, `mime-db`, `jsqr`, `exifr` and `acorn`. Credits: the IEEE OUI list is on the licenses page and in `docs/datasets.md`; the EFF Large Wordlist (CC-BY-4.0) is on the licenses page. Rolldown's CJS interop error string (`https://rolldown.rs/in-depth/bundling-cjs`) is allowlisted: it is thrown only when bundled code calls `require` and the browser has none, and it is never fetched. The screen ruler is sized to its container so the page has no keyboard-inaccessible scroll region. The collections end-to-end test waits for hydration before it creates a collection. **Verified:** strict validator (174 tools), licenses (65 packages), typecheck, lint, 1562 unit tests, builds at `/` and `/tools/` (scan-dist clean, largest page 80.6 KB gzip, 62 heavy assets), and 589 passing end-to-end tests (8 skipped) against preview at `/tools/`, including axe in both themes. **Deferred:** search, recents, Trusted Types and the full accessibility pass stay in Phase 3. |
 | 2026-10-24 | 2     | **Image build installs OpenSSL and OpenSSH.** The Alpine build stage runs the unit tests. `csr-tool` and `ssh-keygen` shell out to `openssl` and `ssh-keygen`, which `node:26-alpine` does not ship, so the image jobs and the scaffolding loop failed before the site was built. The build stage now installs `openssl` and `openssh-client`. The runtime image still copies only the static files. |
 | 2026-10-24 | 2     | **Password tools.** Password strength was already in the catalog (zxcvbn, dictionaries loaded lazily). Added `password-generator`: character-set passwords (length, sets, ambiguous characters excluded by default, every selected set used at least once) and EFF Diceware passphrases (word count, space/hyphen/none, optional capitals), sharing the Diceware wordlist and its unbiased draw. `token-generator` is now Random bytes, a local `openssl rand`: 1 to 1,048,576 bytes, hex, base64 (wrapped at 64 columns), base64url, or a raw binary download, with the matching openssl command shown. Catalog is 186 pages. Verified in the browser: zxcvbn on "password", a 12-character password, a 6-word passphrase, and hex, base64 and raw download. |
+| 2026-10-24 | 3     | **Search bar and tool tags.** Every tool has 1–4 public `tags` (the contract change was requested) shown on its card and page. Keywords stay the longer alias list. The header search is a combobox on every page, focused with Ctrl+K, Cmd+K or `/`. It ranks the title, then tags, keywords and the description, and every query word has to match. A longer word can miss by one or two edits. The catalog JSON loads the first time the bar is used. Clicking a tag fills the bar with that tag. **Decision:** a small local ranker instead of Fuse.js, so those weights stay explicit and the page does not take on another library. Recents, Trusted Types and the full accessibility pass stay in Phase 3. |

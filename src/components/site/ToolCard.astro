@@ -4,6 +4,7 @@ import { isNew } from '../../tools/registry.ts';
 import type { ToolMeta } from '../../tools/types.ts';
 import PinButton from './PinButton.astro';
 import SaveTool from './SaveTool.astro';
+import TagList from './TagList.astro';
 
 interface Props {
   tool: ToolMeta;
@@ -26,6 +27,7 @@ const { tool } = Astro.props;
     <span class="text-sm text-muted">{tool.description}</span>
   </a>
   <div class="flex items-center gap-1 border-t border-border px-2 py-1">
+    <TagList tags={tool.tags} />
     <PinButton kind="tool" id={tool.id} label={tool.name} />
     <SaveTool id={tool.id} name={tool.name} />
   </div>

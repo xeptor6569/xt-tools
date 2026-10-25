@@ -8,7 +8,8 @@ import { parseArgs } from 'node:util';
 import { categories, categoryIds, getCategory, groupIdsFor } from '../src/categories.ts';
 import { capabilityIds } from '../src/capabilities.ts';
 import { NETWORK_HOSTS } from '../src/lib/network-allow.ts';
-import { ID_PATTERN, validateMeta } from '../src/tools/validate-meta.ts';
+import { deriveTags } from '../src/tools/tags.ts';
+import { ID_PATTERN, MAX_TAGS, TAG_PATTERN, validateMeta } from '../src/tools/validate-meta.ts';
 import { ROOT, TEMPLATES_DIR, pagePath, rel, slugify, toCamelCase, toPascalCase, toolDir } from './lib/tools.ts';
 
 const HELP = `Scaffold a new tool.
@@ -22,6 +23,7 @@ Options:
   --group <id>           Curated sub-collection. Required when the category defines groups
   --description <text>   One sentence, 20–160 characters, ending with a period
   --keywords <a,b,c>     Comma-separated search keywords (default: words of the name)
+  --tags <a,b>           Public labels, 1–4 (default: derived from the keywords and name)
   --requires <a,b>       Capabilities: ${capabilityIds.join(', ')}
   --sensitive            The tool handles secrets (no URL state or persistence)
   --network <origins>    Comma-separated allowlisted HTTPS origins this tool contacts
@@ -53,6 +55,7 @@ try {
       group: { type: 'string' },
       description: { type: 'string' },
       keywords: { type: 'string' },
+      tags: { type: 'string' },
       requires: { type: 'string' },
       sensitive: { type: 'boolean', default: false },
       network: { type: 'string' },
@@ -173,6 +176,15 @@ if (keywords.length === 0) {
 }
 keywords = [...new Set(keywords.map((k) => k.toLowerCase()))];
 
+let tags = deriveTags(name, keywords);
+if (opts.tags) {
+  tags = [...new Set(splitList(opts.tags).map((tag) => tag.toLowerCase()))];
+  const bad = tags.filter((tag) => tag.length < 2 || tag.length > 24 || !TAG_PATTERN.test(tag));
+  if (tags.length === 0 || tags.length > MAX_TAGS || bad.length > 0) {
+    fail(`--tags needs 1–${MAX_TAGS} labels of 2–24 lowercase letters, digits and hyphens`);
+  }
+}
+
 const requires = splitList(opts.requires);
 for (const r of requires) {
   if (!capabilityIds.includes(r)) fail(`unknown capability "${r}". Valid: ${capabilityIds.join(', ')}`);
@@ -193,6 +205,7 @@ const meta: Record<string, unknown> = {
   category,
   ...(group ? { group } : {}),
   keywords,
+  tags,
   added,
 };
 if (opts.sensitive) meta.sensitive = true;

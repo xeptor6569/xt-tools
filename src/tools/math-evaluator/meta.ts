@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Evaluate arithmetic and common functions without running arbitrary code.',
   category: 'math',
   keywords: ['math', 'calculator', 'expression', 'evaluate'],
+  tags: ['math', 'calculator'],
   added: '2026-10-24',
   heavy: true,
   examples: [

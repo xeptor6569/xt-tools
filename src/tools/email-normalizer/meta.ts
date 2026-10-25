@@ -20,6 +20,7 @@ const meta: ToolMeta = {
     'idn',
     'deduplicate',
   ],
+  tags: ['email', 'text'],
   added: '2026-10-24',
   examples: [
     { input: 'John.Doe+news@GoogleMail.com', expect: 'johndoe@gmail.com' },

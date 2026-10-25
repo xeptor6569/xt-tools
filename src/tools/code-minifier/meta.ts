@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Minify and beautify HTML, CSS and JavaScript without running it.',
   category: 'web',
   keywords: ['minify', 'beautify', 'html', 'css', 'javascript'],
+  tags: ['html', 'css'],
   examples: [{ input: 'html\n<p>Hello</p> <!-- note -->', expect: '<p>Hello</p>' }],
   added: '2026-10-24',
   heavy: true,

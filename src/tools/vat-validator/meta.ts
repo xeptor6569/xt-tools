@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: "Check a VAT number's format only, with no registry lookup.",
   category: 'data',
   keywords: ['vat', 'tax', 'format', 'eu'],
+  tags: ['validate', 'tax'],
   added: '2026-10-24',
   examples: [{ input: 'DE136695976', expect: 'format-only' }],
 };

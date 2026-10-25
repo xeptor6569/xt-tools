@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Build SPF, DMARC, DKIM, CAA and SRV records from a form.',
   category: 'network',
   keywords: ['dns', 'spf', 'dmarc', 'dkim', 'caa', 'srv'],
+  tags: ['dns', 'email'],
   examples: [
     { input: 'SPF example.com mx -all', expect: 'v=spf1 mx -all' },
     {

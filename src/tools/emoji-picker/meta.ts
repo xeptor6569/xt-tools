@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'text',
   group: 'write',
   keywords: ['emoji', 'emoticon', 'smiley', 'unicode', 'shortcode', 'picker'],
+  tags: ['emoji', 'unicode'],
   added: '2026-10-18',
   heavy: true,
 };

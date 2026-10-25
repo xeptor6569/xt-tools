@@ -7,7 +7,7 @@ import { categoryHref, href } from '../lib/href.ts';
 <BaseLayout title="Page not found" description="The page you were looking for does not exist.">
   <h1 class="mb-2 text-3xl font-bold">Page not found</h1>
   <p class="mb-6 text-muted">
-    That page doesn’t exist. Go back to <a href={href()}>all tools</a> or pick a category.
+    That page doesn’t exist. Search for a tool above, go back to <a href={href()}>all tools</a>, or pick a category.
   </p>
   <ul class="flex flex-wrap gap-2">
     {categories.map((c) => (

@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import { categories } from '../categories.ts';
 import Pins from '../components/site/Pins.astro';
+import SearchBar from '../components/site/SearchBar.astro';
 import ThemeSwitch from '../components/site/ThemeSwitch.astro';
 import { buttonClass } from '../components/ui/Button.tsx';
 import { categoryHref, collectionsHref, href } from '../lib/href.ts';
@@ -55,11 +56,12 @@ const version = __XT_VERSION__;
       </div>
     </div>
     <header class="border-b border-border">
-      <div class="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
+      <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
         <a href={href()} class="text-lg font-bold text-fg no-underline">
           xt-tools
         </a>
-        <span class="hidden text-sm text-muted lg:inline">Your toolbox, your server, no internet required.</span>
+        <span class="hidden text-sm text-muted xl:inline">Your toolbox, your server, no internet required.</span>
+        <SearchBar />
         <nav aria-label="Site" class="ml-auto flex items-center gap-4">
           <a href={collectionsHref()} class="text-sm text-fg no-underline hover:underline">
             Collections

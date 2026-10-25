@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Measure CSS pixels and estimate DPI from a known length.',
   category: 'measurement',
   keywords: ['ruler', 'dpi', 'pixels', 'screen'],
+  tags: ['css', 'screen'],
   added: '2026-10-24',
   examples: [{ input: '25.4 mm for 96 px', expect: '96 DPI' }],
 };

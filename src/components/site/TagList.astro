@@ -1,0 +1,22 @@
+---
+interface Props {
+  tags: readonly string[];
+}
+
+const { tags } = Astro.props;
+---
+
+<ul class="flex min-w-0 flex-1 flex-wrap gap-1">
+  {tags.map((tag) => (
+    <li>
+      <button
+        type="button"
+        data-xt-tag={tag}
+        aria-label={`Search tools tagged ${tag}`}
+        class="inline-flex min-h-6 items-center rounded-full border border-border bg-bg px-2 text-xs text-muted hover:border-accent hover:text-fg"
+      >
+        {tag}
+      </button>
+    </li>
+  ))}
+</ul>

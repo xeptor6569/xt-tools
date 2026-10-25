@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Build an offline HTTP request snippet for fetch, Python or Go.',
   category: 'web',
   keywords: ['http', 'snippet', 'fetch', 'request', 'offline'],
+  tags: ['http', 'code'],
   examples: [
     {
       input: 'POST https://example.com/api\nContent-Type: application/json\n\n{"ok":true}',

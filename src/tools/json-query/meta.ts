@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'development',
   group: 'utilities',
   keywords: ['json', 'jsonpath', 'query', 'filter', 'playground', 'select', 'json pointer', 'json path'],
+  tags: ['json', 'query'],
   examples: [{ input: '{"a":{"b":42}}', expect: '42' }],
   added: '2026-10-24',
 };

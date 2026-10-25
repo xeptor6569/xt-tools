@@ -17,6 +17,7 @@ const meta: ToolMeta = {
     'uppercase',
     'lowercase',
   ],
+  tags: ['text', 'case'],
   examples: [{ input: 'XMLHttpRequest handler', expect: 'xml_http_request_handler' }],
   added: '2026-10-18',
 };

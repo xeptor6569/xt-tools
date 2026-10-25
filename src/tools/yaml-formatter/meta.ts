@@ -8,6 +8,7 @@ const meta: ToolMeta = {
   category: 'development',
   group: 'formatters',
   keywords: ['yaml', 'yml', 'format', 'prettify', 'validate', 'lint', 'indent', 'sort keys', 'multi-document'],
+  tags: ['yaml', 'format'],
   added: '2026-10-24',
   examples: [
     { input: 'a:   1\nb:    [1,   2]', expect: 'b: [1, 2]' },

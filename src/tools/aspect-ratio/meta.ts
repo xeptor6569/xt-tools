@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Calculate a missing width or height from an aspect ratio.',
   category: 'images-media',
   keywords: ['aspect', 'ratio', 'width', 'height', '16:9'],
+  tags: ['image', 'css'],
   added: '2026-10-24',
   examples: [
     { input: '1920 1080', expect: '16:9' },

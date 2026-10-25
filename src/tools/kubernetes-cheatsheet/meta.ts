@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'development',
   group: 'cheatsheets',
   keywords: ['kubernetes', 'k8s', 'kubectl', 'cheatsheet', 'pods', 'deployment', 'jsonpath', 'commands', 'reference'],
+  tags: ['kubernetes', 'cheatsheet'],
   added: '2026-10-24',
   examples: [{ input: 'rollout undo', expect: 'kubectl rollout undo deployment/<name>' }],
 };

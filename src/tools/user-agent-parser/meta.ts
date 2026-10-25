@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Parse a user-agent string into browser, engine and OS fields.',
   category: 'web',
   keywords: ['user-agent', 'browser', 'os', 'parse', 'ua'],
+  tags: ['browser', 'http'],
   examples: [
     {
       input:

@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'converter',
   group: 'units',
   keywords: ['date', 'time', 'timestamp', 'unix', 'epoch', 'iso 8601', 'rfc 2822', 'batch unix timestamp converter'],
+  tags: ['date', 'time'],
   examples: [
     { input: '1700000000', expect: '2023-11-14T22:13:20.000Z' },
     { input: '2026-10-14T10:00:00+02:00\n0', expect: '1970-01-01T00:00:00.000Z' },

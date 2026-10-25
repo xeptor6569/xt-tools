@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Parse a Cookie or Set-Cookie header into names and attributes.',
   category: 'web',
   keywords: ['cookie', 'set-cookie', 'parse', 'header'],
+  tags: ['http', 'cookie'],
   examples: [{ input: 'session=abc; Path=/; HttpOnly', expect: 'HttpOnly: true' }],
   added: '2026-10-24',
 };
