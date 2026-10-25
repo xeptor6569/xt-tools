@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'text',
   group: 'write',
   keywords: ['ascii', 'art', 'figlet', 'banner', 'text art'],
+  tags: ['text', 'ascii'],
   added: '2026-10-18',
   heavy: true,
 };

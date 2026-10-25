@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'converter',
   group: 'encodings',
   keywords: ['binary', 'ascii', 'bytes', 'text to binary', 'bits', 'utf-8'],
+  tags: ['encoding', 'binary'],
   examples: [{ input: 'Hi', expect: '01001000 01101001' }],
   added: '2026-10-18',
 };

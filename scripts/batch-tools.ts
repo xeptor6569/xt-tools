@@ -4,12 +4,13 @@
 // Usage: node scripts/batch-tools.ts <spec.json> [--skip-existing] [--only a,b] [--dry-run]
 //
 // The spec is an array of objects:
-//   { "id", "name", "category", "description", "keywords": [], "template"?,
+//   { "id", "name", "category", "description", "keywords": [], "tags"?: [], "template"?,
 //     "group"?, "requires"?: [], "sensitive"?, "heavy"?, "worker"?, "network"?: [] }
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
+import { deriveTags } from '../src/tools/tags.ts';
 import { validateMeta } from '../src/tools/validate-meta.ts';
 import { pagePath, ROOT, TEMPLATES_DIR, toolDir } from './lib/tools.ts';
 
@@ -20,6 +21,7 @@ interface Entry {
   group?: string;
   description: string;
   keywords: string[];
+  tags?: string[];
   template?: string;
   requires?: string[];
   sensitive?: boolean;
@@ -88,6 +90,7 @@ for (const [i, e] of entries.entries()) {
     category: e.category,
     ...(e.group ? { group: e.group } : {}),
     keywords: e.keywords,
+    tags: e.tags && e.tags.length > 0 ? e.tags : deriveTags(String(e.name ?? ''), e.keywords ?? []),
     added: today,
   };
   if (e.requires?.length) meta.requires = e.requires;
@@ -124,6 +127,8 @@ for (const e of toCreate) {
     e.description,
     '--keywords',
     e.keywords.join(','),
+    '--tags',
+    (e.tags && e.tags.length > 0 ? e.tags : deriveTags(e.name, e.keywords)).join(','),
     '--template',
     e.template ?? 'two-pane',
     '--yes',

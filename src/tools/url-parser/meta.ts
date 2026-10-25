@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Split a URL into its origin, path, query and fragment.',
   category: 'web',
   keywords: ['url', 'parse', 'query', 'origin', 'fragment'],
+  tags: ['url', 'http'],
   examples: [
     {
       input: 'https://ada:secret@example.com:8443/a/b?x=1&y=2#top',

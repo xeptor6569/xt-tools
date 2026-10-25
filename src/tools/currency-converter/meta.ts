@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'converter',
   group: 'units',
   keywords: ['currency', 'exchange', 'fx', 'ecb', 'frankfurter', 'convert'],
+  tags: ['currency', 'unit'],
   added: '2026-10-24',
   network: { hosts: ['https://api.frankfurter.dev'] },
 };

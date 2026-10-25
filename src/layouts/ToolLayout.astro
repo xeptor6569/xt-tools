@@ -3,6 +3,7 @@ import { getCategory, getGroup } from '../categories.ts';
 import Icon from '../components/site/Icon.astro';
 import PinButton from '../components/site/PinButton.astro';
 import SaveTool from '../components/site/SaveTool.astro';
+import TagList from '../components/site/TagList.astro';
 import CapabilityNotice from '../components/ui/CapabilityNotice.tsx';
 import LegacyWarning from '../components/ui/LegacyWarning.astro';
 import { categoryHref, href } from '../lib/href.ts';
@@ -56,6 +57,7 @@ const requires = meta.requires ?? [];
       <SaveTool id={meta.id} name={meta.name} labelled />
     </div>
     <p class="text-muted">{meta.description}</p>
+    <TagList tags={meta.tags} />
   </header>
 
   <div class="mb-6 flex flex-col gap-3 empty:hidden">

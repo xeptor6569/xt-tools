@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'converter',
   group: 'encodings',
   keywords: ['punycode', 'idn', 'domain', 'xn--', 'unicode domain'],
+  tags: ['encoding', 'dns'],
   examples: [
     { input: 'münchen.de', expect: 'xn--mnchen-3ya.de' },
     { input: 'xn--wgv71a119e.jp', expect: '日本語.jp' },

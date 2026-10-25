@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Clean an SVG and preview the sanitized result.',
   category: 'images-media',
   keywords: ['svg', 'optimize', 'minify', 'svgo'],
+  tags: ['svg', 'image'],
   added: '2026-10-24',
   heavy: true,
   examples: [

@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'text',
   group: 'write',
   keywords: ['lorem', 'ipsum', 'placeholder', 'dummy text', 'filler'],
+  tags: ['text', 'placeholder'],
   added: '2026-10-18',
 };
 

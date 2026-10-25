@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Calculate a percentage of a value, a change, and a reverse percentage.',
   category: 'math',
   keywords: ['percentage', 'percent', 'ratio', 'change'],
+  tags: ['math', 'calculator'],
   added: '2026-10-24',
   examples: [
     { input: '20% of 80', expect: '16' },

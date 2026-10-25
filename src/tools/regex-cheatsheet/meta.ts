@@ -18,6 +18,7 @@ const meta: ToolMeta = {
     'pcre',
     'reference',
   ],
+  tags: ['regex', 'cheatsheet'],
   added: '2026-10-24',
   examples: [{ input: 'lookbehind', expect: '(?<=abc)' }],
 };

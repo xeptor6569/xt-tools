@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Compute an HMAC over text with a secret key.',
   category: 'crypto',
   keywords: ['hmac', 'mac', 'sha256', 'authentication', 'key'],
+  tags: ['hash', 'key'],
   examples: [
     {
       input: 'key: key\nThe quick brown fox jumps over the lazy dog',

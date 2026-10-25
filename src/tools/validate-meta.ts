@@ -7,6 +7,10 @@ import { isNetworkHost } from '../lib/network-allow.ts';
 
 export const ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
+/** A public tag: lowercase words and digits, hyphens allowed, 2–24 characters. */
+export const TAG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+export const MAX_TAGS = 4;
+
 const isString = (v: unknown): v is string => typeof v === 'string';
 
 export function validateMeta(meta: unknown, expectedId?: string, today = new Date()): string[] {
@@ -21,6 +25,7 @@ export function validateMeta(meta: unknown, expectedId?: string, today = new Dat
     'category',
     'group',
     'keywords',
+    'tags',
     'added',
     'sensitive',
     'requires',
@@ -76,6 +81,18 @@ export function validateMeta(meta: unknown, expectedId?: string, today = new Dat
       else if (k !== k.toLowerCase()) problems.push(`keyword "${k}" must be lowercase`);
       else if (seen.has(k)) problems.push(`keyword "${k}" is duplicated`);
       else seen.add(k);
+    }
+  }
+
+  if (!Array.isArray(m.tags) || m.tags.length === 0 || m.tags.length > MAX_TAGS) {
+    problems.push(`tags must be 1–${MAX_TAGS} labels`);
+  } else {
+    const seen = new Set<string>();
+    for (const tag of m.tags) {
+      if (!isString(tag) || tag.length < 2 || tag.length > 24 || !TAG_PATTERN.test(tag)) {
+        problems.push(`tag "${String(tag)}" must be 2–24 lowercase letters, digits and hyphens`);
+      } else if (seen.has(tag)) problems.push(`tag "${tag}" is duplicated`);
+      else seen.add(tag);
     }
   }
 

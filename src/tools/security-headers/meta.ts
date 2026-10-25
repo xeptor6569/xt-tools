@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Generate a starter set of HTTP security headers.',
   category: 'web',
   keywords: ['security', 'headers', 'hsts', 'csp', 'referrer'],
+  tags: ['security', 'http'],
   examples: [{ input: '', expect: 'X-Content-Type-Options: nosniff' }],
   added: '2026-10-24',
 };

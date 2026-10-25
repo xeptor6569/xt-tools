@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'converter',
   group: 'formats',
   keywords: ['table', 'csv', 'tsv', 'markdown table', 'html table', 'markdown table generator', 'csv to markdown'],
+  tags: ['csv', 'markdown'],
   examples: [{ input: 'Name,Role\nAda,Engineer', expect: '| Ada  | Engineer |' }],
   added: '2026-10-18',
 };

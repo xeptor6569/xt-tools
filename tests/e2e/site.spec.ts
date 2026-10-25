@@ -30,8 +30,42 @@ test('category pages list their tools', async ({ page }) => {
 test('search index contains every tool', async ({ request }) => {
   const response = await request.get('search-index.json');
   expect(response.ok()).toBe(true);
-  const index = (await response.json()) as Array<{ id: string }>;
+  const index = (await response.json()) as Array<{ id: string; tags: string[] }>;
   expect(index.map((t) => t.id).sort()).toEqual(tools.map((t) => t.id).sort());
+  expect(index.every((tool) => tool.tags.length > 0)).toBe(true);
+});
+
+test('search matches a title, a description, a tag and a keyword', async ({ page }) => {
+  await page.goto('');
+  const search = page.getByRole('combobox', { name: 'Search tools' });
+  await expect(page.locator('[data-xt="search"]')).toHaveAttribute('data-xt-search', 'ready');
+  const list = page.getByRole('listbox', { name: 'Search results' });
+
+  await page.keyboard.press('/');
+  await expect(search).toBeFocused();
+  await search.fill('slugify');
+  await expect(list.getByRole('option').first()).toContainText('Slugify');
+
+  await search.fill('permalink');
+  await expect(list.getByRole('option', { name: /Slugify/ })).toBeVisible();
+
+  await search.fill('url-friendly');
+  await expect(list.getByRole('option', { name: /Slugify/ })).toBeVisible();
+
+  await page.keyboard.press('Control+k');
+  await expect(search).toBeFocused();
+  await search.fill('slugify');
+  await expect(list.getByRole('option').first()).toContainText('Slugify');
+  await search.press('Enter');
+  await expect(page).toHaveURL(/\/tools\/slugify\/$/);
+
+  await expect(page.locator('[data-xt="search"]')).toHaveAttribute('data-xt-search', 'ready');
+  await page.getByRole('button', { name: 'Search tools tagged url' }).click();
+  await expect(page.getByRole('combobox', { name: 'Search tools' })).toHaveValue('url');
+  await expect(
+    page.getByRole('listbox', { name: 'Search results' }).getByRole('option', { name: /Slugify/ }),
+  ).toBeVisible();
+  await expectAccessible(page);
 });
 
 test('unknown pages return the custom 404', async ({ page, guard }) => {

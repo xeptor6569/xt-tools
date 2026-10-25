@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'converter',
   group: 'signals',
   keywords: ['nato', 'phonetic', 'alphabet', 'spelling', 'alfa bravo charlie', 'radio'],
+  tags: ['text', 'reference'],
   examples: [
     { input: 'XT 42', expect: 'X-ray Tango / Four Two' },
     { input: 'Sierra Oscar Sierra', expect: 'SOS' },

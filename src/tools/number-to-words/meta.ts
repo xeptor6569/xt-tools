@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'converter',
   group: 'numbers',
   keywords: ['number', 'words', 'spell', 'ordinal', 'cheque', 'check'],
+  tags: ['number', 'text'],
   examples: [{ input: '1234.56', expect: 'One thousand two hundred thirty-four and 56/100' }],
   added: '2026-10-18',
 };

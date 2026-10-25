@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'text',
   group: 'write',
   keywords: ['markdown', 'md', 'preview', 'html', 'markdown to html', 'pdf', 'editor'],
+  tags: ['markdown', 'editor'],
   added: '2026-10-18',
 };
 

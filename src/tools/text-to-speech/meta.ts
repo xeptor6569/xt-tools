@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'text',
   group: 'write',
   keywords: ['speech', 'tts', 'read aloud', 'voice', 'speak'],
+  tags: ['audio', 'text'],
   added: '2026-10-18',
   requires: ['speech-synthesis'],
 };

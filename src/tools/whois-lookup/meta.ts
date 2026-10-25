@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Look up .com, .net, .org and ARIN registration data for a domain name or IP address.',
   category: 'network',
   keywords: ['whois', 'rdap', 'domain', 'registrar', 'arin'],
+  tags: ['dns', 'network'],
   added: '2026-10-24',
   network: { hosts: ['https://rdap.verisign.com', 'https://rdap.publicinterestregistry.org', 'https://rdap.arin.net'] },
 };

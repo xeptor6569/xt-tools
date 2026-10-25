@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'development',
   group: 'utilities',
   keywords: ['regex', 'regexp', 'regular expression', 'match', 'replace', 'find and replace', 'capture group'],
+  tags: ['regex', 'text'],
   examples: [{ input: '\\w+@\\w+', expect: '2 matches' }],
   added: '2026-10-18',
 };

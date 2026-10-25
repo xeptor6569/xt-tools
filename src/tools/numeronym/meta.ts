@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'text',
   group: 'transform',
   keywords: ['numeronym', 'i18n', 'a11y', 'abbreviation'],
+  tags: ['text', 'abbreviation'],
   examples: [{ input: 'internationalization accessibility', expect: 'i18n a11y' }],
   added: '2026-10-18',
 };

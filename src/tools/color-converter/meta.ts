@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'converter',
   group: 'units',
   keywords: ['color', 'colour', 'hex', 'rgb', 'hsl', 'hwb', 'lab', 'lch', 'oklch', 'oklab', 'css'],
+  tags: ['color', 'css'],
   examples: [
     { input: 'rebeccapurple', expect: '#663399' },
     { input: 'oklch(0.7 0.15 150)', expect: 'rgb(' },

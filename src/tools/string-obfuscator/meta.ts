@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'text',
   group: 'transform',
   keywords: ['obfuscate', 'mask', 'redact', 'hide', 'secret', 'censor'],
+  tags: ['text', 'security'],
   sensitive: true,
   added: '2026-10-18',
 };

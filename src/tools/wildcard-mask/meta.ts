@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Convert between a subnet mask, a prefix length and a wildcard mask.',
   category: 'network',
   keywords: ['wildcard', 'netmask', 'cidr', 'acl', 'inverse'],
+  tags: ['ip', 'network'],
   examples: [
     { input: '/24', expect: '0.0.0.255' },
     { input: '255.255.255.0', expect: '/24' },

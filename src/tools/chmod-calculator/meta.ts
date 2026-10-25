@@ -20,6 +20,7 @@ const meta: ToolMeta = {
     'setgid',
     'sticky bit',
   ],
+  tags: ['permissions', 'unix'],
   added: '2026-10-24',
   examples: [
     { input: '755', expect: 'rwxr-xr-x' },

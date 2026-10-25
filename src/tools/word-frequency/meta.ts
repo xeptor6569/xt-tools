@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'text',
   group: 'analyze',
   keywords: ['word', 'frequency', 'count', 'occurrences', 'keyword density'],
+  tags: ['text', 'count'],
   examples: [{ input: 'The cat and the hat. The cat sat.', expect: '37.50%' }],
   added: '2026-10-18',
 };

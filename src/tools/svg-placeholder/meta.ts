@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Generate a sized SVG placeholder with a label.',
   category: 'images-media',
   keywords: ['svg', 'placeholder', 'image', 'dummy'],
+  tags: ['svg', 'image'],
   added: '2026-10-24',
   examples: [{ input: '640 480 Hello', expect: 'width="640"' }],
 };

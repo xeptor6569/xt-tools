@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Convert an IPv4 address between dotted decimal, integer, hex and binary.',
   category: 'network',
   keywords: ['ipv4', 'address', 'integer', 'hex', 'binary', 'convert'],
+  tags: ['ip', 'network'],
   examples: [
     { input: '192.168.1.1', expect: '3232235777' },
     { input: '3232235777', expect: '192.168.1.1' },

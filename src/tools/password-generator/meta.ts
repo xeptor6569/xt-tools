@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Generate a random password or an EFF Diceware passphrase in this browser.',
   category: 'crypto',
   keywords: ['password', 'passphrase', 'diceware', 'generator', 'secret'],
+  tags: ['password', 'passphrase'],
   added: '2026-10-25',
   sensitive: true,
   heavy: true,
