@@ -1,10 +1,10 @@
 [
   {
     "id": "token-generator",
-    "name": "Token generator",
+    "name": "Random bytes",
     "category": "crypto",
-    "description": "Generate cryptographically random tokens as hex or base64.",
-    "keywords": ["token", "secret", "random", "hex", "base64", "api key"],
+    "description": "Generate random bytes locally, like openssl rand, as hex, base64 or a raw file.",
+    "keywords": ["random", "bytes", "openssl", "rand", "hex", "base64", "binary", "token"],
     "template": "generator",
     "sensitive": true
   },
@@ -79,6 +79,16 @@
     "description": "Estimate how guessable a password is, without sending it anywhere.",
     "keywords": ["password", "strength", "zxcvbn", "entropy", "guesses"],
     "template": "two-pane",
+    "sensitive": true,
+    "heavy": true
+  },
+  {
+    "id": "password-generator",
+    "name": "Password generator",
+    "category": "crypto",
+    "description": "Generate a random password or an EFF Diceware passphrase in this browser.",
+    "keywords": ["password", "passphrase", "diceware", "generator", "secret"],
+    "template": "generator",
     "sensitive": true,
     "heavy": true
   },
