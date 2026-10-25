@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Build an HTTP Basic Authorization header from a username and password.',
   category: 'web',
   keywords: ['basic', 'auth', 'authorization', 'header', 'base64'],
+  tags: ['http', 'auth'],
   examples: [{ input: 'Aladdin:open sesame', expect: 'QWxhZGRpbjpvcGVuIHNlc2FtZQ==' }],
   added: '2026-10-24',
   sensitive: true,

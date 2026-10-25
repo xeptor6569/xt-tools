@@ -9,6 +9,7 @@ const meta: ToolMeta = {
   description: 'Decode, sign and verify a JWT, and flag the none algorithm.',
   category: 'crypto',
   keywords: ['jwt', 'jws', 'token', 'hs256', 'rs256', 'none'],
+  tags: ['jwt', 'token'],
   examples: [
     { input: TOKEN, expect: 'John Doe' },
     {

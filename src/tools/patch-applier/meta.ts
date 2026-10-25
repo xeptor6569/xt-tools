@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'development',
   group: 'utilities',
   keywords: ['patch', 'diff', 'unified diff', 'apply', 'git diff', 'git apply', 'hunk', 'reverse patch'],
+  tags: ['diff', 'git'],
   added: '2026-10-24',
   examples: [
     {

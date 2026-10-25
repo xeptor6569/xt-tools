@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Hash a password with bcrypt and check a hash against a password.',
   category: 'crypto',
   keywords: ['bcrypt', 'password', 'hash', 'compare', 'kdf'],
+  tags: ['password', 'hash'],
   examples: [
     {
       input: 'mode: compare\nhash: $2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i\nabc',

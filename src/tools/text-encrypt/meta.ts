@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Encrypt and decrypt text with AES-GCM, and decrypt legacy ciphers only.',
   category: 'crypto',
   keywords: ['encrypt', 'decrypt', 'aes', 'aes-gcm', 'tripledes', 'rabbit', 'rc4'],
+  tags: ['encrypt', 'text'],
   examples: [
     {
       input:

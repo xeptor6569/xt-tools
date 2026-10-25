@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Generate an SSH key and show its fingerprint.',
   category: 'crypto',
   keywords: ['ssh', 'ed25519', 'rsa', 'fingerprint', 'openssh'],
+  tags: ['ssh', 'key'],
   added: '2026-10-24',
   sensitive: true,
 };

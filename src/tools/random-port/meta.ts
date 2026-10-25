@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'development',
   group: 'generators',
   keywords: ['port', 'random', 'tcp', 'udp', 'ephemeral', 'dynamic port', 'free port'],
+  tags: ['network', 'random'],
   added: '2026-10-24',
 };
 

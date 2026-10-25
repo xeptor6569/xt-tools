@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'development',
   group: 'generators',
   keywords: ['code', 'image', 'screenshot', 'png', 'syntax highlighting', 'carbon', 'snippet'],
+  tags: ['image', 'code'],
   added: '2026-10-24',
 };
 

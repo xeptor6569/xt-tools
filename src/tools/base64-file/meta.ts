@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'converter',
   group: 'encodings',
   keywords: ['base64', 'file', 'data uri', 'encode', 'decode', 'binary'],
+  tags: ['base64', 'file'],
   added: '2026-10-18',
 };
 

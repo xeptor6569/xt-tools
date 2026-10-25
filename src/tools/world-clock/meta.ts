@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Show the current time in several time zones.',
   category: 'measurement',
   keywords: ['clock', 'timezone', 'world', 'time'],
+  tags: ['time', 'date'],
   added: '2026-10-24',
   examples: [{ input: 'UTC', expect: 'UTC' }],
 };

@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Generate Universally Unique Lexicographically Sortable Identifiers.',
   category: 'crypto',
   keywords: ['ulid', 'identifier', 'sortable', 'uuid'],
+  tags: ['identifier', 'random'],
   added: '2026-10-24',
 };
 

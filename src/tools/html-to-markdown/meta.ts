@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'converter',
   group: 'formats',
   keywords: ['html', 'markdown', 'convert', 'turndown'],
+  tags: ['html', 'markdown'],
   examples: [{ input: '<h2>Notes</h2><p>Some <strong>bold</strong> text.</p>', expect: '## Notes' }],
   added: '2026-10-18',
 };

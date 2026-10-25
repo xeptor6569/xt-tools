@@ -20,6 +20,7 @@ const meta: ToolMeta = {
     'sql',
     'insert',
   ],
+  tags: ['json', 'generator'],
   added: '2026-10-24',
   heavy: true,
 };

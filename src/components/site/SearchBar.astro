@@ -1,0 +1,37 @@
+---
+// The catalog search. The input is in the HTML so it is visible without
+// JavaScript; results are filled in by search-client.ts the first time it is used.
+---
+
+<form role="search" data-xt="search" class="relative order-last w-full sm:order-none sm:w-72 sm:flex-1">
+  <label class="sr-only" for="tool-search">
+    Search tools
+  </label>
+  <input
+    id="tool-search"
+    type="search"
+    role="combobox"
+    class="w-full rounded-md border border-border bg-bg px-3 py-2 text-sm text-fg"
+    placeholder="Name, description or tag"
+    autocomplete="off"
+    autocapitalize="off"
+    spellcheck="false"
+    enterkeyhint="search"
+    aria-autocomplete="list"
+    aria-expanded="false"
+    aria-controls="tool-search-list"
+    aria-keyshortcuts="Control+K Meta+K Slash"
+  />
+  <div data-xt="search-panel" hidden class="absolute z-30 mt-1 w-full rounded-lg border border-border bg-bg p-1">
+    <p data-xt="search-empty" hidden class="px-3 py-2 text-sm text-muted"></p>
+    <div id="tool-search-list" data-xt="search-list" role="listbox" aria-label="Search results"></div>
+    <p data-xt="search-more" hidden class="px-3 py-2 text-xs text-muted"></p>
+  </div>
+  <p data-xt="search-status" class="sr-only" aria-live="polite"></p>
+</form>
+
+<script>
+  import { installSearch } from './search-client.ts';
+
+  installSearch();
+</script>

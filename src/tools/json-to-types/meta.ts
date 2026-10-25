@@ -21,6 +21,7 @@ const meta: ToolMeta = {
     'dataclass',
     'typeddict',
   ],
+  tags: ['json', 'code'],
   examples: [{ input: '{"id":1,"name":"Ada"}', expect: 'interface Root' }],
   added: '2026-10-24',
 };

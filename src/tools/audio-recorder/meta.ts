@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Record the microphone and show a live waveform.',
   category: 'images-media',
   keywords: ['audio', 'record', 'microphone', 'waveform'],
+  tags: ['audio', 'recording'],
   added: '2026-10-24',
   requires: ['microphone'],
   examples: [{ input: 'voice', expect: 'voice.webm' }],

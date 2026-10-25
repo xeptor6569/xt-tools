@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Read a QR code from an image file or the camera.',
   category: 'images-media',
   keywords: ['qr', 'scan', 'camera', 'decode'],
+  tags: ['qr', 'image'],
   added: '2026-10-24',
   requires: ['camera'],
   heavy: true,

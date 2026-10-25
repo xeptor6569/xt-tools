@@ -8,6 +8,7 @@ const valid = {
   category: 'text',
   group: 'transform',
   keywords: ['demo'],
+  tags: ['demo'],
   added: '2026-01-01',
 };
 
@@ -29,6 +30,10 @@ describe('validateMeta', () => {
     [{ keywords: [] }, /non-empty array/],
     [{ keywords: ['Upper'] }, /lowercase/],
     [{ keywords: ['a', 'a'] }, /duplicated/],
+    [{ tags: [] }, /1–4/],
+    [{ tags: ['A'] }, /lowercase/],
+    [{ tags: ['ok', 'ok'] }, /duplicated/],
+    [{ tags: ['one', 'two', 'three', 'four', 'five'] }, /1–4/],
     [{ added: '2026-13-45' }, /ISO date/],
     [{ added: '2999-01-01' }, /future/],
     [{ requires: ['telepathy'] }, /unknown capability/],

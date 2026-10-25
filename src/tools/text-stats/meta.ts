@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'text',
   group: 'analyze',
   keywords: ['count', 'characters', 'words', 'length', 'reading time', 'statistics'],
+  tags: ['text', 'count'],
   examples: [{ input: 'Hello world. How are you today?', expect: 'Sentences' }],
   added: '2026-10-18',
 };

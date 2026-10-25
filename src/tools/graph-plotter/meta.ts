@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Plot a function of x on a canvas from a safe expression.',
   category: 'math',
   keywords: ['graph', 'plot', 'function', 'canvas'],
+  tags: ['math', 'graph'],
   added: '2026-10-24',
   examples: [{ input: 'x', expect: '0 → 0' }],
 };

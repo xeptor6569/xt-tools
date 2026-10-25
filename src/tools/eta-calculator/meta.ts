@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Estimate remaining time from progress and elapsed time.',
   category: 'math',
   keywords: ['eta', 'time', 'progress', 'estimate'],
+  tags: ['time', 'math'],
   added: '2026-10-24',
   examples: [
     { input: '50% in 10 min', expect: '10 min' },

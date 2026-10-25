@@ -20,6 +20,7 @@ const meta: ToolMeta = {
     'kubeval',
     'kubeconform',
   ],
+  tags: ['kubernetes', 'yaml'],
   added: '2026-10-24',
   heavy: true,
   examples: [

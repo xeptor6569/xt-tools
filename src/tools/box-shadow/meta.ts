@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Build a CSS box-shadow and preview it on a sample box.',
   category: 'design',
   keywords: ['box-shadow', 'css', 'shadow', 'preview'],
+  tags: ['css', 'color'],
   added: '2026-10-24',
   examples: [{ input: '4 8 24 0 #000000', expect: 'box-shadow:' }],
 };

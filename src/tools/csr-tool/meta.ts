@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Decode a certificate signing request, or build one with WebCrypto.',
   category: 'crypto',
   keywords: ['csr', 'pkcs10', 'certificate', 'pem', 'request'],
+  tags: ['certificate', 'key'],
   examples: [
     {
       input: `-----BEGIN CERTIFICATE REQUEST-----

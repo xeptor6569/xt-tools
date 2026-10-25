@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Expand, compress and split an IPv6 address or prefix.',
   category: 'network',
   keywords: ['ipv6', 'subnet', 'cidr', 'compress', 'expand'],
+  tags: ['ip', 'network'],
   examples: [
     { input: '2001:0db8:0000:0000:0000:0000:0000:0001', expect: '2001:db8::1' },
     { input: '2001:db8::1/64', expect: '2001:db8::ffff:ffff:ffff:ffff' },

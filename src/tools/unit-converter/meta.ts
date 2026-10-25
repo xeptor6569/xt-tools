@@ -19,6 +19,7 @@ const meta: ToolMeta = {
     'bytes',
     'temperature converter',
   ],
+  tags: ['unit', 'convert'],
   examples: [{ input: '2.5', expect: '8.20209973753' }],
   added: '2026-10-18',
 };

@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'development',
   group: 'utilities',
   keywords: ['cron', 'crontab', 'schedule', 'cron expression', 'cron generator', 'next run', 'job'],
+  tags: ['cron', 'time'],
   examples: [{ input: '0 9 * * 1-5', expect: 'At 09:00, Monday through Friday' }],
   added: '2026-10-18',
 };

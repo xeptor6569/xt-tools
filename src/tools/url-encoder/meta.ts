@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Encode and decode URL components and full URLs.',
   category: 'web',
   keywords: ['url', 'encode', 'decode', 'percent', 'uri'],
+  tags: ['url', 'encoding'],
   examples: [{ input: 'a b', expect: 'a%20b' }],
   added: '2026-10-24',
 };

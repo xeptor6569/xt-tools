@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Generate a robots.txt and a simple XML sitemap.',
   category: 'web',
   keywords: ['robots.txt', 'sitemap', 'seo', 'crawl'],
+  tags: ['seo', 'http'],
   examples: [
     {
       input: 'User-agent: *\nDisallow: /private\nhttps://example.com/a',

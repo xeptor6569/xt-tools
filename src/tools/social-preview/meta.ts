@@ -6,6 +6,7 @@ const meta: ToolMeta = {
   description: 'Preview a sanitized title, description and image as a social card.',
   category: 'web',
   keywords: ['social', 'preview', 'og', 'card', 'seo'],
+  tags: ['seo', 'image'],
   examples: [{ input: 'Hello | A short description', expect: 'Hello' }],
   added: '2026-10-24',
 };

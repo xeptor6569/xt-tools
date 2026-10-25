@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'converter',
   group: 'signals',
   keywords: ['morse', 'code', 'telegraph', 'audio', 'dots and dashes'],
+  tags: ['encoding', 'text'],
   examples: [
     { input: 'SOS', expect: '... --- ...' },
     { input: '.... . .-.. .-.. ---', expect: 'HELLO' },

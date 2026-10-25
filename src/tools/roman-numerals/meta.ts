@@ -7,6 +7,7 @@ const meta: ToolMeta = {
   category: 'converter',
   group: 'numbers',
   keywords: ['roman', 'numerals', 'number', 'latin'],
+  tags: ['number', 'convert'],
   examples: [{ input: '1994\nMMXXVI', expect: 'MCMXCIV\n2026' }],
   added: '2026-10-18',
 };

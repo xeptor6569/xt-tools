@@ -8,6 +8,7 @@ const meta: ToolMeta = {
   category: 'development',
   group: 'generators',
   keywords: ['gitignore', 'git', 'ignore', 'template', 'github'],
+  tags: ['git', 'ignore'],
   added: '2026-10-24',
 };
 
