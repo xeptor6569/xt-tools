@@ -1,0 +1,40 @@
+# Overlay for compose.yaml. Puts Caddy in front of the site and stops
+# publishing the site's HTTP port on the host.
+#
+#   docker compose -f compose.yaml -f compose.https.yaml up -d
+#   make up-https
+#
+# Needs Compose 2.24 or later for `ports: !reset`.
+
+services:
+  tools:
+    ports: !reset []
+    expose:
+      - '8080'
+
+  caddy:
+    image: caddy:2-alpine@sha256:eb4d35b7452d1ab6171fbdbe8d9275b2301dad6dad92115d91e19fb9b24d510f
+    depends_on:
+      tools:
+        condition: service_healthy
+    environment:
+      DOMAIN: ${DOMAIN:-tools.example.com}
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+    # /data and /config are the named volumes. The image needs
+    # NET_BIND_SERVICE to listen on 443, so this service does not drop
+    # every capability the way the site container does.
+    read_only: true
+    tmpfs:
+      - /tmp
+
+volumes:
+  caddy_data:
+  caddy_config:

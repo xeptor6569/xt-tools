@@ -17,11 +17,12 @@ ARGS       ?=
 
 DEV     := docker compose -f compose.dev.yaml
 PROD    := docker compose -f compose.yaml
+HTTPS   := docker compose -f compose.yaml -f compose.https.yaml
 RUN_DEV := $(DEV) run --rm --service-ports=false dev
 
 .DEFAULT_GOAL := help
 .PHONY: help new-tool remove-tool list-tools dev shell validate lint test-unit test-e2e test \
-        build smoke up down logs deploy export import clean
+        build smoke up up-https down logs deploy export import caddy-ca clean
 
 help: ## Show this help
 	@grep -hE '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -81,11 +82,26 @@ else
 endif
 	@echo "xt-tools is running on http://localhost:$(or $(XT_PORT),8080)$(BASE_PATH)"
 
-down: ## Stop the site
-	$(PROD) down
+up-https: ## Run the site over HTTPS (Caddy). Set DOMAIN in .env.
+ifeq ($(strip $(XT_TAG)),)
+	@docker image inspect $(IMAGE) >/dev/null 2>&1 || $(MAKE) build
+	docker tag $(IMAGE) ghcr.io/xeptor6569/xt-tools:local
+	XT_TAG=local $(HTTPS) up -d --no-build
+else
+	$(HTTPS) up -d
+endif
+	@echo "xt-tools is running on https://$(or $(DOMAIN),tools.example.com)"
+
+down: ## Stop the site (HTTP or HTTPS)
+	-$(HTTPS) down
+	-$(PROD) down
 
 logs: ## Follow the site logs
-	$(PROD) logs -f
+	$(HTTPS) logs -f
+
+caddy-ca: ## Copy Caddy's internal root CA to ./caddy-root.crt (LAN tls internal only)
+	$(HTTPS) cp caddy:/data/caddy/pki/authorities/local/root.crt ./caddy-root.crt
+	@echo "Trust ./caddy-root.crt once on each device."
 
 deploy: ## Build and deploy with compose like the CI deploy job (port 3125, ~/xt-tools; needs Node 26)
 	node scripts/deploy.ts $(ARGS)

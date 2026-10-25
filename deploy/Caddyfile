@@ -1,0 +1,28 @@
+# HTTPS in front of the xt-tools container. The site container already sends
+# the CSP and the other security headers; this file adds HSTS and compression
+# and does not replace those headers.
+#
+# Public name (Let's Encrypt). DOMAIN comes from the environment.
+{$DOMAIN} {
+	encode gzip zstd
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+	reverse_proxy tools:8080
+}
+
+# LAN name, with no public DNS. Replace the block above with this one.
+# Do not send HSTS for a name that is only reachable on the LAN.
+#
+# {$DOMAIN} {
+# 	tls internal
+# 	encode gzip zstd
+# 	header {
+# 		-Server
+# 	}
+# 	reverse_proxy tools:8080
+# }
+#
+# Then, from the repo: make caddy-ca
+# Trust ./caddy-root.crt once on each device.

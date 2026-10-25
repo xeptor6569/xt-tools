@@ -1,11 +1,10 @@
 # xt-tools
 
-> Your toolbox, on your server. Lookups ask before they leave.
+> Your toolbox, your server, no internet required.
 
 xt-tools is a self-hostable collection of privacy-first developer and everyday tools that run in your browser. There's no tracking and no server-side processing. A few tools look something up on the network, and only after you run them; every other tool stays on your device. Host it with one Docker command, or put the static files on any web server.
 
-> [!NOTE]
-> **Status: Phase 2 in progress (v0.1).** 43 tools work today: every Text and Converter tool from the catalog plus the Phase 1 pilots (hashing, JSON, regex, cron, QR codes, UUIDs, IPv4 subnets and more). The site, scaffolder, shared UI kit, Docker image and CI are in place. No image is published yet, so build it from source (see [Run it now](#run-it-now)). The full build plan is in **[PLAN.md](PLAN.md)**.
+The lightweight catalog is built (about 175 tools). Heavy tools (Argon2, PGP, PDF, video, SQLite) are still to come. Images are published to GHCR when a `v*` tag or `main` is pushed. Until the first release is tagged, build from source with `make build up`. The plan is in **[PLAN.md](PLAN.md)**.
 
 ## Principles
 
@@ -15,7 +14,7 @@ xt-tools is a self-hostable collection of privacy-first developer and everyday t
 - **Small and fast.** Each page loads only its own code, at most 150 KB of gzipped JavaScript. Heavy tools (PDF, ffmpeg, SQLite, Argon2, OpenPGP) download their WASM only when you use them.
 - **Easy to extend.** One folder per tool, registered automatically. A new tool takes one command to create.
 
-## What's included (planned)
+## What's included
 
 About 185 tools in 13 categories:
 
@@ -49,7 +48,9 @@ make down        # stop it
 
 Or with Node 26: `npm ci && npm run build && npx astro preview`.
 
-## Quick start (planned for v1.0)
+## Quick start
+
+The paths below are written out in [docs/deployment.md](docs/deployment.md). HTTPS, a sub-path, an air-gapped copy and an existing reverse proxy each have their own page: [deployment](docs/deployment.md), [air-gap](docs/air-gap.md), [reverse proxy](docs/reverse-proxy.md).
 
 ### Docker
 
@@ -75,9 +76,9 @@ make up-https    # HTTPS via Caddy (Let's Encrypt, or an internal CA for LANs)
 
 - **Sub-path** (for example `https://example.com/tools/`): the base path is compiled into the site, so build the image yourself with `make build BASE_PATH=/tools/`.
 - **Air-gapped machines:** run `make export` on a connected machine, copy `xt-tools.tar.gz` across, then run `make import up`.
-- **Behind an existing reverse proxy:** examples for Traefik and nginx will be in `docs/reverse-proxy.md`.
+- **Behind an existing reverse proxy:** [docs/reverse-proxy.md](docs/reverse-proxy.md) has Traefik labels and an nginx `location`. Forward `Host`, and keep the security headers from the container.
 - **Continuous deployment from your own runner:** CI can build every green push to `main` on a self-hosted GitHub Actions runner and deploy it there with Docker Compose (port 3125 by default). See [docs/self-hosted-runner.md](docs/self-hosted-runner.md); `make deploy` does the same by hand.
-- **Any static host:** each release will include a zip of the built site, with ready-made header configs for nginx, Apache and Caddy.
+- **Any static host:** a `v*` release includes a zip of the built site and [server-configs](server-configs/README.md) for nginx, Apache and Caddy. The generated CSP for that build is inside the zip.
 
 Image tags: `latest` is the newest release, `X.Y` and `X.Y.Z` pin a version, and `edge` follows `main`.
 
@@ -109,7 +110,7 @@ With Node installed, run `npm run new-tool`, `npm run dev`, `npm test` and `npm 
 
 ## Security and privacy
 
-What the project promises, how that's enforced, and what it can't protect against: see [PLAN.md § 9](PLAN.md#9-privacy-and-security-model). A `SECURITY.md` with reporting instructions will come with v1.0.
+What the project promises, how that's enforced, and what it can't protect against: [SECURITY.md](SECURITY.md) and [docs/threat-model.md](docs/threat-model.md).
 
 ## Tech stack
 
