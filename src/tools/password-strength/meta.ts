@@ -7,7 +7,7 @@ const meta: ToolMeta = {
   category: 'crypto',
   keywords: ['password', 'strength', 'zxcvbn', 'entropy', 'guesses'],
   examples: [
-    { input: 'password', expect: 'score: 0/4' },
+    { input: 'password', expect: 'common' },
     { input: 'correct horse battery staple', expect: 'score: 4/4' },
   ],
   added: '2026-10-24',
