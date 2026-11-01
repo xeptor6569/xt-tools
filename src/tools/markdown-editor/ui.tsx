@@ -5,11 +5,12 @@ import DownloadButton from '../../components/ui/DownloadButton.tsx';
 import ErrorMessage from '../../components/ui/ErrorMessage.tsx';
 import SandboxedPreview from '../../components/ui/SandboxedPreview.tsx';
 import TextArea from '../../components/ui/TextArea.tsx';
+import Toggle from '../../components/ui/Toggle.tsx';
 import { useDebounced } from '../../components/ui/useDebounced.ts';
 import { PREVIEW_CSS } from '../../lib/preview-css.ts';
 import { runTool } from '../../lib/run-tool.ts';
 import { sanitizeHtml } from '../../lib/sanitize.ts';
-import { htmlDocument, markdownStats, markdownToHtml } from './logic.ts';
+import { PRINT_CSS, cleanMarkdown, htmlDocument, markdownStats, markdownToHtml } from './logic.ts';
 
 const START = `# Notes
 
@@ -27,13 +28,13 @@ function titleOf(md: string): string {
   return /^#\s+(.+)$/m.exec(md)?.[1]?.trim().slice(0, 80) || 'Document';
 }
 
-function printable(md: string, html: string): string {
-  return htmlDocument(titleOf(md), sanitizeHtml(html), PREVIEW_CSS);
+function printable(md: string, html: string, printFriendly: boolean): string {
+  return htmlDocument(titleOf(md), sanitizeHtml(html), printFriendly ? PREVIEW_CSS + PRINT_CSS : PREVIEW_CSS);
 }
 
 /** Opens the rendered document (sanitized, script-free by CSP) in a new tab and prints it. */
-function print(md: string, html: string) {
-  const url = URL.createObjectURL(new Blob([printable(md, html)], { type: 'text/html' }));
+function print(md: string, html: string, printFriendly: boolean) {
+  const url = URL.createObjectURL(new Blob([printable(md, html, printFriendly)], { type: 'text/html' }));
   const win = window.open(url, '_blank');
   if (!win) return;
   win.addEventListener('load', () => {
@@ -44,10 +45,26 @@ function print(md: string, html: string) {
 
 export default function MarkdownEditorTool() {
   const [input, setInput] = useState(START);
+  const [previous, setPrevious] = useState<string | null>(null);
+  const [printFriendly, setPrintFriendly] = useState(true);
   const md = useDebounced(input, 150);
   const result = useMemo(() => runTool(() => markdownToHtml(md)), [md]);
   const html = result.output ?? '';
   const stats = markdownStats(input);
+  const [tidyError, setTidyError] = useState<string>();
+
+  const replaceText = (next: string) => {
+    setTidyError(undefined);
+    if (next === input) return;
+    setPrevious(input);
+    setInput(next);
+  };
+
+  const tidyUp = () => {
+    const tidy = runTool(() => cleanMarkdown(input));
+    if (tidy.output === undefined) setTidyError(tidy.error);
+    else replaceText(tidy.output);
+  };
 
   return (
     <div class="flex flex-col gap-3">
@@ -58,18 +75,45 @@ export default function MarkdownEditorTool() {
           <SandboxedPreview html={html} title="Markdown preview" class="min-h-[60vh] flex-1" />
         </div>
       </div>
-      <ErrorMessage message={result.error} />
+      <ErrorMessage message={result.error ?? tidyError} />
+      <div class="flex flex-wrap items-center gap-2">
+        <Button onClick={tidyUp} disabled={input === ''}>
+          Tidy up
+        </Button>
+        <Button onClick={() => replaceText(START)} disabled={input === START}>
+          Reset
+        </Button>
+        <Button onClick={() => replaceText('')} disabled={input === ''}>
+          Clear
+        </Button>
+        {previous !== null && (
+          <Button
+            onClick={() => {
+              setInput(previous);
+              setPrevious(null);
+            }}
+          >
+            Undo
+          </Button>
+        )}
+      </div>
+      <Toggle
+        label="Print-friendly layout"
+        checked={printFriendly}
+        onChecked={setPrintFriendly}
+        hint="Black on white, serif text, no page breaks inside code, tables or images, and link addresses shown on paper. Applies to Print and Download .html."
+      />
       <div class="flex flex-wrap items-center gap-2">
         <CopyButton text={html} label="Copy HTML" />
         <CopyButton text={input} label="Copy Markdown" />
         <DownloadButton data={input} filename="document.md" mime="text/markdown;charset=utf-8" label="Download .md" />
         <DownloadButton
-          data={() => printable(input, html)}
+          data={() => printable(input, html, printFriendly)}
           filename="document.html"
           mime="text/html;charset=utf-8"
           label="Download .html"
         />
-        <Button onClick={() => print(input, html)} disabled={!html}>
+        <Button onClick={() => print(input, html, printFriendly)} disabled={!html}>
           Print / save as PDF
         </Button>
         <span class="ml-auto text-sm text-muted" aria-live="polite">
