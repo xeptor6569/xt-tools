@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { expectRobust } from '../../../tests/helpers/expect-robust.ts';
-import { htmlDocument, markdownStats, markdownToHtml } from './logic.ts';
+import { PRINT_CSS, cleanMarkdown, htmlDocument, markdownStats, markdownToHtml } from './logic.ts';
 
 describe('markdownToHtml', () => {
   it('renders CommonMark and GitHub extensions', () => {
@@ -27,10 +27,40 @@ describe('markdownToHtml', () => {
     expect(doc).toContain('<title>Notes &lt;1></title>');
   });
 
+  it('tidies whitespace, blank lines and headings', () => {
+    expect(cleanMarkdown('\uFEFF\r\n\r\n# Title   \r\ntext\u00A0here\t \n\n\n\n\nnext\u200B')).toBe(
+      '# Title\n\ntext here\n\nnext\n',
+    );
+    expect(cleanMarkdown('intro\n## Sub\nbody')).toBe('intro\n\n## Sub\n\nbody\n');
+    expect(cleanMarkdown('#hashtag\n#\nx')).toBe('#hashtag\n\n#\n\nx\n');
+  });
+
+  it('keeps hard breaks and fenced code untouched', () => {
+    expect(cleanMarkdown('line one  \nline two  \n\nend  ')).toBe('line one  \nline two\n\nend\n');
+    const code = '```js\nconst a = 1;  \n\n\n\n# not a heading\n```\n';
+    expect(cleanMarkdown(code)).toBe(code);
+    expect(cleanMarkdown('~~~\n```\n\n\nx  \n~~~\n\n\ny')).toBe('~~~\n```\n\n\nx  \n~~~\n\ny\n');
+  });
+
+  it('returns an empty string for blank input and is idempotent', () => {
+    expect(cleanMarkdown('')).toBe('');
+    expect(cleanMarkdown(' \n\n\t\n')).toBe('');
+    const messy = '# A\ntext  \n\n\n- x\n- y\n```\ncode  \n\n\n```\n## B\n';
+    const once = cleanMarkdown(messy);
+    expect(cleanMarkdown(once)).toBe(once);
+  });
+
+  it('adds print rules only inside @media print or @page', () => {
+    expect(PRINT_CSS).toContain('@media print{');
+    expect(PRINT_CSS).toContain('attr(href)');
+    expect(PRINT_CSS).not.toContain('</style');
+  });
+
   it('survives empty, huge and malformed input', () => {
     expectRobust(markdownToHtml, {
       timeLimitMs: 15_000,
       malformed: ['['.repeat(10_000), '*'.repeat(10_000), '> '.repeat(5000)],
     });
+    expectRobust(cleanMarkdown, { malformed: ['```'.repeat(10_000), '#'.repeat(10_000), '\n'.repeat(100_000)] });
   });
 });
