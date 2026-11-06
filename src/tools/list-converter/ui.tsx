@@ -15,6 +15,7 @@ const SPLITS = [
   { value: 'tab', label: 'Tabs' },
   { value: 'space', label: 'Spaces' },
   { value: 'pipe', label: 'Pipes (|)' },
+  { value: 'url', label: 'Web links' },
 ] as const satisfies ReadonlyArray<{ value: Split; label: string }>;
 
 const JOINS = [
@@ -96,7 +97,13 @@ export default function ListConverterTool() {
       <TwoPane
         controls={
           <>
-            <Select label="Split on" value={split} options={SPLITS} onValue={setSplit} />
+            <Select
+              label="Split on"
+              value={split}
+              options={SPLITS}
+              onValue={setSplit}
+              hint="Detect also separates web links whose separator was deleted, at each link start."
+            />
             <Select label="Join with" value={join} options={JOINS} onValue={setJoin} />
             <Select
               label="Order"

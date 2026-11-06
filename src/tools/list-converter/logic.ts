@@ -1,6 +1,7 @@
 import { ToolInputError } from '../types.ts';
 
-export type Split = 'auto' | 'newline' | 'comma' | 'semicolon' | 'space' | 'tab' | 'pipe';
+export type Split = 'auto' | 'newline' | 'comma' | 'semicolon' | 'space' | 'tab' | 'pipe' | 'url';
+type Delimiter = Exclude<Split, 'auto' | 'url'>;
 export type Join = 'newline' | 'comma' | 'comma-space' | 'semicolon' | 'space' | 'tab' | 'pipe';
 export type Sort = 'none' | 'asc' | 'desc' | 'natural' | 'length' | 'reverse' | 'shuffle';
 export type Case = 'keep' | 'lower' | 'upper';
@@ -23,7 +24,8 @@ export interface ListOptions {
 }
 
 const MAX_INPUT = 5_000_000;
-const SPLIT: Record<Exclude<Split, 'auto'>, RegExp> = {
+const URL_START = /https?:\/\//gi;
+const SPLIT: Record<Delimiter, RegExp> = {
   newline: /\r?\n/,
   comma: /,/,
   semicolon: /;/,
@@ -41,13 +43,27 @@ const JOIN: Record<Join, string> = {
   pipe: '|',
 };
 
-export function detectSplit(text: string): Exclude<Split, 'auto'> {
+export function detectSplit(text: string): Delimiter {
   if (/\r?\n/.test(text.trim())) return 'newline';
   if (text.includes('\t')) return 'tab';
   if (text.includes(';') && !text.includes(',')) return 'semicolon';
   if (text.includes(',')) return 'comma';
   if (text.includes('|')) return 'pipe';
   return 'space';
+}
+
+/**
+ * Splits where a new http or https link starts, including when the separator
+ * between links was deleted. A link whose query contains another link is split
+ * there too: the next scheme is the only signal that remains.
+ */
+export function splitOnUrls(text: string): string[] {
+  const parts = text.split(/(?=https?:\/\/)/i).filter((part) => part !== '');
+  return parts.length > 0 ? parts : [text];
+}
+
+function schemeCount(text: string): number {
+  return text.match(URL_START)?.length ?? 0;
 }
 
 function shuffle<T>(items: T[], random: (n: number) => Uint8Array): T[] {
@@ -70,7 +86,11 @@ export function listConverter(input: string, o: ListOptions = {}): { text: strin
   if (input.length > MAX_INPUT) throw new ToolInputError('Input is too large (maximum 5 MB).');
   if (input === '') return { text: '', count: 0 };
   const split = o.split && o.split !== 'auto' ? o.split : detectSplit(input);
-  let items = input.split(SPLIT[split]);
+  let items = split === 'url' ? splitOnUrls(input) : input.split(SPLIT[split]);
+  // Detect also repairs a list whose separator was deleted, after the normal split.
+  if (!o.split || o.split === 'auto') {
+    items = items.flatMap((item) => (schemeCount(item) >= 2 ? splitOnUrls(item) : [item]));
+  }
   if (o.trim ?? true) items = items.map((s) => s.trim());
   if (o.removeEmpty ?? true) items = items.filter((s) => s !== '');
   if (o.caseMode === 'lower') items = items.map((s) => s.toLocaleLowerCase());

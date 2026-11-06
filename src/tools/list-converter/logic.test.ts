@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { expectRobust } from '../../../tests/helpers/expect-robust.ts';
-import { detectSplit, listConverter } from './logic.ts';
+import { detectSplit, listConverter, splitOnUrls } from './logic.ts';
 
 const run = (input: string, o: Parameters<typeof listConverter>[1] = {}) => listConverter(input, o).text;
 
@@ -39,6 +39,31 @@ describe('listConverter', () => {
     }).split('\n');
     expect([...out].sort()).toEqual([...items].sort());
     expect(out).not.toEqual(items);
+  });
+
+  it('splits links where the separator was deleted', () => {
+    const stuck = 'https://example.com/ahttps://example.com/bhttp://example.com/c';
+    expect(splitOnUrls(stuck)).toEqual(['https://example.com/a', 'https://example.com/b', 'http://example.com/c']);
+    expect(run(stuck, { join: 'newline' })).toBe('https://example.com/a\nhttps://example.com/b\nhttp://example.com/c');
+    expect(run('HTTPS://Example.com/ahttps://example.com/b', { join: 'newline' })).toBe(
+      'HTTPS://Example.com/a\nhttps://example.com/b',
+    );
+    expect(
+      run('https://example.com/ahttps://example.com/b\nhttps://example.com/chttps://example.com/d', {
+        join: 'newline',
+      }),
+    ).toBe('https://example.com/a\nhttps://example.com/b\nhttps://example.com/c\nhttps://example.com/d');
+    expect(run('https://example.com/only', { join: 'newline' })).toBe('https://example.com/only');
+    expect(run('apple, banana', { join: 'newline' })).toBe('apple\nbanana');
+  });
+
+  it('splits on web links even when another separator is present', () => {
+    expect(run('https://example.com/a https://example.com/b', { split: 'url', join: 'newline' })).toBe(
+      'https://example.com/a\nhttps://example.com/b',
+    );
+    expect(run('see https://example.com/ahttps://example.com/b', { split: 'url', join: 'newline' })).toBe(
+      'see\nhttps://example.com/a\nhttps://example.com/b',
+    );
   });
 
   it('counts the items', () => {
