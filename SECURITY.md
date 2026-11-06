@@ -18,6 +18,6 @@ Images are `ghcr.io/xeptor6569/xt-tools`. `latest` is the newest release. `X.Y` 
 
 Tool input stays in the browser, except for a network tool, which sends the query you typed to the hosts named on its page, and only after you run it. Those requests are credential-free GETs and do not follow a redirect off the allowlist.
 
-Offline tools make no requests except for this site's own files. localStorage holds pins, collections, the theme, and per-tool state you turned on. Sensitive tools do not persist or share their input.
+Offline tools make no requests except for this site's own files. localStorage holds pins, collections, recent tools, the theme, and per-tool state you turned on. Sensitive tools do not persist or share their input.
 
 The [threat model](docs/threat-model.md) is the longer version of what an operator can and cannot guarantee.

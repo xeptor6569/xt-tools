@@ -29,7 +29,7 @@ test.describe('persistence and sharing (json-format)', () => {
     await page.goto('tools/json-format/');
     await waitForHydration(page);
     await page.locator('[data-xt="input"]').fill('{"a":1}');
-    expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
+    expect(await page.evaluate(() => Object.keys(localStorage).filter((k) => k.includes('json-format')))).toEqual([]);
 
     await page.getByRole('switch', { name: 'Remember on this device' }).check();
     await page.getByRole('switch', { name: 'Sort keys' }).check();

@@ -68,6 +68,28 @@ test('search matches a title, a description, a tag and a keyword', async ({ page
   await expectAccessible(page);
 });
 
+test('slash focuses search unless the cursor is in a field', async ({ page }) => {
+  await page.goto('tools/slugify/');
+  await waitForHydration(page);
+  const input = page.locator('[data-xt="input"]');
+  await input.fill('already');
+  await input.press('/');
+  await expect(input).toHaveValue('already/');
+  await expect(page.getByRole('combobox', { name: 'Search tools' })).not.toBeFocused();
+});
+
+test('recent tools stay on this device, newest first', async ({ page }) => {
+  await page.goto('tools/slugify/');
+  await page.goto('tools/uuid-generator/');
+  await page.goto('');
+  const recent = page.locator('[data-xt="recent"]');
+  await expect(recent.getByRole('link').nth(0)).toContainText('UUID generator');
+  await expect(recent.getByRole('link').nth(1)).toContainText('Slugify');
+  await page.reload();
+  await expect(page.locator('[data-xt="recent"]').getByRole('link').nth(0)).toContainText('UUID generator');
+  await expectAccessible(page);
+});
+
 test('unknown pages return the custom 404', async ({ page, guard }) => {
   guard.allowNotFound();
   const response = await page.goto('this-page-does-not-exist/');
@@ -168,9 +190,11 @@ test('settings page explains that offline mode needs HTTPS', async ({ page }) =>
   await expectAccessible(page);
 });
 
-test('clear all local data removes pins and the theme', async ({ page }) => {
+test('clear all local data removes pins, recents and the theme', async ({ page }) => {
+  await page.goto('tools/slugify/');
   await page.goto('');
   await expect(page.locator('html')).toHaveAttribute('data-xt-pins', 'ready');
+  await expect(page.locator('[data-xt="recent"]').getByRole('link', { name: /^Slugify/ })).toBeVisible();
   await page.locator('[data-xt="tool-grid"] button[data-xt-pin="tool:slugify"]').click();
   await expect(page.locator('[data-xt="pinned"]').getByRole('link', { name: 'Slugify' })).toBeVisible();
   await page.goto('settings/');
@@ -185,6 +209,7 @@ test('clear all local data removes pins and the theme', async ({ page }) => {
   await expect(page.locator('html')).toHaveAttribute('data-xt-pins', 'ready');
   await expect(page.locator('html')).not.toHaveAttribute('data-theme', /.*/);
   await expect(page.locator('[data-xt="pinned"]').getByRole('link')).toHaveCount(0);
+  await expect(page.locator('[data-xt="recent"]')).toBeHidden();
 });
 
 test('CSP meta tag is present on every page type', async ({ page }) => {

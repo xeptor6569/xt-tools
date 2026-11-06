@@ -70,7 +70,7 @@ export default tseslint.config(
   ...astro.configs['flat/recommended'],
   {
     files: ['**/*.{ts,tsx,astro}'],
-    languageOptions: { globals: { ...globals.browser, __XT_VERSION__: 'readonly' } },
+    languageOptions: { globals: { ...globals.browser, __XT_VERSION__: 'readonly', __XT_BUILD_DATE__: 'readonly' } },
     rules: {
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       '@typescript-eslint/consistent-type-imports': ['error', { fixStyle: 'inline-type-imports' }],

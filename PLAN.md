@@ -411,6 +411,7 @@ Build this in Phase 1, before the pilot tools. Components live in `src/component
   - Category chips that jump to that category on the page. The category heading links to its page.
   - Curated groups inside categories that define them (Text, Converter, Development).
   - Pinned tools, groups, categories and personal collections shown first, when present.
+  - Recently opened tools, stored on this device (newest first, up to 12).
   - Personal collections, with one level of sub-collections, stored on this device.
 - **Search:**
   - A search bar in the header on every page, including the 404 page.
@@ -495,7 +496,7 @@ frame-ancestors 'self';          # header only; meta tags can't set it
 5. Don't use Shiki, whose inline styles CSP blocks. Use a class-based highlighter (Prism or highlight.js) for code-to-image.
 6. Don't use `upgrade-insecure-requests`, because it breaks plain-HTTP LAN deployments.
 7. Libraries that need `eval` or `new Function` (Ajv, for example), inject `<style>` tags, or load scripts from `blob:` must be reconfigured or replaced. Adding a new source to any directive needs user approval.
-8. Defer evaluating Trusted Types (`require-trusted-types-for 'script'`) to Phase 3.
+8. Trusted Types (`require-trusted-types-for 'script'`) was evaluated in Phase 3 and left off. The directive also covers HTML sinks such as `innerHTML`. DOMPurify writes those sinks, and allowing it needs a named `trusted-types` policy, which is a CSP change. A policy that returns the string unchanged would not add protection. First-party code already cannot call `eval` or `new Function`.
 
 ### 9.4 Secure-context matrix
 
@@ -1258,7 +1259,7 @@ Every phase ends with the full check set from [13.3](#133-commands-per-phase) pa
 - PWA ([section 10](#10-offline-and-pwa)): `gen-sw`, the manifest, icons, the update prompt and `offline.spec.ts`.
 - Search with Ctrl/Cmd+K and `/`, favorites, recents and the "New" badge.
 - Settings: download everything, persistent storage, clear all local data and the storage estimate.
-- Site banner for secure contexts. Evaluate Trusted Types.
+- Site banner for secure contexts. Trusted Types was evaluated and left off (see [9.3](#93-content-security-policy)).
 - A full accessibility pass across every page.
 
 ### Phase 4: v1.0 release
@@ -1323,3 +1324,4 @@ Every phase ends with the full check set from [13.3](#133-commands-per-phase) pa
 | 2026-10-24 | 4     | **v1.0 release machinery, not yet tagged.** `release.yml` publishes multi-arch images to GHCR (`edge` and `sha-<short>` from `main`; `X.Y.Z`, `X.Y` and `latest` from a `v*` tag) with provenance and an SBOM. A `v*` tag also attaches the root-path site zip, `SHA256SUMS` and `sbom.spdx.json` to the GitHub release. The zip includes `server-configs/` plus the CSP snippets generated for that build. `scheduled.yml` rebuilds `edge` every Monday and runs Trivy; GitHub disables that schedule after 60 days without repository activity. `compose.https.yaml` and `deploy/Caddyfile` add Caddy (`make up-https`, `make caddy-ca` for a LAN `tls internal` CA). Docs: README quick start, `SECURITY.md`, `docs/threat-model.md`, `docs/deployment.md` (including the secure-context matrix), `docs/reverse-proxy.md`, `docs/air-gap.md`. **Decisions:** release and the weekly rebuild run on `ubuntu-latest` because the self-hosted runners are amd64 only and multi-arch needs QEMU. Caddy is not `cap_drop: ALL`, because binding 443 needs `NET_BIND_SERVICE`. The first GHCR push creates a private package; it has to be set public once. `v1.0.0` is not tagged yet. Recents, Trusted Types and the full accessibility pass were still open at the end of Phase 3. |
 
 | 2026-11-01 | 3     | **Markdown editor: reset, clear and print-friendly output.** Added Tidy up (`cleanMarkdown`: line endings, invisible characters, non-breaking spaces, trailing whitespace with two-space hard breaks kept, blank-line collapsing, blank lines around headings, fenced code untouched, idempotent), Reset (sample text), Clear, and a one-step Undo, since programmatic edits drop the textarea's native undo. A "Print-friendly layout" toggle (on by default) appends `PRINT_CSS` to Print and Download .html: black on white serif, no page breaks inside code, tables or images, repeated table headers and link addresses printed after links. `PREVIEW_CSS` is unchanged, so no CSP hash changed. |
+| 2026-11-06 | 3     | **Phase 3 done: recents, build-dated New badge, Trusted Types evaluation and accessibility pass.** Recents (`recent`, newest first, cap 12) are recorded when a tool page loads (`ToolLayout.astro` → `recents-store.ts`) and rendered on the home page above personal collections, with unknown or removed tool IDs pruned against the catalog and cleared by Settings → Clear all local data. The "New" badge (`src/lib/new-badge.ts`) compares `tool.added` against the build's calendar date (`__XT_BUILD_DATE__`) instead of the visitor's clock. **Trusted Types stays off:** `require-trusted-types-for 'script'` also covers HTML sinks such as `innerHTML`; DOMPurify (used by `SandboxedPreview`) writes those sinks, and allowing it requires a named `trusted-types` policy in the CSP, whereas a pass-through policy adds no protection and first-party code already bans `eval`, `new Function` and `innerHTML` assignment via ESLint. **Accessibility:** shared kit buttons use a 44px minimum height (`min-h-11`), `FileDropZone` always links its file input `aria-describedby` to the rendered size-limit hint, and all 193 pages pass axe in both light and dark themes. **Verified:** strict validator (175 tools), licenses (66 packages), typecheck, lint, 1595 unit tests across 188 files, builds at `/` and `/tools/` (scan-dist clean, largest page 84.1 KB gzip), and 598 passing end-to-end tests (8 skipped). |
