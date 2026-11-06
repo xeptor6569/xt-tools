@@ -4,7 +4,7 @@
 
 xt-tools is a self-hostable collection of privacy-first developer and everyday tools that run in your browser. There's no tracking and no server-side processing. A few tools look something up on the network, and only after you run them; every other tool stays on your device. Host it with one Docker command, or put the static files on any web server.
 
-The lightweight catalog is built (about 175 tools). Heavy tools (Argon2, PGP, PDF, video, SQLite) are still to come. Images are published to GHCR when a `v*` tag or `main` is pushed. Until the first release is tagged, build from source with `make build up`. The plan is in **[PLAN.md](PLAN.md)**.
+This release is v1.0.0: the lightweight catalog (175 tools), offline use, and search. Heavy tools (Argon2, PGP, PDF, video, SQLite) and the privacy tools are still to come. Images are on GHCR. `latest` is this release, and `edge` follows `main`. From a checkout, `make build up` serves that tree. The plan is in **[PLAN.md](PLAN.md)**.
 
 ## Principles
 
@@ -16,7 +16,7 @@ The lightweight catalog is built (about 175 tools). Heavy tools (Argon2, PGP, PD
 
 ## What's included
 
-About 185 tools in 13 categories:
+The catalog has 186 pages in 13 categories. This release ships the 175 that do not need WASM. Argon2, PGP, PDF signature checks, PDF tools, video to GIF and the SQLite browser are Phase 5. The privacy tools are Phase 6.
 
 | Category         | Examples                                                                                                                                                 |
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -81,6 +81,10 @@ make up-https    # HTTPS via Caddy (Let's Encrypt, or an internal CA for LANs)
 - **Any static host:** a `v*` release includes a zip of the built site and [server-configs](server-configs/README.md) for nginx, Apache and Caddy. The generated CSP for that build is inside the zip.
 
 Image tags: `latest` is the newest release, `X.Y` and `X.Y.Z` pin a version, and `edge` follows `main`.
+
+## Datasets
+
+Word lists, MAC vendors and the other bundled files live in `public/data/`. The site only loads them from its own origin. Refresh one from a connected machine with `node scripts/refresh-data.ts <dataset>`, then commit the new file. Sources, licenses and checksums are in [docs/datasets.md](docs/datasets.md).
 
 ## HTTPS and secure contexts
 
