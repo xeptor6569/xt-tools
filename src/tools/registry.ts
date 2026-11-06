@@ -1,7 +1,10 @@
 // Auto-discovers every tool's metadata at build time. There is no central list.
 import { categories } from '../categories.ts';
+import { isNew, NEW_FOR_DAYS } from '../lib/new-badge.ts';
 import type { ToolMeta } from './types.ts';
 import { validateMeta } from './validate-meta.ts';
+
+export { isNew, NEW_FOR_DAYS };
 
 const modules = import.meta.glob<ToolMeta>('./*/meta.ts', { eager: true, import: 'default' });
 
@@ -15,9 +18,6 @@ const tools: ToolMeta[] = Object.entries(modules).map(([path, meta]) => {
 });
 
 tools.sort((a, b) => a.name.localeCompare(b.name, 'en'));
-
-/** How long a tool shows the "New" badge. */
-export const NEW_FOR_DAYS = 30;
 
 export function allTools(): readonly ToolMeta[] {
   return tools;
@@ -33,9 +33,4 @@ export function toolsInCategory(categoryId: string): ToolMeta[] {
 
 export function toolsByCategory() {
   return categories.map((category) => ({ category, tools: toolsInCategory(category.id) }));
-}
-
-export function isNew(tool: ToolMeta, now = new Date()): boolean {
-  const ageMs = now.getTime() - Date.parse(tool.added);
-  return ageMs >= 0 && ageMs <= NEW_FOR_DAYS * 24 * 3600 * 1000;
 }

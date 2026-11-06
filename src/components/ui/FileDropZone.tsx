@@ -75,7 +75,7 @@ export default function FileDropZone({
             accept_(e.currentTarget.files);
             e.currentTarget.value = '';
           }}
-          aria-describedby={hint ? `${id}-hint` : undefined}
+          aria-describedby={`${id}-hint`}
           class="max-w-full text-sm file:mr-3 file:rounded-md file:border file:border-border file:bg-surface file:px-3 file:py-1.5 file:text-fg"
           data-xt="file-input"
         />

@@ -39,13 +39,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <h2 id="data-heading" class="text-xl font-semibold">
       Local data
     </h2>
-    <p class="text-sm text-muted">Pins, collections, theme and saved tool state are stored on this device.</p>
+    <p class="text-sm text-muted">
+      Pins, collections, recent tools, theme and saved tool state are stored on this device.
+    </p>
     <button type="button" class={buttonClass()} data-xt="clear">
       Clear all local data
     </button>
     <div data-xt="clear-confirm" hidden class="flex flex-col items-start gap-3">
       <p id="clear-warning" class="text-sm text-muted">
-        This removes pins, collections, theme, saved tool state, cached pages and offline files from this browser.
+        This removes pins, collections, recent tools, theme, saved tool state, cached pages and offline files from this
+        browser.
       </p>
       <button type="button" class={buttonClass('primary')} data-xt="clear-go" aria-describedby="clear-warning">
         Delete data
