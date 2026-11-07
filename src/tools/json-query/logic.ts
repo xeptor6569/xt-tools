@@ -10,6 +10,8 @@ const MAX_PATH = 10_000;
 const MAX_OUTPUT = 2_000_000;
 const PREVIEW = 120;
 
+export type QueryEngine = 'jsonpath' | 'jq';
+
 export interface QueryMatch {
   /** Normalized JSONPath (RFC 9535 style), e.g. $['store']['book'][0]. */
   path: string;
@@ -20,7 +22,7 @@ export interface QueryMatch {
 }
 
 export interface QueryResult {
-  /** Pretty-printed JSON array of the matched values. */
+  /** Pretty-printed JSON array (or jq output) of the matched values. */
   text: string;
   matches: QueryMatch[];
   /** True when more matches exist than were collected. */
@@ -133,5 +135,94 @@ export function jsonQuery(input: string, expression: string, maxResults: number 
     }
   }
   const text = values.length === 0 ? '[]' : `[\n${values.map((v) => `  ${v.replace(/\n/g, '\n  ')}`).join(',\n')}\n]`;
+  return { text, matches, truncated };
+}
+
+interface JqRuntime {
+  raw: (jsonText: string, filter: string, flags?: string[]) => string;
+  json: (jsonValue: unknown, filter: string) => unknown;
+}
+
+let jqPromise: Promise<JqRuntime> | undefined;
+
+async function getJqRuntime(wasmUrl?: string): Promise<JqRuntime> {
+  if (!jqPromise) {
+    jqPromise = (async () => {
+      const mod = (await import('jq-web')).default as unknown;
+      if (typeof mod === 'function') {
+        return await (mod as (arg?: { locateFile?: () => string }) => Promise<JqRuntime>)(
+          wasmUrl ? { locateFile: () => wasmUrl } : undefined,
+        );
+      }
+      return await (mod as Promise<JqRuntime>);
+    })();
+  }
+  return await jqPromise;
+}
+
+/**
+ * Evaluates a jq filter expression against a JSON document using jq compiled to WebAssembly.
+ */
+export async function jqQuery(
+  input: string,
+  filter: string,
+  maxResults: number = DEFAULT_MAX_RESULTS,
+  wasmUrl?: string,
+): Promise<QueryResult> {
+  if (input.length > MAX_INPUT) throw new ToolInputError('The JSON is too large (maximum 10 MB).');
+  if (filter.length > MAX_PATH) throw new ToolInputError('The jq filter is too long.');
+  if (input.trim() === '') return { text: '', matches: [], truncated: false };
+  parseDocument(input);
+  const expr = filter.trim();
+  if (expr === '') throw new ToolInputError('Enter a jq filter, for example .store.book[].author or .');
+  const limit = Math.max(1, Math.floor(maxResults) || DEFAULT_MAX_RESULTS);
+
+  const jq = await getJqRuntime(wasmUrl);
+  let rawOut: string;
+  try {
+    rawOut = jq.raw(input, expr, ['-c']);
+  } catch (error) {
+    const msg = error instanceof Error ? error.message.replace(/^Non-zero exit code: \d+\s*/i, '') : String(error);
+    throw new ToolInputError(`jq error: ${msg || 'filter failed.'}`);
+  }
+
+  const lines = rawOut
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l !== '');
+
+  const values: string[] = [];
+  const matches: QueryMatch[] = [];
+  let size = 0;
+  let truncated = false;
+
+  for (const [idx, line] of lines.entries()) {
+    if (matches.length >= limit || size > MAX_OUTPUT) {
+      truncated = true;
+      break;
+    }
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(line);
+    } catch {
+      parsed = line;
+    }
+    const pretty = JSON.stringify(parsed, null, 2) ?? 'null';
+    size += pretty.length;
+    values.push(pretty);
+    const compact = line.length > PREVIEW ? `${line.slice(0, PREVIEW)}…` : line;
+    matches.push({
+      path: `[${idx}]`,
+      pointer: `/${idx}`,
+      preview: compact,
+    });
+  }
+
+  const text =
+    values.length === 0
+      ? '[]'
+      : values.length === 1
+        ? values[0]!
+        : `[\n${values.map((v) => `  ${v.replace(/\n/g, '\n  ')}`).join(',\n')}\n]`;
   return { text, matches, truncated };
 }

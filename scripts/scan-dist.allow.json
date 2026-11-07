@@ -92,6 +92,30 @@
     {
       "prefix": "https://rolldown.rs/in-depth/bundling-cjs",
       "reason": "Text of Rolldown's CJS interop error, thrown only if bundled code calls require() and the browser has no require. Nothing is fetched."
+    },
+    {
+      "prefix": "https://emscripten.org/docs/compiling/Dynamic-Linking.html",
+      "reason": "Documentation URL in an Emscripten dynamic-linking error message inside @ffmpeg/core (video-to-gif); never fetched."
+    },
+    {
+      "prefix": "https://github.com/Hopding/pdf-lib",
+      "reason": "Repository link in pdf-lib's default producer metadata and error message strings (pdf-tools, pdf-image-extractor, pdf-to-images); never fetched."
+    },
+    {
+      "prefix": "http://www.xfa.org/schema/",
+      "reason": "XFA XML namespace URI strings compared inside pdf.js (pdf-to-images); never fetched."
+    },
+    {
+      "prefix": "https://foo.bar",
+      "reason": "Synthetic base URL passed to new URL(rel, 'https://foo.bar') inside pdf.js to parse relative URLs without fetching."
+    },
+    {
+      "prefix": "https://openpgpjs.org",
+      "reason": "Default armor comment string inside openpgp (pgp worker); never fetched."
+    },
+    {
+      "prefix": "https://www.npmjs.com/package/hash-wasm",
+      "reason": "Preserved @license comment in hash-wasm (password-hash worker); never fetched."
     }
   ]
 }

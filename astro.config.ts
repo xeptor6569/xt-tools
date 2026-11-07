@@ -61,10 +61,25 @@ export default defineConfig({
     },
   },
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [
+      tailwindcss(),
+      {
+        name: 'xt-jq-web-factory',
+        transform(code, id) {
+          if (!id.replace(/\\/g, '/').endsWith('/jq-web/jq.js')) return null;
+          return code.replace(
+            /jq\s*=\s*jq\(\)\.then\(\s*module\s*=>\s*\{\s*return\s*\{\s*json:\s*module\.json,\s*raw:\s*module\.raw\s*\};\s*\}\s*\);/,
+            'const _jqFactory = jq; jq = (moduleArg) => _jqFactory(moduleArg).then(module => ({ json: module.json, raw: module.raw }));',
+          );
+        },
+      },
+    ],
     define: {
       __XT_VERSION__: JSON.stringify(version),
       __XT_BUILD_DATE__: JSON.stringify(buildDate),
+    },
+    worker: {
+      format: 'es',
     },
     server: {
       watch: process.env.WATCH_POLL === '1' ? { usePolling: true, interval: 300 } : {},

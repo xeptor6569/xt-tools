@@ -4,7 +4,7 @@
 
 xt-tools is a self-hostable collection of privacy-first developer and everyday tools that run in your browser. There's no tracking and no server-side processing. A few tools look something up on the network, and only after you run them; every other tool stays on your device. Host it with one Docker command, or put the static files on any web server.
 
-This release is v1.0.0: the lightweight catalog (175 tools), offline use, and search. Heavy tools (Argon2, PGP, PDF, video, SQLite) and the privacy tools are still to come. Images are on GHCR. `latest` is this release, and `edge` follows `main`. From a checkout, `make build up` serves that tree. The plan is in **[PLAN.md](PLAN.md)**.
+This tree includes Phase 5 (183 tools): the lightweight catalog, the WASM and heavy tools (Argon2/scrypt/PBKDF2, OpenPGP, PDF signature verification, PDF merge/split/rotate/compress, PDF image extraction, PDF to images, video to GIF via ffmpeg.wasm, SQLite browser, jq WASM, and OxiPNG/MozJPEG/libwebp/libavif image codecs), offline use, and search. The three Phase 6 privacy tools are still to come. Images are on GHCR. `latest` is the latest release, and `edge` follows `main`. From a checkout, `make build up` serves that tree. The plan is in **[PLAN.md](PLAN.md)**.
 
 ## Principles
 
@@ -16,7 +16,7 @@ This release is v1.0.0: the lightweight catalog (175 tools), offline use, and se
 
 ## What's included
 
-The catalog has 186 pages in 13 categories. This release ships the 175 that do not need WASM. Argon2, PGP, PDF signature checks, PDF tools, video to GIF and the SQLite browser are Phase 5. The privacy tools are Phase 6.
+The catalog has 186 pages in 13 categories. 183 ship today, including the Phase 5 WASM and worker tools (Argon2, OpenPGP, PDF signature checks, PDF tools, video to GIF, SQLite browser, jq and WASM image codecs). The three privacy tools are Phase 6.
 
 | Category         | Examples                                                                                                                                                 |
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |

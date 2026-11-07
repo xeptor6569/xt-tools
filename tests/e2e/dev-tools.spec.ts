@@ -75,3 +75,36 @@ test('docker-compose-builder edits services, imports YAML and downloads the file
   expect(file.suggestedFilename()).toBe('compose.yaml');
   expect(file.url()).toMatch(/^blob:/);
 });
+
+test('json-query runs jq in WebAssembly inside its worker', async ({ page }) => {
+  await page.goto('tools/json-query/');
+  await waitForHydration(page);
+  await page.getByLabel('Engine').selectOption('jq');
+  const output = page.locator('[data-xt="output"]').first();
+  await expect(output).toHaveValue(/Nigel Rees/, { timeout: 15_000 });
+});
+
+test('pdf-tools and pdf-to-images process sample PDFs in workers', async ({ page }) => {
+  await page.goto('tools/pdf-tools/');
+  await waitForHydration(page);
+  await page.getByRole('button', { name: 'Load 5-page sample PDF' }).click();
+  await expect(page.locator('[data-xt="output"]').first()).toHaveValue(/Extracted 3 of 5 page\(s\)/, {
+    timeout: 15_000,
+  });
+
+  await page.goto('tools/pdf-to-images/');
+  await waitForHydration(page);
+  await page.getByRole('button', { name: 'Load 2-page sample PDF' }).click();
+  await expect(page.locator('[data-xt="output"]').first()).toHaveValue(/Rendered 2 of 2 page\(s\) at 144 DPI/, {
+    timeout: 15_000,
+  });
+});
+
+test('video-to-gif synthesizes a test-pattern GIF with ffmpeg.wasm', async ({ page }) => {
+  await page.goto('tools/video-to-gif/');
+  await waitForHydration(page);
+  await page.getByRole('button', { name: /Generate sample test-pattern GIF/ }).click();
+  await expect(page.locator('[data-xt="output"]').first()).toHaveValue(/Created 1 file\(s\)/, {
+    timeout: 30_000,
+  });
+});

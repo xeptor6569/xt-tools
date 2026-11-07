@@ -9,7 +9,7 @@ import { useDebounced } from '../../components/ui/useDebounced.ts';
 import { useWorker } from '../../components/ui/useWorker.ts';
 import { errorMessage } from '../../lib/run-tool.ts';
 import { DEFAULT_MAX_RESULTS, MAX_RESULT_OPTIONS } from './limits.ts';
-import type { QueryResult } from './logic.ts';
+import type { QueryEngine, QueryResult } from './logic.ts';
 import meta from './meta.ts';
 
 const createWorker = () => new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
@@ -36,13 +36,26 @@ const STORE = JSON.stringify(
   2,
 );
 
-const SAMPLE_QUERIES = [
+const JSONPATH_SAMPLES = [
   { path: '$..author', label: 'All authors' },
   { path: '$.store.book[?(@.price < 10)]', label: 'Books under 10' },
   { path: '$..book[-1:]', label: 'Last book' },
   { path: '$..book[?(@.isbn)].title', label: 'Titles with an ISBN' },
   { path: '$.store..price', label: 'All prices' },
   { path: '$..*', label: 'Everything' },
+];
+
+const JQ_SAMPLES = [
+  { path: '.store.book[].author', label: 'All authors' },
+  { path: '.store.book | map(select(.price < 10))', label: 'Books under 10' },
+  { path: '[.store.book[].price] | add', label: 'Sum of book prices' },
+  { path: '.store.book | sort_by(.price) | .[0].title', label: 'Cheapest title' },
+  { path: '.', label: 'Identity' },
+];
+
+const ENGINES: ReadonlyArray<{ value: QueryEngine; label: string }> = [
+  { value: 'jsonpath', label: 'JSONPath' },
+  { value: 'jq', label: 'jq (WASM)' },
 ];
 
 /** Rows rendered in the paths table; the JSON output holds every collected match. */
@@ -52,21 +65,30 @@ const MAX_OPTIONS = MAX_RESULT_OPTIONS.map((n) => ({ value: String(n), label: n.
 
 export default function JsonQueryTool() {
   const call = useWorker(createWorker);
+  const [engine, setEngine] = useState<QueryEngine>('jsonpath');
   const [input, setInput] = useState(STORE);
   const [query, setQuery] = useState('$..*');
   const [max, setMax] = useState(String(DEFAULT_MAX_RESULTS));
   const [result, setResult] = useState<QueryResult>();
   const [error, setError] = useState<string>();
   const [busy, setBusy] = useState(false);
+
+  const onEngineChange = (next: QueryEngine) => {
+    setEngine(next);
+    if (next === 'jq' && query.startsWith('$')) setQuery('.store.book[].author');
+    else if (next === 'jsonpath' && !query.startsWith('$')) setQuery('$..*');
+  };
+
   const args = useDebounced(
-    useMemo(() => ({ input, query, max: Number(max) }), [input, query, max]),
+    useMemo(() => ({ engine, input, query, max: Number(max) }), [engine, input, query, max]),
     150,
   );
 
   useEffect(() => {
     let current = true;
     setBusy(true);
-    call<QueryResult>('jsonQuery', args.input, args.query, args.max)
+    const method = args.engine === 'jq' ? 'jqQuery' : 'jsonQuery';
+    call<QueryResult>(method, args.input, args.query, args.max)
       .then(
         (value) => {
           if (!current) return;
@@ -89,26 +111,32 @@ export default function JsonQueryTool() {
 
   const count = result?.matches.length ?? 0;
   const empty = args.input.trim() === '';
+  const samples = engine === 'jq' ? JQ_SAMPLES : JSONPATH_SAMPLES;
 
   return (
     <div class="flex flex-col gap-4">
       <div class="flex flex-col gap-2">
         <div class="flex flex-wrap items-end gap-4">
+          <Select label="Engine" value={engine} options={ENGINES} onValue={onEngineChange} />
           <div class="min-w-64 flex-1">
             <Input
-              label="JSONPath expression"
+              label={engine === 'jq' ? 'jq filter' : 'JSONPath expression'}
               value={query}
               onValue={setQuery}
-              placeholder="$.store.book[*].author"
+              placeholder={engine === 'jq' ? '.store.book[].author' : '$.store.book[*].author'}
               class="w-full font-mono"
-              hint="Filters such as [?(@.price < 10)] run in a safe evaluator; no code is executed."
+              hint={
+                engine === 'jq'
+                  ? 'Evaluated with jq in WebAssembly inside a worker.'
+                  : 'Filters such as [?(@.price < 10)] run in a safe evaluator; no code is executed.'
+              }
             />
           </div>
           <Select label="Max results" value={max} options={MAX_OPTIONS} onValue={setMax} />
         </div>
         <div class="flex flex-wrap items-center gap-2 text-sm">
           <span class="text-muted">Sample queries:</span>
-          {SAMPLE_QUERIES.map((q) => (
+          {samples.map((q) => (
             <button
               key={q.path}
               type="button"
@@ -134,7 +162,7 @@ export default function JsonQueryTool() {
         input={input}
         onInput={setInput}
         inputPlaceholder='{"store": {"book": []}}'
-        outputLabel="Matches (JSON array)"
+        outputLabel={engine === 'jq' ? 'jq result' : 'Matches (JSON array)'}
         output={result?.text ?? ''}
         error={error}
         busy={busy}
@@ -154,7 +182,7 @@ export default function JsonQueryTool() {
             <ResultTable
               caption="Matched paths and values"
               columns={[
-                { key: 'path', label: 'JSONPath', mono: true },
+                { key: 'path', label: engine === 'jq' ? 'Index' : 'JSONPath', mono: true },
                 { key: 'pointer', label: 'JSON Pointer', mono: true },
                 { key: 'preview', label: 'Value', mono: true },
               ]}

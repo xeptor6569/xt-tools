@@ -4,6 +4,7 @@ import FileDropZone from '../../components/ui/FileDropZone.tsx';
 import Input from '../../components/ui/Input.tsx';
 import Select from '../../components/ui/Select.tsx';
 import TwoPane from '../../components/ui/TwoPane.tsx';
+import { useWorker } from '../../components/ui/useWorker.ts';
 import { loadImageElement } from '../../lib/image-file.ts';
 import { runTool } from '../../lib/run-tool.ts';
 import {
@@ -18,33 +19,24 @@ import {
 } from './logic.ts';
 import meta from './meta.ts';
 
+const createWorker = () => new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
+
 const FORMATS = [
-  { value: 'png', label: 'PNG' },
-  { value: 'jpeg', label: 'JPEG' },
-  { value: 'webp', label: 'WebP' },
+  { value: 'png', label: 'PNG (OxiPNG WASM)' },
+  { value: 'jpeg', label: 'JPEG (MozJPEG WASM)' },
+  { value: 'webp', label: 'WebP (libwebp WASM)' },
+  { value: 'avif', label: 'AVIF (libavif WASM)' },
 ] as const satisfies ReadonlyArray<{ value: ImageFormat; label: string }>;
 
-async function convertFile(file: File, spec: ImageSpec): Promise<{ summary: string; blob: Blob }> {
-  const image = await loadImageElement(file);
-  const fitted = parseImageSpec(
-    formatImageSpec({ ...spec, sourceW: image.naturalWidth, sourceH: image.naturalHeight }),
-  );
-  const fit = fitImage(image.naturalWidth, image.naturalHeight, fitted.maxWidth, fitted.crop);
-  const canvas = document.createElement('canvas');
-  canvas.width = fit.dw;
-  canvas.height = fit.dh;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) throw new Error('This browser cannot draw images.');
-  ctx.drawImage(image, fit.sx, fit.sy, fit.sw, fit.sh, 0, 0, fit.dw, fit.dh);
-  const mime = mimeFor(fitted.format);
-  const blob = await new Promise<Blob | null>((resolve) => {
-    canvas.toBlob(resolve, mime, fitted.format === 'png' ? undefined : fitted.quality);
-  });
-  if (!blob) throw new Error('Could not encode that image. Try PNG.');
-  return { summary: `${describeImage(fitted)}\n${blob.size} bytes`, blob };
-}
+const CODEC_LABELS: Record<ImageFormat, string> = {
+  png: 'OxiPNG WASM',
+  jpeg: 'MozJPEG WASM',
+  webp: 'libwebp WASM',
+  avif: 'libavif WASM',
+};
 
 export default function ImageConverterTool() {
+  const call = useWorker(createWorker, { timeoutMs: 60_000 });
   const [spec, setSpec] = useState('1600 900 800 png 0.92');
   const [maxDraft, setMaxDraft] = useState('800');
   const [qualityDraft, setQualityDraft] = useState('0.92');
@@ -74,7 +66,37 @@ export default function ImageConverterTool() {
     let current = true;
     setBusy(true);
     setFileError(undefined);
-    void convertFile(file, parsed).then(
+
+    const run = async (): Promise<{ summary: string; blob: Blob }> => {
+      const image = await loadImageElement(file);
+      const fitted = parseImageSpec(
+        formatImageSpec({ ...parsed, sourceW: image.naturalWidth, sourceH: image.naturalHeight }),
+      );
+      const fit = fitImage(image.naturalWidth, image.naturalHeight, fitted.maxWidth, fitted.crop);
+      const canvas = document.createElement('canvas');
+      canvas.width = fit.dw;
+      canvas.height = fit.dh;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('This browser cannot draw images.');
+      ctx.drawImage(image, fit.sx, fit.sy, fit.sw, fit.sh, 0, 0, fit.dw, fit.dh);
+      const imgData = ctx.getImageData(0, 0, fit.dw, fit.dh);
+      const encodedBytes = await call<Uint8Array>(
+        'encodeRgba',
+        imgData.data,
+        fit.dw,
+        fit.dh,
+        fitted.format,
+        fitted.quality,
+      );
+      const mime = mimeFor(fitted.format);
+      const outBlob = new Blob([new Uint8Array(encodedBytes)], { type: mime });
+      return {
+        summary: `${describeImage(fitted)} (${CODEC_LABELS[fitted.format]})\n${outBlob.size.toLocaleString('en')} bytes`,
+        blob: outBlob,
+      };
+    };
+
+    void run().then(
       (result) => {
         if (!current) return;
         setFileText(result.summary);
@@ -96,7 +118,7 @@ export default function ImageConverterTool() {
     return () => {
       current = false;
     };
-  }, [file, parsed]);
+  }, [file, parsed, call]);
 
   useEffect(() => {
     return () => {
@@ -119,9 +141,9 @@ export default function ImageConverterTool() {
   return (
     <div class="flex flex-col gap-4">
       <p class="text-sm text-muted">
-        Settings line: source width, source height, max width, png/jpeg/webp, quality, then an optional crop x y width
-        height. Example: 1600 900 800 jpeg 0.8. Drop an image to resize it. The picture is not enlarged past its own
-        size.
+        Settings line: source width, source height, max width, png/jpeg/webp/avif, quality, then an optional crop x y
+        width height. Example: 1600 900 800 jpeg 0.8. Drop an image to resize and encode it with OxiPNG, MozJPEG,
+        libwebp or libavif in a Web Worker.
       </p>
       <FileDropZone
         label="Image"

@@ -16,6 +16,9 @@
   ],
   "shipped": ["astro", "@astrojs/preact"],
   "exceptions": {
-    "argparse": "Python-2.0 (permissive). Used only by sql-formatter's CLI (bin/sql-formatter-cli.cjs); never bundled into the site. Approved by the user on 2026-10-24."
+    "argparse": "Python-2.0 (permissive). Used only by sql-formatter's CLI (bin/sql-formatter-cli.cjs); never bundled into the site. Approved by the user on 2026-10-24.",
+    "openpgp": "LGPL-3.0+. Pre-approved in PLAN.md section 16.2; loaded dynamically as its own lazy chunk so users can replace it.",
+    "@ffmpeg/core": "GPL-2.0-or-later. Pre-approved in PLAN.md section 16.2; shipped as a separate unmodified asset with a link to its source on the licenses page.",
+    "pako": "(MIT AND Zlib), both permissive. Transitive dependency of pre-approved pdf-lib for Deflate stream handling."
   }
 }
