@@ -108,3 +108,17 @@ test('video-to-gif synthesizes a test-pattern GIF with ffmpeg.wasm', async ({ pa
     timeout: 30_000,
   });
 });
+
+test('password-export-viewer decrypts a KDBX 4 vault, shows TOTP and converts formats', async ({ page }) => {
+  await page.goto('tools/password-export-viewer/');
+  await waitForHydration(page);
+  await page.getByRole('button', { name: 'Load sample KeePass KDBX 4 vault' }).click();
+  await expect(page.locator('[data-xt="output"]').first()).toHaveValue(/GitHub Production/, {
+    timeout: 15_000,
+  });
+  await expect(page.getByText(/TOTP: \d{6}/)).toBeVisible();
+  await page.getByLabel('Convert output to').selectOption('1password-csv');
+  await expect(page.locator('[data-xt="output"]').first()).toHaveValue(
+    /Title,Website,Username,Password,OTPAuth,Notes,Type[\s\S]*GitHub Production,https:\/\/example\.com\/login,alice@example\.com,hunter2-kdbx-secret/,
+  );
+});

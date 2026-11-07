@@ -10,6 +10,8 @@ declare module 'pako' {
   const pako: {
     deflate: (input: Uint8Array) => Uint8Array;
     inflate: (input: Uint8Array) => Uint8Array;
+    gzip: (input: Uint8Array) => Uint8Array;
+    ungzip: (input: Uint8Array) => Uint8Array;
   };
   export default pako;
 }
