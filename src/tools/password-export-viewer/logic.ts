@@ -38,6 +38,8 @@ export interface VaultEntry {
   folder: string;
   totp: string;
   favorite: boolean;
+  /** Every login URI, when the export has more than `url`. */
+  urls?: string[];
 }
 
 export interface TotpCodeInfo {
@@ -48,11 +50,26 @@ export interface TotpCodeInfo {
   remainingSeconds: number;
 }
 
+export interface VaultFolder {
+  id: string;
+  name: string;
+}
+
+export interface VaultDocument {
+  sourceFormat: VaultSourceFormat;
+  entries: VaultEntry[];
+  /** Bitwarden items that are not logins or secure notes (cards, identities, and so on). */
+  passthroughItems: unknown[];
+  folders: VaultFolder[];
+}
+
 export interface ParsedVault {
   sourceFormat: VaultSourceFormat;
   entries: VaultEntry[];
   converted: string;
   summary: string;
+  passthroughItems?: unknown[];
+  folders?: VaultFolder[];
 }
 
 export const TARGET_FORMATS: ReadonlyArray<{
@@ -208,7 +225,7 @@ function parseKeePassXml(xml: string, formatLabel: VaultSourceFormat = 'keepass-
   return finalizeVault(formatLabel, entries, 'summary');
 }
 
-function parseJsonExport(text: string): { sourceFormat: VaultSourceFormat; entries: VaultEntry[] } {
+function parseJsonExport(text: string): VaultDocument {
   let data: unknown;
   try {
     data = JSON.parse(text);
@@ -228,20 +245,29 @@ function parseJsonExport(text: string): { sourceFormat: VaultSourceFormat; entri
   // Bitwarden JSON: { folders?: [{ id, name }], items: [...] }
   if (Array.isArray(obj.items)) {
     const folderMap = new Map<string, string>();
+    const folders: VaultFolder[] = [];
     if (Array.isArray(obj.folders)) {
       for (const f of obj.folders as Array<Record<string, unknown>>) {
         if (typeof f?.id === 'string' && typeof f?.name === 'string') {
           folderMap.set(f.id, f.name);
+          folders.push({ id: f.id, name: f.name });
         }
       }
     }
     const entries: VaultEntry[] = [];
+    const passthroughItems: unknown[] = [];
     for (const rawItem of obj.items as Array<Record<string, unknown>>) {
       if (!rawItem || typeof rawItem !== 'object') continue;
+      const is1PasswordItem = 'overview' in rawItem || 'details' in rawItem;
+      const typeNum = typeof rawItem.type === 'number' ? rawItem.type : undefined;
+      if (!is1PasswordItem && typeNum !== undefined && typeNum !== 1 && typeNum !== 2) {
+        passthroughItems.push(rawItem);
+        continue;
+      }
       const login = (rawItem.login as Record<string, unknown> | undefined) ?? {};
       const uris = Array.isArray(login.uris) ? (login.uris as Array<Record<string, unknown>>) : [];
-      const firstUri =
-        typeof uris[0]?.uri === 'string' ? uris[0].uri : typeof rawItem.url === 'string' ? rawItem.url : '';
+      const urls = uris.map((uri) => (typeof uri?.uri === 'string' ? uri.uri.trim() : '')).filter((uri) => uri !== '');
+      const firstUri = urls[0] ?? (typeof rawItem.url === 'string' ? rawItem.url : '');
       const folderId = typeof rawItem.folderId === 'string' ? rawItem.folderId : '';
       const folder = folderMap.get(folderId) ?? (typeof rawItem.folder === 'string' ? rawItem.folder : '');
       const itemType = rawItem.type === 2 ? 'note' : 'login';
@@ -269,13 +295,13 @@ function parseJsonExport(text: string): { sourceFormat: VaultSourceFormat; entri
         }
       }
 
-      const is1PasswordItem = 'overview' in rawItem || 'details' in rawItem;
       const title = String(rawItem.name ?? overview.title ?? `Entry ${entries.length + 1}`);
       const username = String(login.username ?? opUser ?? '');
       const password = String(login.password ?? opPass ?? '');
       const url = String(firstUri || (overview.url ?? ''));
       const notes = String(rawItem.notes ?? details.notesPlain ?? '');
       const totp = String(login.totp ?? opTotp ?? '');
+      const allUrls = url && !urls.includes(url) ? [url, ...urls] : urls;
 
       entries.push({
         id: String(rawItem.id ?? rawItem.uuid ?? `item-${entries.length + 1}`),
@@ -284,19 +310,19 @@ function parseJsonExport(text: string): { sourceFormat: VaultSourceFormat; entri
         username,
         password,
         url,
+        ...(allUrls.length > 0 ? { urls: allUrls } : {}),
         notes,
         folder,
         totp,
         favorite: Boolean(rawItem.favorite),
       });
-      if (is1PasswordItem && entries.length === 1) {
-        // Continue collecting; mark source below if 1Password keys are present.
-      }
     }
     const is1P = (obj.items as Array<Record<string, unknown>>).some((i) => i && ('overview' in i || 'details' in i));
     return {
       sourceFormat: is1P ? '1password-json' : 'bitwarden-json',
       entries,
+      passthroughItems: is1P ? [] : passthroughItems,
+      folders: is1P ? [] : folders,
     };
   }
 
@@ -338,13 +364,13 @@ function parseJsonExport(text: string): { sourceFormat: VaultSourceFormat; entri
         }
       }
     }
-    return { sourceFormat: '1password-json', entries };
+    return { sourceFormat: '1password-json', entries, passthroughItems: [], folders: [] };
   }
 
   throw new ToolInputError('Unrecognized JSON password export structure (expected Bitwarden or 1Password JSON).');
 }
 
-function parseCsvExport(text: string): { sourceFormat: VaultSourceFormat; entries: VaultEntry[] } {
+function parseCsvExport(text: string): VaultDocument {
   let rows: string[][];
   try {
     rows = parseCsv(text);
@@ -352,7 +378,7 @@ function parseCsvExport(text: string): { sourceFormat: VaultSourceFormat; entrie
     throw new ToolInputError(error instanceof CsvError ? error.message : 'Invalid CSV password export.');
   }
   const nonEmpty = rows.filter((r) => r.some((cell) => cell.trim() !== ''));
-  if (nonEmpty.length === 0) return { sourceFormat: 'generic-csv', entries: [] };
+  if (nonEmpty.length === 0) return { sourceFormat: 'generic-csv', entries: [], passthroughItems: [], folders: [] };
 
   const headerRow = nonEmpty[0]!;
   const norm = headerRow.map((h) =>
@@ -384,6 +410,9 @@ function parseCsvExport(text: string): { sourceFormat: VaultSourceFormat; entrie
   } else if (has('title', 'website', 'username', 'password') && (norm.includes('otpauth') || norm.includes('type'))) {
     sourceFormat = '1password-csv';
   } else if (has('title', 'url', 'username', 'password', 'otpauth')) {
+    sourceFormat = 'safari-csv';
+  } else if (has('title', 'url', 'username', 'password') && !norm.includes('website') && !norm.includes('name')) {
+    // Apple Passwords (iCloud / Safari) uses Title,URL,Username,Password, and Notes/OTPAuth are optional.
     sourceFormat = 'safari-csv';
   } else if (has('name', 'url', 'username', 'password')) {
     sourceFormat = 'chrome-csv';
@@ -442,6 +471,7 @@ function parseCsvExport(text: string): { sourceFormat: VaultSourceFormat; entrie
       username,
       password,
       url,
+      ...(url ? { urls: [url] } : {}),
       notes,
       folder,
       totp,
@@ -449,7 +479,7 @@ function parseCsvExport(text: string): { sourceFormat: VaultSourceFormat; entrie
     });
   }
 
-  return { sourceFormat, entries };
+  return { sourceFormat, entries, passthroughItems: [], folders: [] };
 }
 
 export function formatVaultSummary(
@@ -535,7 +565,10 @@ export function convertVaultEntries(
         ? { secureNote: { type: 0 } }
         : {
             login: {
-              uris: e.url ? [{ match: null, uri: e.url }] : [],
+              uris: (e.urls && e.urls.length > 0 ? e.urls : e.url ? [e.url] : []).map((uri) => ({
+                match: null,
+                uri,
+              })),
               username: e.username || null,
               password: e.password || null,
               totp: e.totp || null,
@@ -602,6 +635,7 @@ function finalizeVault(
   entries: VaultEntry[],
   targetFormat: VaultTargetFormat,
   unixSeconds?: number,
+  extras?: Pick<VaultDocument, 'passthroughItems' | 'folders'>,
 ): ParsedVault {
   const summary = formatVaultSummary(entries, sourceFormat, unixSeconds);
   const converted = convertVaultEntries(entries, targetFormat, sourceFormat, unixSeconds);
@@ -610,7 +644,24 @@ function finalizeVault(
     entries,
     converted,
     summary,
+    ...(extras ? { passthroughItems: extras.passthroughItems, folders: extras.folders } : {}),
   };
+}
+
+function documentFromParsed(
+  parsed: {
+    sourceFormat: VaultSourceFormat;
+    entries: VaultEntry[];
+    passthroughItems?: unknown[];
+    folders?: VaultFolder[];
+  },
+  targetFormat: VaultTargetFormat,
+  unixSeconds?: number,
+): ParsedVault {
+  return finalizeVault(parsed.sourceFormat, parsed.entries, targetFormat, unixSeconds, {
+    passthroughItems: parsed.passthroughItems ?? [],
+    folders: parsed.folders ?? [],
+  });
 }
 
 export interface InspectVaultOptions {
@@ -684,7 +735,7 @@ export async function inspectAndConvertVault(
     if (isKdbxBytes(options.fileBytes)) {
       const { xml, version } = await decryptKdbxToXml(options.fileBytes, masterPassword, options.keyfileBytes);
       const parsed = parseKeePassXml(xml, version.startsWith('3.') ? 'kdbx-3' : 'kdbx-4');
-      return finalizeVault(parsed.sourceFormat, parsed.entries, targetFormat, unixSeconds);
+      return documentFromParsed(parsed, targetFormat, unixSeconds);
     }
     const decodedText = new TextDecoder('utf-8', { fatal: false }).decode(options.fileBytes);
     return await inspectAndConvertVault(decodedText, {
@@ -709,7 +760,7 @@ export async function inspectAndConvertVault(
       if (isKdbxBytes(maybeBytes)) {
         const { xml, version } = await decryptKdbxToXml(maybeBytes, masterPassword, options.keyfileBytes);
         const parsed = parseKeePassXml(xml, version.startsWith('3.') ? 'kdbx-3' : 'kdbx-4');
-        return finalizeVault(parsed.sourceFormat, parsed.entries, targetFormat, unixSeconds);
+        return documentFromParsed(parsed, targetFormat, unixSeconds);
       }
     } catch (error) {
       if (error instanceof ToolInputError) throw error;
@@ -718,16 +769,30 @@ export async function inspectAndConvertVault(
 
   if (trimmed.startsWith('<')) {
     const parsed = parseKeePassXml(trimmed, 'keepass-xml');
-    return finalizeVault(parsed.sourceFormat, parsed.entries, targetFormat, unixSeconds);
+    return documentFromParsed(parsed, targetFormat, unixSeconds);
   }
 
   if (trimmed.startsWith('{')) {
     const parsed = parseJsonExport(trimmed);
-    return finalizeVault(parsed.sourceFormat, parsed.entries, targetFormat, unixSeconds);
+    return documentFromParsed(parsed, targetFormat, unixSeconds);
   }
 
   const parsed = parseCsvExport(trimmed);
-  return finalizeVault(parsed.sourceFormat, parsed.entries, targetFormat, unixSeconds);
+  return documentFromParsed(parsed, targetFormat, unixSeconds);
+}
+
+/**
+ * Parses one export into entries. Bitwarden items that are not logins or notes
+ * stay on `passthroughItems` so a merge can copy them into a new JSON file.
+ */
+export async function parseVaultDocument(inputText: string, options: InspectVaultOptions = {}): Promise<VaultDocument> {
+  const vault = await inspectAndConvertVault(inputText, { ...options, targetFormat: 'summary' });
+  return {
+    sourceFormat: vault.sourceFormat,
+    entries: vault.entries,
+    passthroughItems: vault.passthroughItems ?? [],
+    folders: vault.folders ?? [],
+  };
 }
 
 /**

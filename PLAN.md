@@ -949,7 +949,7 @@ The current file already matches the spec. Phase 0 makes these fixes:
 - `math-evaluator` + `unit-calculator`
 - `qr-generator` + `wifi-qr`
 
-### 19.2 Catalog by category (186 pages)
+### 19.2 Catalog by category (187 pages)
 
 #### Crypto (24)
 
@@ -1156,11 +1156,12 @@ The current file already matches the spec. Phase 0 makes these fixes:
 - `geo-converter`: Coordinate and geohash converter
 - `csv-editor`: CSV viewer and editor · W
 
-#### Privacy (3)
+#### Privacy (4)
 
 - `metadata-remover`: Metadata remover for images, PDF and Office files · H · W · **P6**
 - `secure-note`: Encrypted local secure note (AES-GCM, scrypt key, IndexedDB) · S · **P6**
 - `password-export-viewer`: Password manager file viewer and export converter (KeePass KDBX/XML/CSV, Bitwarden JSON/CSV, 1Password, and browser CSVs, with live TOTP and format conversion) · S · H · W · **P6**
+- `password-vault-merge`: Merge Bitwarden with Apple Passwords, Chrome and other exports into one Bitwarden file · S · H · W · **P6**
 
 #### Documents (3)
 
@@ -1281,7 +1282,7 @@ Every phase ends with the full check set from [13.3](#133-commands-per-phase) pa
 
 ### Phase 6: Expansion
 
-- Privacy tools: `metadata-remover`, `secure-note`, `password-export-viewer` (KeePass KDBX, Bitwarden JSON/CSV, 1Password and browser CSV viewer with live TOTP and cross-manager export converter).
+- Privacy tools: `metadata-remover`, `secure-note`, `password-export-viewer` (KeePass KDBX, Bitwarden JSON/CSV, 1Password and browser CSV viewer with live TOTP and cross-manager export converter), `password-vault-merge` (fold those exports into one Bitwarden file).
 - Any remaining catalog gaps.
 - A Helm chart or Kubernetes manifest, only if requested.
 
@@ -1329,5 +1330,6 @@ Every phase ends with the full check set from [13.3](#133-commands-per-phase) pa
 | 2026-11-06 | 4     | **Phase 4 done, tagged v1.0.0.** The release workflows, Caddy overlay and guides were already on `main`. This tag is the Phase 3 tree: 175 tools, the service worker, search, recents and the accessibility pass. README states which catalog pages ship in 1.0 and links dataset refresh to `docs/datasets.md`. `release.yml` publishes `1.0.0`, `1.0` and `latest` from the tag, plus the site zip, `SHA256SUMS` and `sbom.spdx.json`. **Repo metadata was not changed from this environment:** the description still says "no network calls", and topics are empty. §17.2 is the text to set: description "100+ privacy-first developer and everyday tools that run in your browser. No tracking. Network tools name the service they contact and run only when you ask. Self-host with one Docker command." Topics: `self-hosted`, `offline-first`, `privacy`, `developer-tools`, `pwa`, `docker`, `astro`, `preact`, `static-site`, `web-tools`, `cybersecurity`, `homelab`. The GHCR package stays private until it is set public once. |
 | 2026-11-06 | 5     | **Phase 5 (Heavy tools) done (183 tools).** Added the 8 Phase 5 tools (`password-hash`, `pgp`, `pdf-signature`, `pdf-tools`, `pdf-image-extractor`, `pdf-to-images`, `video-to-gif`, `sqlite-browser`) and upgraded `json-query` with jq WASM and `image-converter` with WASM codecs (OxiPNG, MozJPEG, libwebp SIMD and libavif). **Decisions:** Vite workers now build as ES modules (`worker.format: 'es'`), so `openpgp` (LGPL-3.0+) stays in its own replaceable chunk and `jq-web` loads only when jq mode is selected. `@ffmpeg/core` (GPL-2.0+) is imported with `?url` so both `ffmpeg-core.js` and `ffmpeg-core.wasm` ship as separate unmodified assets, credited with a source link on `/licenses/`. `pdf.js` runs inside the tool worker with `isEvalSupported: false`, `useSystemFonts: false` and `disableFontFace: true`. `jq-web` is transformed by a small Vite plugin (`xt-jq-web-factory`) so its Emscripten factory accepts a local `locateFile` URL for `jq.wasm`. Optional Node-only native bindings (`entry.optional`, such as `@napi-rs/canvas` from `pdfjs-dist`) are excluded from `shippedPackages`. All 90 heavy assets (WASM binaries, lazy chunks and datasets) are listed in `heavy-assets.json` and verified offline after "Download everything". **Verified:** strict validator (183 tools), licenses (83 shipped packages), typecheck, lint, 1628 unit tests across 196 files, builds at `/` and `/tools/` (scan-dist clean, 201 pages within the 150 KB budget, largest non-heavy page 84.1 KB gzip), and end-to-end suites at both base paths. |
 | 2026-11-06 | 5     | **fix(pgp): OpenPGP works without WebCrypto.** `getWebCrypto()` in OpenPGP.js 6 throws while the module is loading when `crypto.subtle` is missing, so the pgp worker crashed in container e2e (`http://site:8080` is not a secure context) and the passphrase example never decrypted. Vite plugin `xt-openpgp-plain-http` (also registered on `worker.plugins`, because worker bundles do not inherit the main plugin list) makes that guard return undefined and turns the seven unguarded Curve25519 `try` blocks (key generation, signing, verification and shared-secret recovery) into `NotSupportedError`, which is the signal OpenPGP.js already uses to fall back to its bundled noble/nacl code. AES-KW's module-level WebCrypto cache gets the same fallback. |
-| 2026-11-06 | 6     | **Added `password-export-viewer` (184 tools): Password Manager File Viewer and Export Converter.** | Parses and inspects KeePass `.kdbx` (v3.1 AES-KDF + SHA-256 hashed blocks + Salsa20 inner stream and v4.0 Argon2d/Argon2id/AES-KDF + HMAC-SHA-256 block stream + ChaCha20 inner stream, with optional keyfile), KeePass XML/CSV, Bitwarden JSON/CSV, 1Password CSV/1PUX JSON, and Chrome/Firefox/Safari CSV exports inside a Web Worker. Shows folders, logins, secure notes, masked passwords with reveal/copy, and live TOTP codes (`otpauth://` and Base32 secrets via RFC 6238 `totpAt`), and converts vaults between Bitwarden CSV/JSON, 1Password CSV, KeePass CSV, Chrome CSV and Firefox CSV. Marked `sensitive` and `heavy`. |
+| 2026-11-06 | 6     | **Added `password-export-viewer` (184 tools): Password Manager File Viewer and Export Converter.** Parses and inspects KeePass `.kdbx` (v3.1 AES-KDF + SHA-256 hashed blocks + Salsa20 inner stream and v4.0 Argon2d/Argon2id/AES-KDF + HMAC-SHA-256 block stream + ChaCha20 inner stream, with optional keyfile), KeePass XML/CSV, Bitwarden JSON/CSV, 1Password CSV/1PUX JSON, and Chrome/Firefox/Safari CSV exports inside a Web Worker. Shows folders, logins, secure notes, masked passwords with reveal/copy, and live TOTP codes (`otpauth://` and Base32 secrets via RFC 6238 `totpAt`), and converts vaults between Bitwarden CSV/JSON, 1Password CSV, KeePass CSV, Chrome CSV and Firefox CSV. Marked `sensitive` and `heavy`. |
+| 2026-11-10 | 6     | **Added `password-vault-merge` (185 tools).** Loads several exports (Bitwarden, Apple Passwords / iCloud / Safari, Chrome / Google, Edge, Firefox, 1Password, KeePass) and writes one Bitwarden JSON and CSV. Logins match on username plus host (`www` and the path are ignored). The same password is folded, empty fields are filled, and a different password stays a conflict that defaults to Bitwarden. New logins land in a folder named for their source. Bitwarden cards and other non-login items are copied into the JSON only. Apple Passwords CSV is recognized with or without an OTPAuth column. Marked `sensitive` and `heavy`. |
 

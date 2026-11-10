@@ -4,7 +4,7 @@
 
 xt-tools is a self-hostable collection of privacy-first developer and everyday tools that run in your browser. There's no tracking and no server-side processing. A few tools look something up on the network, and only after you run them; every other tool stays on your device. Host it with one Docker command, or put the static files on any web server.
 
-This tree includes Phase 5 and `password-export-viewer` (184 tools): the lightweight catalog, the WASM and heavy tools (Argon2/scrypt/PBKDF2, OpenPGP, PDF signature verification, PDF merge/split/rotate/compress, PDF image extraction, PDF to images, video to GIF via ffmpeg.wasm, SQLite browser, jq WASM, and OxiPNG/MozJPEG/libwebp/libavif image codecs), the password manager file viewer and export converter (KeePass KDBX, Bitwarden, 1Password, and browser CSVs with live TOTP), offline use, and search. Two Phase 6 privacy tools (`metadata-remover`, `secure-note`) are still to come. Images are on GHCR. `latest` is the latest release, and `edge` follows `main`. From a checkout, `make build up` serves that tree. The plan is in **[PLAN.md](PLAN.md)**.
+This tree includes Phase 5, `password-export-viewer` and `password-vault-merge` (185 tools): the lightweight catalog, the WASM and heavy tools (Argon2/scrypt/PBKDF2, OpenPGP, PDF signature verification, PDF merge/split/rotate/compress, PDF image extraction, PDF to images, video to GIF via ffmpeg.wasm, SQLite browser, jq WASM, and OxiPNG/MozJPEG/libwebp/libavif image codecs), the password manager file viewer and export converter (KeePass KDBX, Bitwarden, 1Password, and browser CSVs with live TOTP), offline use, and search. Two Phase 6 privacy tools (`metadata-remover`, `secure-note`) are still to come. Images are on GHCR. `latest` is the latest release, and `edge` follows `main`. From a checkout, `make build up` serves that tree. The plan is in **[PLAN.md](PLAN.md)**.
 
 ## Principles
 
@@ -16,7 +16,7 @@ This tree includes Phase 5 and `password-export-viewer` (184 tools): the lightwe
 
 ## What's included
 
-The catalog has 186 pages in 13 categories. 184 ship today, including the Phase 5 WASM and worker tools and `password-export-viewer`. The remaining two privacy tools (`metadata-remover`, `secure-note`) are Phase 6.
+The catalog has 187 pages in 13 categories. 185 ship today, including the Phase 5 WASM and worker tools, `password-export-viewer`, and `password-vault-merge`. The remaining two privacy tools (`metadata-remover`, `secure-note`) are Phase 6.
 
 | Category         | Examples                                                                                                                                                 |
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
