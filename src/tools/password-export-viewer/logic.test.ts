@@ -120,6 +120,19 @@ describe('passwordExportViewer', () => {
     expect(parsedKp.entries[0]?.title).toBe('SSH Bastion');
   });
 
+  it('labels an Apple Passwords CSV with or without OTPAuth as Safari', async () => {
+    const withOtp = [
+      'Title,URL,Username,Password,Notes,OTPAuth',
+      'Example,https://example.com,alice,secret,note,GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',
+    ].join('\n');
+    const withoutOtp = ['Title,URL,Username,Password,Notes', 'Example,https://example.com,alice,secret,note'].join(
+      '\n',
+    );
+    expect((await inspectAndConvertVault(withOtp)).sourceFormat).toBe('safari-csv');
+    expect((await inspectAndConvertVault(withoutOtp)).sourceFormat).toBe('safari-csv');
+    expect((await inspectAndConvertVault(withoutOtp)).entries[0]?.password).toBe('secret');
+  });
+
   it('matches the metadata examples', async () => {
     for (const ex of meta.examples ?? []) {
       expect(await passwordExportViewer(ex.input)).toContain(ex.expect);

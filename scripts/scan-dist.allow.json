@@ -66,6 +66,10 @@
       "reason": "Sample http(s) URLs in web-tool examples and generated snippets (Open Graph, cURL, HTTP snippet, robots, Safe Links). Nothing is fetched."
     },
     {
+      "prefix": "https://www.example.com",
+      "reason": "Sample URL in the password-vault-merge example, used only to show that www is ignored when matching logins. Nothing is fetched."
+    },
+    {
       "prefix": "http://example.com",
       "reason": "Sample http URL in web-tool examples. Nothing is fetched."
     },

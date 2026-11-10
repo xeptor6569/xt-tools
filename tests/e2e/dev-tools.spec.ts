@@ -1,6 +1,7 @@
 // Development tools whose real work happens in lazy chunks, workers or bundled
 // datasets. meta.examples can't cover them (random or image output), so these
 // checks prove those paths load under the production CSP with no external requests.
+import { readFile } from 'node:fs/promises';
 import { expect, test, waitForHydration } from './fixtures.ts';
 
 test('mock-data generates seeded rows in its worker', async ({ page }) => {
@@ -107,6 +108,30 @@ test('video-to-gif synthesizes a test-pattern GIF with ffmpeg.wasm', async ({ pa
   await expect(page.locator('[data-xt="output"]').first()).toHaveValue(/Created 1 file\(s\)/, {
     timeout: 30_000,
   });
+});
+
+test('password-vault-merge folds a Bitwarden login with a Chrome login and downloads CSV', async ({ page }) => {
+  await page.goto('tools/password-vault-merge/');
+  await waitForHydration(page);
+  const bitwarden = [
+    'folder,favorite,type,name,notes,fields,reprompt,login_uri,login_username,login_password,login_totp',
+    ',1,login,Example,Work,,0,https://example.com/login,alice,correct-horse,',
+  ].join('\n');
+  const chrome = ['name,url,username,password', 'Example,https://www.example.com/settings,alice,correct-horse'].join(
+    '\n',
+  );
+  await page.locator('[data-xt="file-input"]').setInputFiles([
+    { name: 'bitwarden.csv', mimeType: 'text/csv', buffer: Buffer.from(bitwarden) },
+    { name: 'chrome.csv', mimeType: 'text/csv', buffer: Buffer.from(chrome) },
+  ]);
+  await expect(page.locator('[data-xt="output"]').first()).toHaveValue(/folded: 1/, { timeout: 15_000 });
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download Bitwarden CSV' }).click();
+  const file = await download;
+  expect(file.suggestedFilename()).toBe('bitwarden-import.csv');
+  const csv = await readFile(await file.path(), 'utf8');
+  expect(csv.startsWith('folder,favorite,type,name,notes,fields,reprompt,login_uri')).toBe(true);
+  expect(csv).toContain('correct-horse');
 });
 
 test('password-export-viewer decrypts a KDBX 4 vault, shows TOTP and converts formats', async ({ page }) => {
