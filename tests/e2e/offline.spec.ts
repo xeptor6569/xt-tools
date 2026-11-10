@@ -76,4 +76,17 @@ test('pages and a heavy tool work offline after download everything', async ({ p
   await waitForHydration(page);
   await page.locator('[data-xt="input"]').fill('select id from users');
   await expect(page.locator('[data-xt="output"]')).toHaveValue(/SELECT/);
+
+  await page.goto('tools/sqlite-browser/');
+  await expect(page.getByRole('heading', { level: 1, name: 'SQLite browser' })).toBeVisible();
+  await waitForHydration(page);
+  await expect(page.locator('[data-xt="output"]')).toHaveValue(/"name": "pear"/);
+
+  await page.goto('tools/password-hash/');
+  await expect(page.getByRole('heading', { level: 1, name: 'Password hash' })).toBeVisible();
+  await waitForHydration(page);
+  await page
+    .locator('[data-xt="input"]')
+    .fill('algo: argon2id\nmemory: 512\niterations: 2\nparallelism: 1\nsalt: ssssssss\npassword');
+  await expect(page.locator('[data-xt="output"]')).toHaveValue(/^\$argon2id\$v=19\$m=512,t=2,p=1\$/);
 });

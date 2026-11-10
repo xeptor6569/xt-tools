@@ -2,6 +2,7 @@ import preact from '@astrojs/preact';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 import { createHash } from 'node:crypto';
+import { patchOpenPgpPlainHttp } from './scripts/lib/openpgp-plain-http.ts';
 import { NETWORK_HOSTS } from './src/lib/network-allow.ts';
 import { PREVIEW_CSS } from './src/lib/preview-css.ts';
 import { themeBootstrapScript } from './src/lib/theme.ts';
@@ -27,6 +28,25 @@ const previewStyleHash = sha256(PREVIEW_CSS);
 // those sinks, and satisfying it needs a named policy (`trusted-types …`),
 // which is a CSP change. A policy that returns the string unchanged would not
 // add protection. First-party code already cannot call eval or `new Function`.
+// OpenPGP is imported from the tool worker. Vite does not run main-bundle
+// plugins on worker bundles, so this plugin is listed in both places.
+const openpgpPlainHttpPlugin = {
+  name: 'xt-openpgp-plain-http',
+  enforce: 'pre' as const,
+  transform(code: string, id: string) {
+    const path = id.split('?')[0]?.replace(/\\/g, '/') ?? '';
+    if (
+      !path.includes('/openpgp/') ||
+      path.includes('/openpgp/dist/node/') ||
+      path.includes('/openpgp/dist/lightweight/')
+    ) {
+      return null;
+    }
+    if (!code.includes('The WebCrypto API is not available')) return null;
+    return patchOpenPgpPlainHttp(code);
+  },
+};
+
 const cspDirectives = [
   "default-src 'self'",
   "img-src 'self' blob: data:",
@@ -61,10 +81,28 @@ export default defineConfig({
     },
   },
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [
+      tailwindcss(),
+      {
+        name: 'xt-jq-web-factory',
+        transform(code, id) {
+          if (!id.replace(/\\/g, '/').endsWith('/jq-web/jq.js')) return null;
+          return code.replace(
+            /jq\s*=\s*jq\(\)\.then\(\s*module\s*=>\s*\{\s*return\s*\{\s*json:\s*module\.json,\s*raw:\s*module\.raw\s*\};\s*\}\s*\);/,
+            'const _jqFactory = jq; jq = (moduleArg) => _jqFactory(moduleArg).then(module => ({ json: module.json, raw: module.raw }));',
+          );
+        },
+      },
+      openpgpPlainHttpPlugin,
+    ],
     define: {
       __XT_VERSION__: JSON.stringify(version),
       __XT_BUILD_DATE__: JSON.stringify(buildDate),
+    },
+    // Worker bundles do not inherit the main plugin list.
+    worker: {
+      format: 'es',
+      plugins: () => [openpgpPlainHttpPlugin],
     },
     server: {
       watch: process.env.WATCH_POLL === '1' ? { usePolling: true, interval: 300 } : {},

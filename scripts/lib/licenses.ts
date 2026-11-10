@@ -79,7 +79,7 @@ export function shippedPackages(root = ROOT): ShippedPackage[] {
   for (const [path, entry] of Object.entries(lock.packages)) {
     if (path === '' || entry.link) continue;
     const name = nameFromPath(path);
-    const isProd = !entry.dev && !entry.devOptional;
+    const isProd = !entry.dev && !entry.devOptional && !entry.optional;
     const isShipped = policy.shipped.includes(name) && path === `node_modules/${name}`;
     if (!isProd && !isShipped) continue;
     const key = `${name}@${entry.version ?? '?'}`;

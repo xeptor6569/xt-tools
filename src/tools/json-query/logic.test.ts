@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { expectRobust } from '../../../tests/helpers/expect-robust.ts';
-import { describePath, jsonQuery } from './logic.ts';
+import { describePath, jqQuery, jsonQuery } from './logic.ts';
 import meta from './meta.ts';
 
 // The classic example document from Stefan Goessner's JSONPath article.
@@ -145,5 +145,18 @@ describe('jsonQuery: errors and safety', () => {
     const malformed = ['{"a":', '$[', '$..[?(@ =', '$[(@.length-1)]', '$..[?(@property.x.y)]', '$.a^^^~'];
     expectRobust((s) => jsonQuery(s, '$..*'), { malformed });
     expectRobust((s) => jsonQuery(DOC, s), { malformed });
+  });
+
+  it('evaluates jq filters in WebAssembly', async () => {
+    const authors = await jqQuery(DOC, '.store.book[].author');
+    expect(JSON.parse(authors.text)).toEqual(books.map((b) => b.author));
+
+    const total = await jqQuery(DOC, '[.store.book[].price] | add');
+    expect(Number(total.text)).toBeCloseTo(8.95 + 12.99 + 8.99 + 22.99, 5);
+
+    const cheap = await jqQuery(DOC, '[.store.book[] | select(.price < 10) | .title]');
+    expect(JSON.parse(cheap.text)).toEqual(['Sayings of the Century', 'Moby Dick']);
+
+    await expect(jqQuery(DOC, '.store.book | [')).rejects.toThrow(/jq error/);
   });
 });

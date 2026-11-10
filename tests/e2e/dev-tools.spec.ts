@@ -75,3 +75,50 @@ test('docker-compose-builder edits services, imports YAML and downloads the file
   expect(file.suggestedFilename()).toBe('compose.yaml');
   expect(file.url()).toMatch(/^blob:/);
 });
+
+test('json-query runs jq in WebAssembly inside its worker', async ({ page }) => {
+  await page.goto('tools/json-query/');
+  await waitForHydration(page);
+  await page.getByLabel('Engine').selectOption('jq');
+  const output = page.locator('[data-xt="output"]').first();
+  await expect(output).toHaveValue(/Nigel Rees/, { timeout: 15_000 });
+});
+
+test('pdf-tools and pdf-to-images process sample PDFs in workers', async ({ page }) => {
+  await page.goto('tools/pdf-tools/');
+  await waitForHydration(page);
+  await page.getByRole('button', { name: 'Load 5-page sample PDF' }).click();
+  await expect(page.locator('[data-xt="output"]').first()).toHaveValue(/Extracted 3 of 5 page\(s\)/, {
+    timeout: 15_000,
+  });
+
+  await page.goto('tools/pdf-to-images/');
+  await waitForHydration(page);
+  await page.getByRole('button', { name: 'Load 2-page sample PDF' }).click();
+  await expect(page.locator('[data-xt="output"]').first()).toHaveValue(/Rendered 2 of 2 page\(s\) at 144 DPI/, {
+    timeout: 15_000,
+  });
+});
+
+test('video-to-gif synthesizes a test-pattern GIF with ffmpeg.wasm', async ({ page }) => {
+  await page.goto('tools/video-to-gif/');
+  await waitForHydration(page);
+  await page.getByRole('button', { name: /Generate sample test-pattern GIF/ }).click();
+  await expect(page.locator('[data-xt="output"]').first()).toHaveValue(/Created 1 file\(s\)/, {
+    timeout: 30_000,
+  });
+});
+
+test('password-export-viewer decrypts a KDBX 4 vault, shows TOTP and converts formats', async ({ page }) => {
+  await page.goto('tools/password-export-viewer/');
+  await waitForHydration(page);
+  await page.getByRole('button', { name: 'Load sample KeePass KDBX 4 vault' }).click();
+  await expect(page.locator('[data-xt="output"]').first()).toHaveValue(/GitHub Production/, {
+    timeout: 15_000,
+  });
+  await expect(page.getByText(/TOTP: \d{6}/)).toBeVisible();
+  await page.getByLabel('Convert output to').selectOption('1password-csv');
+  await expect(page.locator('[data-xt="output"]').first()).toHaveValue(
+    /Title,Website,Username,Password,OTPAuth,Notes,Type[\s\S]*GitHub Production,https:\/\/example\.com\/login,alice@example\.com,hunter2-kdbx-secret/,
+  );
+});
