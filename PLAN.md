@@ -949,7 +949,7 @@ The current file already matches the spec. Phase 0 makes these fixes:
 - `math-evaluator` + `unit-calculator`
 - `qr-generator` + `wifi-qr`
 
-### 19.2 Catalog by category (187 pages)
+### 19.2 Catalog by category (188 pages)
 
 #### Crypto (24)
 
@@ -1163,11 +1163,12 @@ The current file already matches the spec. Phase 0 makes these fixes:
 - `password-export-viewer`: Password manager file viewer and export converter (KeePass KDBX/XML/CSV, Bitwarden JSON/CSV, 1Password, and browser CSVs, with live TOTP and format conversion) · S · H · W · **P6**
 - `password-vault-merge`: Merge Bitwarden with Apple Passwords, Chrome and other exports into one Bitwarden file · S · H · W · **P6**
 
-#### Documents (3)
+#### Documents (4)
 
 - `pdf-tools`: PDF merge, split, rotate and compress · H · W · **P5**
 - `pdf-image-extractor`: Image extraction from PDFs · H · W · **P5**
 - `pdf-to-images`: PDF to images (pdf.js) · H · W · **P5**
+- `pdf-text-extractor`: Extract the text layer from a PDF (pdf.js; a scan with no text layer stays empty) · S · H · W · **P6**
 
 #### Design (5)
 
@@ -1336,4 +1337,5 @@ Every phase ends with the full check set from [13.3](#133-commands-per-phase) pa
 | 2026-11-19 | 6     | **Markdown editor downloads Word.** `Download .docx` writes Office Open XML in the browser (no new dependency). Headings, emphasis, links, lists, code and tables keep their styles; table headers are shaded and bordered, and cell alignment is kept. Remote images stay as alt text so Word has nothing to fetch. `data:` images are embedded. The converter is a lazy chunk. |
 | 2026-11-19 | 6     | **`password-vault-merge` shows a creation date with each duplicate.** Bitwarden JSON `creationDate`, 1Password `createdAt`, KeePass `CreationTime`, and Firefox `timeCreated` (plus a created column on other CSVs) are kept on the entry. A duplicate login becomes a choice when the passwords differ or a recorded creation date differs. Each choice shows the source, that date or "created date unknown", and the password. The selected copy’s password and `creationDate` are what the Bitwarden JSON download keeps. Identical copies with no dates still fold with no choice. |
 | 2026-11-19 | 6     | **Filled the remaining gaps in tools that already existed.** No new pages. `unit-converter` adds Delisle, Newton, Réaumur and Rømer, converted through Kelvin. `list-converter` truncates each item by code point and transposes columns (a line is a row; trailing empty cells are dropped; an all-empty column is removed when empty items are removed). `crontab` has minute, hour, day, month and weekday fields that rewrite the expression, including nicknames and a leading seconds field. `ipv4-converter` adds the IPv4-mapped form `::ffff:a.b.c.d`. `mac-generator` takes a prefix of up to 5 hex bytes and prints upper or lower case; a prefix is copied as written, so the local and unicast switches apply only when it is empty. `iban-validator` prints the BBAN and whether a CH or LI IBAN is a QR-IBAN (IID 30000–31999). **Left as they were:** charset tokens stay on `password-generator` (`token-generator` remains random bytes); integer bases stay 2–36 (Base64 text stays `base-encoder`); TripleDES, Rabbit and RC4 stay decrypt-only (D5). |
+| 2026-11-19 | 6     | **Added `pdf-text-extractor` (186 tools).** Reads the text layer of a PDF with the pdf.js already used by `pdf-to-images` (`isEvalSupported: false`, `useSystemFonts: false`, `disableFontFace: true`), off the main thread. Lines are rebuilt from glyph positions (higher y first, a wide gap becomes a space). Page selections match `pdf-tools` (`all`, `odd`, `even`, `reverse`, `1-3, 5`). A page with no text layer is reported empty; there is no OCR. Marked `sensitive` and `heavy`. No new dependency. |
 
