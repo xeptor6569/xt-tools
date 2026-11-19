@@ -100,6 +100,25 @@ test('unknown pages return the custom 404', async ({ page, guard }) => {
   await expectAccessible(page);
 });
 
+test('the 404 page can chase bits and hash the run', async ({ page, guard }) => {
+  guard.allowNotFound();
+  await page.goto('this-page-does-not-exist/');
+  const stored = await page.evaluate(() => JSON.stringify(localStorage));
+  await page.getByRole('button', { name: 'Chase the bits' }).click();
+  const board = page.getByRole('group', { name: 'Hash snake. Arrow keys move.' });
+  await expect(board).toBeVisible();
+  await expect(page.getByText(/next [0-9a-f]{2}/)).toBeVisible();
+  await board.focus();
+  for (let i = 0; i < 30; i++) await page.keyboard.press('ArrowUp');
+  const fingerprint = page.locator('[data-xt="hash-snake-fingerprint"]');
+  await expect(fingerprint).toHaveText(/^[0-9a-f]{64}$/, { timeout: 10_000 });
+  await expect(page.locator('[data-xt="hash-snake-score"]')).toHaveText(/^[0-9a-f]{16}$/);
+  expect(await page.evaluate(() => JSON.stringify(localStorage))).toBe(stored);
+  await expectAccessible(page);
+  await page.getByRole('button', { name: 'Play again' }).click();
+  await expect(fingerprint).toBeHidden();
+});
+
 test('theme choice applies immediately and survives a reload', async ({ page }) => {
   await page.goto('');
   const select = page.locator('select[data-xt-theme]');
