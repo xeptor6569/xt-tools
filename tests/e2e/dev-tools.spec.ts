@@ -134,6 +134,46 @@ test('password-vault-merge folds a Bitwarden login with a Chrome login and downl
   expect(csv).toContain('correct-horse');
 });
 
+test('password-vault-merge shows each duplicate creation date and password', async ({ page }) => {
+  await page.goto('tools/password-vault-merge/');
+  await waitForHydration(page);
+  const bitwarden = JSON.stringify({
+    encrypted: false,
+    items: [
+      {
+        id: 'bw-1',
+        type: 1,
+        name: 'Example',
+        creationDate: '2020-01-02T03:04:05.000Z',
+        login: { username: 'alice', password: 'correct-horse', uris: [{ uri: 'https://example.com/login' }] },
+      },
+    ],
+  });
+  const chrome = ['name,url,username,password', 'Example,https://www.example.com/settings,alice,chrome-secret'].join(
+    '\n',
+  );
+  await page.locator('[data-xt="file-input"]').setInputFiles([
+    { name: 'bitwarden.json', mimeType: 'application/json', buffer: Buffer.from(bitwarden) },
+    { name: 'chrome.csv', mimeType: 'text/csv', buffer: Buffer.from(chrome) },
+  ]);
+  await expect(page.getByRole('heading', { name: 'Duplicate logins' })).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText('Created date unknown')).toBeVisible();
+  await expect(page.getByText(/Created .+2020/)).toBeVisible();
+  await page.getByRole('switch', { name: 'Reveal passwords' }).check();
+  await expect(page.getByText('correct-horse')).toBeVisible();
+  await expect(page.getByText('chrome-secret')).toBeVisible();
+
+  await page.getByRole('radio', { name: /Chrome/ }).check();
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download Bitwarden JSON' }).click();
+  const file = await download;
+  const json = JSON.parse(await readFile(await file.path(), 'utf8')) as {
+    items: Array<{ creationDate?: string; login: { password: string } }>;
+  };
+  expect(json.items[0]?.login.password).toBe('chrome-secret');
+  expect(json.items[0]?.creationDate).toBeUndefined();
+});
+
 test('password-export-viewer decrypts a KDBX 4 vault, shows TOTP and converts formats', async ({ page }) => {
   await page.goto('tools/password-export-viewer/');
   await waitForHydration(page);

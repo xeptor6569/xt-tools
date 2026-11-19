@@ -19,8 +19,11 @@ export interface MergeSourceInput {
 }
 
 export interface MergeConflictOption {
+  id: string;
   sourceLabel: string;
   password: string;
+  /** ISO-8601 creation time, when that export included one. */
+  createdAt?: string;
 }
 
 export interface MergeConflict {
@@ -30,6 +33,7 @@ export interface MergeConflict {
   host: string;
   options: MergeConflictOption[];
   defaultPassword: string;
+  defaultOptionId: string;
 }
 
 export interface MergeSourceStat {
@@ -198,6 +202,15 @@ function emptyReport(): MergeReport {
   };
 }
 
+/** A duplicate needs a choice when the copies disagree on the password or on a recorded creation date. */
+function duplicateNeedsChoice(options: readonly MergeConflictOption[]): boolean {
+  if (options.length < 2) return false;
+  const passwords = new Set(options.map((option) => option.password.trim()));
+  if (passwords.size > 1) return true;
+  const created = options.map((option) => option.createdAt ?? '');
+  return new Set(created).size > 1 && created.some((value) => value !== '');
+}
+
 function uniqueItemId(used: Set<string>, id: string, fallback: string): string {
   const base = id.trim() || fallback;
   let next = base;
@@ -237,6 +250,7 @@ function writeBitwardenJson(entries: readonly VaultEntry[], passthrough: readonl
       name: entry.title,
       notes: entry.notes || null,
       favorite: entry.favorite,
+      ...(entry.createdAt ? { creationDate: entry.createdAt } : {}),
       ...(entry.type === 'note'
         ? { secureNote: { type: 0 } }
         : {
@@ -315,17 +329,22 @@ function mergeDocuments(
     for (const item of group) {
       const password = item.entry.password;
       if (password.trim() === '') continue;
-      if (passwordOptions.some((option) => option.password.trim() === password.trim())) continue;
-      passwordOptions.push({ sourceLabel: item.label, password });
+      passwordOptions.push({
+        id: `${item.order}:${item.entry.id}:${passwordOptions.length}`,
+        sourceLabel: item.label,
+        password,
+        ...(item.entry.createdAt ? { createdAt: item.entry.createdAt } : {}),
+      });
     }
 
-    const defaultPassword = passwordOptions[0]?.password ?? '';
+    const needsChoice = duplicateNeedsChoice(passwordOptions);
     const chosenRaw = choices[id];
-    const chosen =
-      chosenRaw !== undefined && passwordOptions.some((option) => option.password === chosenRaw)
-        ? chosenRaw
-        : defaultPassword;
-    if (passwordOptions.length > 1) {
+    const chosenOption =
+      (chosenRaw !== undefined ? passwordOptions.find((option) => option.id === chosenRaw) : undefined) ??
+      (chosenRaw !== undefined ? passwordOptions.find((option) => option.password === chosenRaw) : undefined) ??
+      passwordOptions[0];
+    const chosen = chosenOption?.password ?? '';
+    if (needsChoice && chosenOption) {
       const first = group[0]!.entry;
       const host =
         entryUrls(first)
@@ -337,7 +356,8 @@ function mergeDocuments(
         username: group.map((item) => item.entry.username.trim()).find((user) => user !== '') ?? '',
         host,
         options: passwordOptions,
-        defaultPassword,
+        defaultPassword: passwordOptions[0]!.password,
+        defaultOptionId: passwordOptions[0]!.id,
       });
     }
 
@@ -355,6 +375,7 @@ function mergeDocuments(
     let folder = '';
     let favorite = false;
     let type: VaultEntry['type'] = 'note';
+    let createdAt = '';
     const urls: string[] = [];
     for (const item of group) {
       if (!title && item.entry.title.trim()) title = item.entry.title;
@@ -363,9 +384,11 @@ function mergeDocuments(
       if (!folder && item.entry.folder.trim()) folder = item.entry.folder;
       if (item.entry.favorite) favorite = true;
       if (item.entry.type === 'login') type = 'login';
+      if (!createdAt && item.entry.createdAt) createdAt = item.entry.createdAt;
       notes = combineNotes(notes, item.entry.notes, item.label);
       for (const url of entryUrls(item.entry)) addUrl(urls, url);
     }
+    if (needsChoice) createdAt = chosenOption?.createdAt ?? '';
     if (!hasBitwarden && folder.trim() === '') folder = importFolderName(group[0]!.format);
     if (!hasBitwarden && type === 'login') added += 1;
 
@@ -381,6 +404,7 @@ function mergeDocuments(
       folder,
       totp,
       favorite,
+      ...(createdAt ? { createdAt } : {}),
     });
   }
 
@@ -396,7 +420,8 @@ function mergeDocuments(
   ];
   for (const conflict of conflicts) {
     const where = conflict.host || conflict.title;
-    lines.push(`conflict: ${where} | ${conflict.username} | choices=${conflict.options.length}`);
+    const created = conflict.options.map((option) => option.createdAt ?? 'unknown').join(', ');
+    lines.push(`conflict: ${where} | ${conflict.username} | choices=${conflict.options.length} | created=${created}`);
   }
   if (passthroughCount > 0) lines.push('passthrough items are included in the JSON download only');
 
