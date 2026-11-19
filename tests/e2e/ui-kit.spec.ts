@@ -148,3 +148,19 @@ test('untrusted Markdown is sanitized and sandboxed in the preview', async ({ pa
   await expect(preview).toHaveAttribute('sandbox', '');
   expect(await page.evaluate(() => (window as unknown as { __xtPwned?: boolean }).__xtPwned)).toBeUndefined();
 });
+
+test('markdown editor downloads a Word document with its table', async ({ page }) => {
+  await page.goto('tools/markdown-editor/');
+  await waitForHydration(page);
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download .docx' }).click();
+  const file = await download;
+  expect(file.suggestedFilename()).toBe('document.docx');
+  const stream = await file.createReadStream();
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream) chunks.push(Buffer.from(chunk));
+  const bytes = Buffer.concat(chunks);
+  expect(bytes.subarray(0, 2).toString()).toBe('PK');
+  expect(bytes.includes(Buffer.from('w:tbl'))).toBe(true);
+  expect(bytes.includes(Buffer.from('Feature'))).toBe(true);
+});
