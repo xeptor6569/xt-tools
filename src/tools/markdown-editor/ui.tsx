@@ -7,8 +7,9 @@ import SandboxedPreview from '../../components/ui/SandboxedPreview.tsx';
 import TextArea from '../../components/ui/TextArea.tsx';
 import Toggle from '../../components/ui/Toggle.tsx';
 import { useDebounced } from '../../components/ui/useDebounced.ts';
+import { downloadBlob } from '../../lib/download.ts';
 import { PREVIEW_CSS } from '../../lib/preview-css.ts';
-import { runTool } from '../../lib/run-tool.ts';
+import { errorMessage, runTool } from '../../lib/run-tool.ts';
 import { sanitizeHtml } from '../../lib/sanitize.ts';
 import { PRINT_CSS, cleanMarkdown, htmlDocument, markdownStats, markdownToHtml } from './logic.ts';
 
@@ -17,7 +18,7 @@ const START = `# Notes
 Write **Markdown** on the left and see it on the right.
 
 - [x] Live preview
-- [ ] Copy the HTML or print to PDF
+- [ ] Copy the HTML, print to PDF, or download Word
 
 | Feature | Works offline |
 | ------- | ------------- |
@@ -52,6 +53,27 @@ export default function MarkdownEditorTool() {
   const html = result.output ?? '';
   const stats = markdownStats(input);
   const [tidyError, setTidyError] = useState<string>();
+  const [docxError, setDocxError] = useState<string>();
+  const [docxBusy, setDocxBusy] = useState(false);
+
+  const downloadWord = async () => {
+    setDocxBusy(true);
+    setDocxError(undefined);
+    try {
+      const { markdownToDocx } = await import('./docx.ts');
+      const bytes = markdownToDocx(input);
+      downloadBlob(
+        new Blob([new Uint8Array(bytes)], {
+          type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        }),
+        'document.docx',
+      );
+    } catch (error) {
+      setDocxError(errorMessage(error));
+    } finally {
+      setDocxBusy(false);
+    }
+  };
 
   const replaceText = (next: string) => {
     setTidyError(undefined);
@@ -75,7 +97,7 @@ export default function MarkdownEditorTool() {
           <SandboxedPreview html={html} title="Markdown preview" class="min-h-[60vh] flex-1" />
         </div>
       </div>
-      <ErrorMessage message={result.error ?? tidyError} />
+      <ErrorMessage message={result.error ?? tidyError ?? docxError} />
       <div class="flex flex-wrap items-center gap-2">
         <Button onClick={tidyUp} disabled={input === ''}>
           Tidy up
@@ -101,7 +123,7 @@ export default function MarkdownEditorTool() {
         label="Print-friendly layout"
         checked={printFriendly}
         onChecked={setPrintFriendly}
-        hint="Black on white, serif text, no page breaks inside code, tables or images, and link addresses shown on paper. Applies to Print and Download .html."
+        hint="Black on white, serif text, no page breaks inside code, tables or images, and link addresses shown on paper. Applies to Print and Download .html. Word keeps headings, emphasis, code and table borders."
       />
       <div class="flex flex-wrap items-center gap-2">
         <CopyButton text={html} label="Copy HTML" />
@@ -115,6 +137,9 @@ export default function MarkdownEditorTool() {
         />
         <Button onClick={() => print(input, html, printFriendly)} disabled={!html}>
           Print / save as PDF
+        </Button>
+        <Button onClick={() => void downloadWord()} disabled={input.trim() === '' || docxBusy}>
+          {docxBusy ? 'Preparing Word…' : 'Download .docx'}
         </Button>
         <span class="ml-auto text-sm text-muted" aria-live="polite">
           {stats.words} words · {stats.headings} headings · {stats.links} links

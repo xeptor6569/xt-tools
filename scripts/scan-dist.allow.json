@@ -6,6 +6,10 @@
       "reason": "XML namespace identifiers used by Preact for SVG and MathML; never fetched."
     },
     {
+      "prefix": "http://schemas.openxmlformats.org/",
+      "reason": "Office Open XML namespace identifiers written into .docx files by the markdown editor. They are XML names, never fetched."
+    },
+    {
       "prefix": "https://web.archive.org/web/20120819044459/http://www.roysac.com/",
       "reason": "Credit line inside bundled FIGlet font data (ascii-art); never fetched."
     },

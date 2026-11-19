@@ -1,4 +1,4 @@
-import { Marked } from 'marked';
+import { Marked, type Token } from 'marked';
 import { ToolInputError } from '../types.ts';
 
 const MAX_INPUT = 5_000_000;
@@ -19,6 +19,16 @@ export function markdownToHtml(input: string): string {
   if (input.length > MAX_INPUT) throw new ToolInputError('Input is too large (maximum 5 MB).');
   try {
     return marked.parse(input) as string;
+  } catch (error) {
+    throw new ToolInputError(`Couldn't render this Markdown: ${(error as Error).message}`);
+  }
+}
+
+/** GitHub-flavoured tokens for the Word exporter. Same limits as {@link markdownToHtml}. */
+export function markdownTokens(input: string): Token[] {
+  if (input.length > MAX_INPUT) throw new ToolInputError('Input is too large (maximum 5 MB).');
+  try {
+    return marked.lexer(input);
   } catch (error) {
     throw new ToolInputError(`Couldn't render this Markdown: ${(error as Error).message}`);
   }
