@@ -120,6 +120,58 @@ describe('passwordExportViewer', () => {
     expect(parsedKp.entries[0]?.title).toBe('SSH Bastion');
   });
 
+  it('keeps creation dates from Bitwarden, 1Password, KeePass and Firefox', async () => {
+    const bitwarden = JSON.stringify({
+      encrypted: false,
+      items: [
+        {
+          id: '1',
+          type: 1,
+          name: 'Example',
+          creationDate: '2020-01-02T03:04:05.000Z',
+          login: { username: 'alice', password: 'secret', uris: [{ uri: 'https://example.com' }] },
+        },
+      ],
+    });
+    expect((await inspectAndConvertVault(bitwarden)).entries[0]?.createdAt).toBe('2020-01-02T03:04:05.000Z');
+
+    const onePassword = JSON.stringify({
+      accounts: [
+        {
+          vaults: [
+            {
+              attrs: { name: 'Personal' },
+              items: [
+                {
+                  uuid: 'item-1',
+                  createdAt: 1700000000,
+                  overview: { title: 'Example', url: 'https://example.com' },
+                  details: { loginFields: [{ designation: 'password', value: 'secret' }] },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    expect((await inspectAndConvertVault(onePassword)).entries[0]?.createdAt).toBe(
+      new Date(1700000000 * 1000).toISOString(),
+    );
+
+    const keepass = `<KeePassFile><Root><Group><Name>Root</Name><Entry>
+      <Times><CreationTime>2024-06-01T15:30:00Z</CreationTime></Times>
+      <String><Key>Title</Key><Value>Example</Value></String>
+      <String><Key>Password</Key><Value>secret</Value></String>
+    </Entry></Group></Root></KeePassFile>`;
+    expect((await inspectAndConvertVault(keepass)).entries[0]?.createdAt).toBe('2024-06-01T15:30:00.000Z');
+
+    const firefox = [
+      'url,username,password,httpRealm,formActionOrigin,guid,timeCreated,timeLastUsed,timePasswordChanged',
+      'https://example.com,alice,secret,,,,1700000000000,1700000000000,1700000000000',
+    ].join('\n');
+    expect((await inspectAndConvertVault(firefox)).entries[0]?.createdAt).toBe(new Date(1700000000000).toISOString());
+  });
+
   it('labels an Apple Passwords CSV with or without OTPAuth as Safari', async () => {
     const withOtp = [
       'Title,URL,Username,Password,Notes,OTPAuth',

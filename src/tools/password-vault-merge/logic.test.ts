@@ -108,6 +108,88 @@ describe('password vault merge', () => {
     expect(report.bitwardenCsv.startsWith('folder,favorite,type,name,notes,fields,reprompt,login_uri')).toBe(true);
   });
 
+  it('lists each duplicate with its creation date and password', async () => {
+    const bitwarden = JSON.stringify({
+      encrypted: false,
+      items: [
+        {
+          id: 'bw-1',
+          type: 1,
+          name: 'Example',
+          creationDate: '2020-01-02T03:04:05.000Z',
+          login: { username: 'alice', password: 'correct-horse', uris: [{ uri: 'https://example.com/login' }] },
+        },
+      ],
+    });
+    const firefox = [
+      'url,username,password,httpRealm,formActionOrigin,guid,timeCreated,timeLastUsed,timePasswordChanged',
+      'https://www.example.com/settings,alice,newer-secret,,,,1700000000000,1700000000000,1700000000000',
+    ].join('\n');
+    const sources = [
+      { name: 'bitwarden.json', text: bitwarden },
+      { name: 'firefox.csv', text: firefox },
+    ];
+    const report = await mergeVaultSources(sources);
+    expect(report.conflicts).toHaveLength(1);
+    const conflict = report.conflicts[0]!;
+    const firefoxCreated = new Date(1700000000000).toISOString();
+    expect(conflict.options.map((option) => [option.sourceLabel, option.password, option.createdAt])).toEqual([
+      ['Bitwarden', 'correct-horse', '2020-01-02T03:04:05.000Z'],
+      ['Firefox', 'newer-secret', firefoxCreated],
+    ]);
+    expect(report.summary).toContain(`created=2020-01-02T03:04:05.000Z, ${firefoxCreated}`);
+    const kept = JSON.parse(report.bitwardenJson).items[0];
+    expect(kept.login.password).toBe('correct-horse');
+    expect(kept.creationDate).toBe('2020-01-02T03:04:05.000Z');
+
+    const picked = conflict.options[1]!;
+    const chosen = await mergeVaultSources(sources, { [conflict.id]: picked.id });
+    const item = JSON.parse(chosen.bitwardenJson).items[0];
+    expect(item.login.password).toBe('newer-secret');
+    expect(item.creationDate).toBe(firefoxCreated);
+  });
+
+  it('asks which copy to keep when the passwords match but the creation dates do not', async () => {
+    const older = JSON.stringify({
+      encrypted: false,
+      items: [
+        {
+          id: 'bw-1',
+          type: 1,
+          name: 'Example',
+          creationDate: '2019-05-01T00:00:00.000Z',
+          login: { username: 'alice', password: 'same-secret', uris: [{ uri: 'https://example.com' }] },
+        },
+      ],
+    });
+    const newer = JSON.stringify({
+      encrypted: false,
+      items: [
+        {
+          id: 'bw-2',
+          type: 1,
+          name: 'Example',
+          creationDate: '2024-05-01T00:00:00.000Z',
+          login: { username: 'alice', password: 'same-secret', uris: [{ uri: 'https://www.example.com/login' }] },
+        },
+      ],
+    });
+    const sources = [
+      { name: 'older.json', text: older },
+      { name: 'newer.json', text: newer },
+    ];
+    const report = await mergeVaultSources(sources);
+    expect(report.conflicts).toHaveLength(1);
+    expect(report.folded).toBe(1);
+    expect(report.conflicts[0]?.options.map((option) => option.password)).toEqual(['same-secret', 'same-secret']);
+    expect(JSON.parse(report.bitwardenJson).items[0].creationDate).toBe('2019-05-01T00:00:00.000Z');
+
+    const later = report.conflicts[0]!.options[1]!.id;
+    const chosen = await mergeVaultSources(sources, { [report.conflicts[0]!.id]: later });
+    expect(JSON.parse(chosen.bitwardenJson).items[0].login.password).toBe('same-secret');
+    expect(JSON.parse(chosen.bitwardenJson).items[0].creationDate).toBe('2024-05-01T00:00:00.000Z');
+  });
+
   it('reads an Apple Passwords CSV that has no OTPAuth column', async () => {
     const apple = ['Title,URL,Username,Password,Notes', 'Example,https://example.com,alice,secret,note'].join('\n');
     const report = await mergeVaultSources([{ name: 'apple.csv', text: apple }]);

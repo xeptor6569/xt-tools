@@ -25,6 +25,13 @@ function maskSecret(secret: string): string {
   return '•'.repeat(count);
 }
 
+function formatCreated(iso: string | undefined): string {
+  if (!iso) return 'Created date unknown';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return 'Created date unknown';
+  return `Created ${date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}`;
+}
+
 export default function PasswordVaultMergeTool() {
   const call = useWorker(createWorker, { timeoutMs: 60_000 });
   const nextId = useRef(1);
@@ -82,9 +89,9 @@ export default function PasswordVaultMergeTool() {
     <div class="flex flex-col gap-4">
       <p class="text-sm text-muted">
         Drop a Bitwarden export and the stragglers from Apple Passwords, Chrome, or another manager. Matching logins are
-        folded together. Bitwarden keeps its password when another file disagrees, and you can switch that choice below.
-        The download is a new vault: importing it into a vault that already has these logins will duplicate them. Cards
-        and other non-login items are included only in the JSON file.
+        folded together. When copies disagree, each one shows its password and the date that file recorded. Bitwarden
+        stays selected until you switch. The download is a new vault: importing it into a vault that already has these
+        logins will duplicate them. Cards and other non-login items are included only in the JSON file.
       </p>
       <FileDropZone
         label="Password exports (.kdbx, .json, .csv, .xml)"
@@ -171,12 +178,12 @@ export default function PasswordVaultMergeTool() {
       {report && report.conflicts.length > 0 && (
         <div class="flex flex-col gap-3">
           <div class="flex flex-wrap items-center justify-between gap-2">
-            <h2 class="text-base font-semibold">Passwords that disagree</h2>
+            <h2 class="text-base font-semibold">Duplicate logins</h2>
             <Toggle label="Reveal passwords" checked={reveal} onChecked={setReveal} />
           </div>
           <ul class="flex flex-col gap-3">
             {report.conflicts.map((conflict, index) => {
-              const selected = choices[conflict.id] ?? conflict.defaultPassword;
+              const selected = choices[conflict.id] ?? conflict.defaultOptionId;
               return (
                 <li key={conflict.id} class="rounded-lg border border-border p-3">
                   <fieldset class="flex flex-col gap-2">
@@ -184,16 +191,20 @@ export default function PasswordVaultMergeTool() {
                       {conflict.host || conflict.title}
                       {conflict.username ? ` · ${conflict.username}` : ''}
                     </legend>
-                    {conflict.options.map((option, optionIndex) => (
-                      <label key={`${option.sourceLabel}-${optionIndex}`} class="flex items-center gap-2 text-sm">
+                    {conflict.options.map((option) => (
+                      <label key={option.id} class="flex items-start gap-2 text-sm">
                         <input
                           type="radio"
+                          class="mt-1"
                           name={`merge-conflict-${index}`}
-                          checked={selected === option.password}
-                          onChange={() => setChoices((current) => ({ ...current, [conflict.id]: option.password }))}
+                          checked={selected === option.id}
+                          onChange={() => setChoices((current) => ({ ...current, [conflict.id]: option.id }))}
                         />
-                        <span>{option.sourceLabel}</span>
-                        <span class="font-mono">{reveal ? option.password : maskSecret(option.password)}</span>
+                        <span class="flex flex-col">
+                          {option.sourceLabel}
+                          <span class="text-muted">{formatCreated(option.createdAt)}</span>
+                          <span class="font-mono">{reveal ? option.password : maskSecret(option.password)}</span>
+                        </span>
                       </label>
                     ))}
                   </fieldset>

@@ -40,6 +40,8 @@ export interface VaultEntry {
   favorite: boolean;
   /** Every login URI, when the export has more than `url`. */
   urls?: string[];
+  /** ISO-8601 creation time, when the export included one. */
+  createdAt?: string;
 }
 
 export interface TotpCodeInfo {
@@ -155,6 +157,32 @@ function textOfXmlValue(val: unknown): string {
   return '';
 }
 
+/** Turns an export's creation field into an ISO-8601 timestamp. Missing or unreadable values stay unset. */
+export function normalizeCreatedAt(raw: unknown): string | undefined {
+  if (raw === null || raw === undefined) return undefined;
+  if (typeof raw === 'number') return createdAtFromEpoch(raw);
+  if (typeof raw !== 'string') return undefined;
+  const trimmed = raw.trim();
+  if (trimmed === '') return undefined;
+  if (/^-?\d+(\.\d+)?$/.test(trimmed)) return createdAtFromEpoch(Number(trimmed));
+  const parsed = Date.parse(trimmed);
+  if (Number.isNaN(parsed)) return undefined;
+  return new Date(parsed).toISOString();
+}
+
+function createdAtFromEpoch(value: number): string | undefined {
+  if (!Number.isFinite(value) || value <= 0) return undefined;
+  let milliseconds = Number.NaN;
+  if (value >= 1e12) milliseconds = value;
+  else if (value >= 1e9) milliseconds = value * 1000;
+  if (!Number.isFinite(milliseconds)) return undefined;
+  const date = new Date(milliseconds);
+  if (Number.isNaN(date.getTime())) return undefined;
+  const year = date.getUTCFullYear();
+  if (year < 1990 || year > 2100) return undefined;
+  return date.toISOString();
+}
+
 function parseKeePassXml(xml: string, formatLabel: VaultSourceFormat = 'keepass-xml'): ParsedVault {
   const parser = new XMLParser({
     ignoreAttributes: false,
@@ -199,6 +227,8 @@ function parseKeePassXml(xml: string, formatLabel: VaultSourceFormat = 'keepass-
       const notes = fields.Notes ?? '';
       const totp = fields.otp ?? fields.TOTP ?? fields['TOTP Seed'] ?? fields['TimeOtp-Secret-Base32'] ?? '';
       if (!title && !username && !password && !url && !notes) continue;
+      const times = asArray(entryNode.Times as Record<string, unknown> | Record<string, unknown>[])[0];
+      const createdAt = normalizeCreatedAt(times ? textOfXmlValue(times.CreationTime) : '');
       entries.push({
         id: `kp-${entries.length + 1}`,
         type: !username && !password && !url && notes ? 'note' : 'login',
@@ -210,6 +240,7 @@ function parseKeePassXml(xml: string, formatLabel: VaultSourceFormat = 'keepass-
         folder: currentFolder,
         totp,
         favorite: false,
+        ...(createdAt ? { createdAt } : {}),
       });
     }
 
@@ -302,6 +333,7 @@ function parseJsonExport(text: string): VaultDocument {
       const notes = String(rawItem.notes ?? details.notesPlain ?? '');
       const totp = String(login.totp ?? opTotp ?? '');
       const allUrls = url && !urls.includes(url) ? [url, ...urls] : urls;
+      const createdAt = normalizeCreatedAt(rawItem.creationDate ?? rawItem.createdAt);
 
       entries.push({
         id: String(rawItem.id ?? rawItem.uuid ?? `item-${entries.length + 1}`),
@@ -315,6 +347,7 @@ function parseJsonExport(text: string): VaultDocument {
         folder,
         totp,
         favorite: Boolean(rawItem.favorite),
+        ...(createdAt ? { createdAt } : {}),
       });
     }
     const is1P = (obj.items as Array<Record<string, unknown>>).some((i) => i && ('overview' in i || 'details' in i));
@@ -349,6 +382,7 @@ function parseJsonExport(text: string): VaultDocument {
               if (v && typeof v.totp === 'string') totp = v.totp;
             }
           }
+          const createdAt = normalizeCreatedAt(item.createdAt);
           entries.push({
             id: String(item.uuid ?? `1p-${entries.length + 1}`),
             type: !username && !password && details.notesPlain ? 'note' : 'login',
@@ -360,6 +394,7 @@ function parseJsonExport(text: string): VaultDocument {
             folder: vaultName,
             totp,
             favorite: Boolean(item.favIndex),
+            ...(createdAt ? { createdAt } : {}),
           });
         }
       }
@@ -429,6 +464,7 @@ function parseCsvExport(text: string): VaultDocument {
   const iTotp = idxOf('logintotp', 'otpauth', 'totp', 'otp', 'totpseed');
   const iType = idxOf('type');
   const iFav = idxOf('favorite', 'fav');
+  const iCreated = idxOf('creationdate', 'createdat', 'datecreated', 'timecreated', 'createdtime', 'created');
 
   if (iTitle < 0 && iUser < 0 && iPass < 0 && iUrl < 0) {
     throw new ToolInputError(
@@ -448,6 +484,7 @@ function parseCsvExport(text: string): VaultDocument {
     const totp = get(iTotp);
     const rawType = get(iType).toLowerCase();
     const fav = get(iFav);
+    const createdAt = normalizeCreatedAt(get(iCreated));
 
     if (!title && !username && !password && !url && !notes) continue;
     const isNote =
@@ -476,6 +513,7 @@ function parseCsvExport(text: string): VaultDocument {
       folder,
       totp,
       favorite: fav === '1' || fav.toLowerCase() === 'true',
+      ...(createdAt ? { createdAt } : {}),
     });
   }
 
