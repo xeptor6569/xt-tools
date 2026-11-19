@@ -1,5 +1,5 @@
 import { ToolInputError } from '../types.ts';
-import { diceware, parseCount as parseWordCount, type RandomBytes } from '../diceware/logic.ts';
+import { DEFAULT_WORDS, MAX_WORDS, diceware, type RandomBytes } from '../diceware/logic.ts';
 
 export type { RandomBytes };
 
@@ -72,7 +72,21 @@ export function parseLength(text: string): number {
   return n;
 }
 
-export { parseWordCount };
+/** Passphrases may be shorter than the Diceware page, which stays at four words. */
+export const MIN_PASSPHRASE_WORDS = 3;
+export const MAX_PASSPHRASE_WORDS = MAX_WORDS;
+
+/** Parses the passphrase word count. Blank means 6. */
+export function parseWordCount(text: string): number {
+  const trimmed = text.trim();
+  if (trimmed === '') return DEFAULT_WORDS;
+  if (!/^\d+$/.test(trimmed)) throw new ToolInputError('Enter a whole number.');
+  const n = Number(trimmed);
+  if (n < MIN_PASSPHRASE_WORDS || n > MAX_PASSPHRASE_WORDS) {
+    throw new ToolInputError(`Enter a word count from ${MIN_PASSPHRASE_WORDS} to ${MAX_PASSPHRASE_WORDS}.`);
+  }
+  return n;
+}
 
 function drawIndex(random: RandomBytes, size: number): number {
   if (size < 1) throw new ToolInputError('Character set is empty.');
@@ -151,8 +165,15 @@ export function passphraseGenerator(
   if (!Number.isInteger(count) || count < 1 || count > MAX_COUNT) {
     throw new ToolInputError(`Enter a count from 1 to ${MAX_COUNT}.`);
   }
+  if (
+    !Number.isInteger(options.words) ||
+    options.words < MIN_PASSPHRASE_WORDS ||
+    options.words > MAX_PASSPHRASE_WORDS
+  ) {
+    throw new ToolInputError(`Enter a word count from ${MIN_PASSPHRASE_WORDS} to ${MAX_PASSPHRASE_WORDS}.`);
+  }
   return Array.from({ length: count }, () => {
-    const phrase = diceware(options.words, random, words)[0];
+    const phrase = diceware(options.words, random, words, MIN_PASSPHRASE_WORDS)[0];
     if (!phrase) throw new ToolInputError('Word list is missing an entry.');
     return formatPhrase(phrase, options);
   });

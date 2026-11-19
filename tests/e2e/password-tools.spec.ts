@@ -17,6 +17,10 @@ test('password generator makes a password and an EFF passphrase', async ({ page 
   await expect(output).toHaveValue(/^.{12}$/);
   await page.getByLabel('Kind').selectOption('passphrase');
   await expect(output).toHaveValue(/^[a-z]+(?: [a-z]+){5}$/, { timeout: 15_000 });
+  await page.getByLabel(/^Words/).fill('3');
+  await expect(output).toHaveValue(/^[a-z]+(?: [a-z]+){2}$/);
+  await page.getByLabel(/^Words/).fill('2');
+  await expect(page.locator('[data-xt="error"]')).toContainText('3 to 10');
 });
 
 test('random bytes follows openssl rand encodings and downloads raw bytes', async ({ page }) => {

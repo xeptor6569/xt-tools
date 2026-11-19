@@ -10,12 +10,13 @@ import Select from '../../components/ui/Select.tsx';
 import TextArea from '../../components/ui/TextArea.tsx';
 import Toggle from '../../components/ui/Toggle.tsx';
 import { errorMessage } from '../../lib/run-tool.ts';
-import { MAX_WORDS, MIN_WORDS } from '../diceware/logic.ts';
 import {
   DEFAULT_LENGTH,
   MAX_COUNT,
   MAX_LENGTH,
+  MAX_PASSPHRASE_WORDS,
   MIN_LENGTH,
+  MIN_PASSPHRASE_WORDS,
   parseCount,
   parseLength,
   parseWordCount,
@@ -140,7 +141,7 @@ export default function PasswordGeneratorTool() {
           />
         ) : (
           <Input
-            label={`Words (${MIN_WORDS}–${MAX_WORDS})`}
+            label={`Words (${MIN_PASSPHRASE_WORDS}–${MAX_PASSPHRASE_WORDS})`}
             value={wordsText}
             onValue={setWordsText}
             inputMode="numeric"

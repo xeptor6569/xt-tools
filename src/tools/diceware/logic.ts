@@ -32,10 +32,19 @@ function draw(random: RandomBytes, size: number): number {
 /**
  * One Diceware passphrase of `count` words. `words` is the EFF large list (or a test list).
  * Indexing uses rejection sampling so every word is equally likely.
+ * `minWords` lowers the floor for a caller that accepts fewer words. The Diceware page stays at {@link MIN_WORDS}.
  */
-export function diceware(count: number, random: RandomBytes, words: readonly string[]): string[] {
-  if (!Number.isInteger(count) || count < MIN_WORDS || count > MAX_WORDS) {
-    throw new ToolInputError(`Enter a word count from ${MIN_WORDS} to ${MAX_WORDS}.`);
+export function diceware(
+  count: number,
+  random: RandomBytes,
+  words: readonly string[],
+  minWords: number = MIN_WORDS,
+): string[] {
+  if (!Number.isInteger(minWords) || minWords < 1 || minWords > MAX_WORDS) {
+    throw new ToolInputError(`Enter a word count from 1 to ${MAX_WORDS}.`);
+  }
+  if (!Number.isInteger(count) || count < minWords || count > MAX_WORDS) {
+    throw new ToolInputError(`Enter a word count from ${minWords} to ${MAX_WORDS}.`);
   }
   if (words.length < 2) throw new ToolInputError('Word list is empty.');
   const picked: string[] = [];
