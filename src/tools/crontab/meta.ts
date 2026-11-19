@@ -3,7 +3,7 @@ import type { ToolMeta } from '../types.ts';
 const meta: ToolMeta = {
   id: 'crontab',
   name: 'Crontab explainer',
-  description: 'Explain a cron schedule in plain English and list its next run times.',
+  description: 'Build a cron expression from its fields, explain it, and list the next run times.',
   category: 'development',
   group: 'utilities',
   keywords: ['cron', 'crontab', 'schedule', 'cron expression', 'cron generator', 'next run', 'job'],

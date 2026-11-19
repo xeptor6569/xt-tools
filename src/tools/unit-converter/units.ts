@@ -60,6 +60,10 @@ export const CATEGORIES: Category[] = [
       u('f', 'Fahrenheit (°F)', 1),
       u('k', 'Kelvin (K)', 1),
       u('r', 'Rankine (°R)', 1),
+      u('de', 'Delisle (°De)', 1),
+      u('n', 'Newton (°N)', 1),
+      u('re', 'Réaumur (°Ré)', 1),
+      u('ro', 'Rømer (°Rø)', 1),
     ],
   },
   {

@@ -109,6 +109,18 @@ function countryLabel(code: string): string {
   }
 }
 
+/**
+ * A Swiss or Liechtenstein QR-IBAN. The 5-digit IID (positions 5–9) is 30000–31999.
+ * Every other IBAN is not a QR-IBAN.
+ */
+export function isQrIban(iban: string): boolean {
+  if (iban.slice(0, 2) !== 'CH' && iban.slice(0, 2) !== 'LI') return false;
+  const iid = iban.slice(4, 9);
+  if (!/^\d{5}$/.test(iid)) return false;
+  const n = Number(iid);
+  return n >= 30_000 && n <= 31_999;
+}
+
 /** Checks an IBAN with MOD-97 and prints it in groups of four. */
 export function ibanValidator(input: string): string {
   if (input.length > MAX_INPUT) throw new ToolInputError('Input is too large (maximum 80 characters).');
@@ -124,5 +136,13 @@ export function ibanValidator(input: string): string {
     throw new ToolInputError(`${country} IBANs are ${expected} characters. This one is ${iban.length}.`);
   }
   if (ibanMod97(iban) !== 1) throw new ToolInputError('The IBAN checksum is wrong (MOD-97).');
-  return [`Valid IBAN`, groupIban(iban), `Country: ${countryLabel(country)}`, `Checksum: MOD-97 OK`].join('\n');
+  const bban = iban.slice(4);
+  return [
+    'Valid IBAN',
+    groupIban(iban),
+    `Country: ${countryLabel(country)}`,
+    `BBAN: ${bban}`,
+    'Checksum: MOD-97 OK',
+    `QR-IBAN: ${isQrIban(iban) ? 'yes' : 'no'}`,
+  ].join('\n');
 }

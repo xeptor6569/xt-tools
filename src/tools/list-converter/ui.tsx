@@ -4,7 +4,7 @@ import Select from '../../components/ui/Select.tsx';
 import Toggle from '../../components/ui/Toggle.tsx';
 import TwoPane from '../../components/ui/TwoPane.tsx';
 import { runTool } from '../../lib/run-tool.ts';
-import { listConverter, type Case, type Join, type Sort, type Split } from './logic.ts';
+import { listConverter, parseTruncate, type Case, type Join, type Sort, type Split } from './logic.ts';
 import meta from './meta.ts';
 
 const SPLITS = [
@@ -67,6 +67,8 @@ export default function ListConverterTool() {
   const [dedupe, setDedupe] = useState(false);
   const [trim, setTrim] = useState(true);
   const [removeEmpty, setRemoveEmpty] = useState(true);
+  const [truncateText, setTruncateText] = useState('');
+  const [transpose, setTranspose] = useState(false);
   const [seed, setSeed] = useState(0);
 
   const w = WRAPS.find((x) => x.value === wrap) ?? WRAPS[0]!;
@@ -81,6 +83,8 @@ export default function ListConverterTool() {
           dedupe,
           trim,
           removeEmpty,
+          truncate: parseTruncate(truncateText),
+          transpose,
           random,
           open: w.open,
           close: w.close,
@@ -89,7 +93,22 @@ export default function ListConverterTool() {
         }),
       ),
     // `seed` re-runs a shuffle when the order is picked again.
-    [input, split, join, sort, caseMode, dedupe, trim, removeEmpty, wrap, prefix, suffix, seed],
+    [
+      input,
+      split,
+      join,
+      sort,
+      caseMode,
+      dedupe,
+      trim,
+      removeEmpty,
+      truncateText,
+      transpose,
+      wrap,
+      prefix,
+      suffix,
+      seed,
+    ],
   );
 
   return (
@@ -115,6 +134,15 @@ export default function ListConverterTool() {
               }}
             />
             <Select label="Case" value={caseMode} options={CASES} onValue={setCaseMode} />
+            <Input
+              label="Truncate each item"
+              value={truncateText}
+              onValue={setTruncateText}
+              inputMode="numeric"
+              placeholder="No limit"
+              hint="Characters to keep. Blank keeps the whole item."
+              class="w-36"
+            />
             <Select label="Wrap items" value={wrap} options={WRAPS} onValue={setWrap} />
             {wrap === 'custom' && (
               <>
@@ -136,6 +164,12 @@ export default function ListConverterTool() {
         <Toggle label="Trim spaces" checked={trim} onChecked={setTrim} />
         <Toggle label="Remove empty items" checked={removeEmpty} onChecked={setRemoveEmpty} />
         <Toggle label="Remove duplicates" checked={dedupe} onChecked={setDedupe} />
+        <Toggle
+          label="Transpose columns"
+          checked={transpose}
+          onChecked={setTranspose}
+          hint="Each line is a row. Columns use the split delimiter, or commas when that delimiter is a new line."
+        />
       </div>
     </div>
   );

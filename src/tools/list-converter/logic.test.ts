@@ -66,6 +66,28 @@ describe('listConverter', () => {
     );
   });
 
+  it('truncates each item to a number of characters', () => {
+    expect(run('apple\nbanana\n🍒🍒', { truncate: 3 })).toBe('app\nban\n🍒🍒');
+    expect(run('abcdef', { truncate: 0, removeEmpty: false })).toBe('');
+    expect(run('APPLE,pear', { caseMode: 'lower', truncate: 3, join: 'comma' })).toBe('app,pea');
+    expect(() => listConverter('a', { truncate: -1 })).toThrow(/whole number/);
+    expect(() => listConverter('a', { truncate: 1.5 })).toThrow(/whole number/);
+    expect(() => listConverter('a', { truncate: 100_001 })).toThrow(/100000/);
+  });
+
+  it('transposes columns into rows and back', () => {
+    const grid = 'a,b,c\nd,e,f';
+    expect(run(grid, { transpose: true, split: 'comma' })).toBe('a,d\nb,e\nc,f');
+    const once = run(grid, { transpose: true, split: 'comma' });
+    expect(run(once, { transpose: true, split: 'comma' })).toBe(grid);
+    expect(run('a,b\nc', { transpose: true, split: 'comma' })).toBe('a,c\nb');
+    expect(run('a\tb\nc\td', { transpose: true, split: 'tab' })).toBe('a\tc\nb\td');
+    expect(run('a,b\nc,d', { transpose: true })).toBe('a,c\nb,d');
+    expect(run('abcd,efgh\nijkl,mnop', { transpose: true, split: 'comma', truncate: 3 })).toBe('abc\nefg');
+    expect(listConverter('a,b\nc,d', { transpose: true, split: 'comma' }).count).toBe(2);
+    expect(run('a,,c\nd,,f', { transpose: true, split: 'comma', removeEmpty: false })).toBe('a,d\n\nc,f');
+  });
+
   it('counts the items', () => {
     expect(listConverter('a\nb\n\nc').count).toBe(3);
   });

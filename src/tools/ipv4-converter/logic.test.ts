@@ -12,6 +12,7 @@ describe('ipv4Converter', () => {
     expect(row['Decimal']).toBe('3232235777');
     expect(row['Hexadecimal']).toBe('0xC0A80101');
     expect(row['Binary']).toBe('11000000.10101000.00000001.00000001');
+    expect(row['IPv6']).toBe('::ffff:192.168.1.1');
   });
 
   it('detects decimal, hex and binary', () => {
@@ -26,8 +27,11 @@ describe('ipv4Converter', () => {
 
   it('covers the ends of the address space', () => {
     expect(as('0.0.0.0')['Decimal']).toBe('0');
+    expect(as('0.0.0.0')['IPv6']).toBe('::ffff:0.0.0.0');
     expect(as('255.255.255.255')['Hexadecimal']).toBe('0xFFFFFFFF');
+    expect(as('255.255.255.255')['IPv6']).toBe('::ffff:255.255.255.255');
     expect(as('4294967295')['Dotted decimal']).toBe('255.255.255.255');
+    expect(as('192.0.2.1')['IPv6']).toBe('::ffff:192.0.2.1');
   });
 
   it('treats a short run of ones as a decimal integer', () => {
