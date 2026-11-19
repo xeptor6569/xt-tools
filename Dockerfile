@@ -103,9 +103,13 @@ LABEL org.opencontainers.image.title="xt-tools" \
       org.opencontainers.image.licenses="MIT"
 
 USER root
-# Pick up Alpine security fixes released since the base image was built
-# (the weekly rebuild keeps this current).
+# Pick up packages published after this base image was built. APK_UPGRADE is
+# part of the command so a new value re-runs the upgrade. The base digest is
+# pinned, and a cached upgrade would keep a vulnerable nginx until that digest
+# moved. CI, release and the weekly rebuild pass the run id.
+ARG APK_UPGRADE=0
 RUN apk upgrade --no-cache \
+ && echo "apk upgrade ${APK_UPGRADE}" >/dev/null \
  && rm -rf /usr/share/nginx/html/* /etc/nginx/conf.d/*
 COPY --chown=root:root deploy/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY --chown=root:root deploy/nginx/default.conf /etc/nginx/conf.d/default.conf
