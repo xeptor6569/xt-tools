@@ -68,6 +68,7 @@ jobs:
           build-args: |
             VERSION=${{ github.ref_name }}
             REVISION=${{ github.sha }}
+            APK_UPGRADE=${{ github.run_id }}
           cache-from: type=gha,scope=release
           cache-to: type=gha,mode=max,scope=release
 

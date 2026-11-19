@@ -8,6 +8,8 @@ const tools = await loadTools();
 const cspFile = join(import.meta.dirname, '..', '..', 'build', 'server', 'csp.txt');
 
 test('home page lists every tool', async ({ page }) => {
+  // Listing every tool and running axe in both themes can take longer than 30s.
+  test.setTimeout(60_000);
   await page.goto('');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Tools');
   for (const tool of tools) {

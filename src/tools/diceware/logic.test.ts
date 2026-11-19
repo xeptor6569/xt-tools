@@ -25,6 +25,11 @@ describe('diceware', () => {
     for (const word of words) expect(EFF_LARGE_WORDLIST).toContain(word);
   });
 
+  it('stays at four words unless a caller lowers the floor', () => {
+    expect(() => diceware(3, zeros, EFF_LARGE_WORDLIST)).toThrow(ToolInputError);
+    expect(diceware(3, zeros, EFF_LARGE_WORDLIST, 3)).toEqual(['abacus abacus abacus']);
+  });
+
   it('parses a word count from 4 to 10', () => {
     expect(parseCount('')).toBe(6);
     expect(parseCount(' 4 ')).toBe(4);

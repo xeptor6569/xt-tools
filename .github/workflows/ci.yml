@@ -155,6 +155,7 @@ jobs:
             BASE_PATH=${{ matrix.base }}
             VERSION=ci-${{ github.sha }}
             REVISION=${{ github.sha }}
+            APK_UPGRADE=${{ github.run_id }}
           cache-from: type=gha,scope=image-${{ matrix.base == '/' && 'root' || 'subpath' }}
           cache-to: type=gha,mode=max,scope=image-${{ matrix.base == '/' && 'root' || 'subpath' }}
       - name: Smoke test (read-only, no capabilities)

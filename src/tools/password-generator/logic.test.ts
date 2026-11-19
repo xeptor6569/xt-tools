@@ -8,6 +8,7 @@ import {
   UPPER,
   parseCount,
   parseLength,
+  parseWordCount,
   passphraseGenerator,
   passwordBits,
   passwordGenerator,
@@ -75,6 +76,15 @@ describe('passphraseGenerator', () => {
       'AaAaAaAa',
     ]);
   });
+
+  it('allows three words and rejects fewer', () => {
+    expect(passphraseGenerator(1, { words: 3, separator: 'hyphen', capitalize: true }, words, zeros)).toEqual([
+      'Aa-Aa-Aa',
+    ]);
+    expect(() => passphraseGenerator(1, { words: 2, separator: 'space', capitalize: false }, words, zeros)).toThrow(
+      ToolInputError,
+    );
+  });
 });
 
 describe('parsers', () => {
@@ -88,8 +98,17 @@ describe('parsers', () => {
     expect(() => parseLength('129')).toThrow(ToolInputError);
   });
 
+  it('parses a passphrase word count from 3 to 10', () => {
+    expect(parseWordCount('')).toBe(6);
+    expect(parseWordCount('3')).toBe(3);
+    expect(parseWordCount('10')).toBe(10);
+    expect(() => parseWordCount('2')).toThrow(ToolInputError);
+    expect(() => parseWordCount('11')).toThrow(ToolInputError);
+  });
+
   it('survives empty, huge and malformed input', () => {
     expectRobust(parseCount);
     expectRobust(parseLength);
+    expectRobust(parseWordCount);
   });
 });
