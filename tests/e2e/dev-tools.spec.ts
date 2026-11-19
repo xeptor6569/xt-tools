@@ -85,6 +85,18 @@ test('json-query runs jq in WebAssembly inside its worker', async ({ page }) => 
   await expect(output).toHaveValue(/Nigel Rees/, { timeout: 15_000 });
 });
 
+test('pdf-text-extractor reads the sample PDF text layer', async ({ page }) => {
+  await page.goto('tools/pdf-text-extractor/');
+  await waitForHydration(page);
+  await page.getByRole('button', { name: 'Load 2-page sample PDF' }).click();
+  const output = page.locator('[data-xt="output"]').first();
+  await expect(output).toHaveValue(/PDF text sample — Page 1 of 2/, { timeout: 15_000 });
+  await expect(output).toHaveValue(/PDF text sample — Page 2 of 2/);
+  await page.getByLabel('Pages').fill('2');
+  await expect(output).toHaveValue(/PDF text sample — Page 2 of 2/);
+  await expect(output).not.toHaveValue(/Page 1 of 2/);
+});
+
 test('pdf-tools and pdf-to-images process sample PDFs in workers', async ({ page }) => {
   await page.goto('tools/pdf-tools/');
   await waitForHydration(page);

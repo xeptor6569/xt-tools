@@ -82,7 +82,12 @@ export const categories = [
     icon: 'shield',
     description: 'Remove metadata and keep private notes on this device.',
   },
-  { id: 'documents', label: 'Documents', icon: 'file-text', description: 'Merge, split and convert PDF documents.' },
+  {
+    id: 'documents',
+    label: 'Documents',
+    icon: 'file-text',
+    description: 'Merge, split, convert and read PDF documents.',
+  },
   {
     id: 'design',
     label: 'Design',
