@@ -19,6 +19,10 @@ export interface ListOptions {
   /** Text before and after the whole list, e.g. "[" and "]". */
   open?: string;
   close?: string;
+  /** Keep at most this many characters of each item. Unset means no limit. */
+  truncate?: number;
+  /** Turn columns into rows. A line is a row; columns use the split delimiter. */
+  transpose?: boolean;
   /** Needed for "shuffle": returns n random bytes. */
   random?: (n: number) => Uint8Array;
 }
@@ -42,6 +46,15 @@ const JOIN: Record<Join, string> = {
   tab: '\t',
   pipe: '|',
 };
+const COLUMN_JOIN: Record<Delimiter, string> = {
+  newline: '\n',
+  comma: ',',
+  semicolon: ';',
+  space: ' ',
+  tab: '\t',
+  pipe: '|',
+};
+const MAX_TRUNCATE = 100_000;
 
 export function detectSplit(text: string): Delimiter {
   if (/\r?\n/.test(text.trim())) return 'newline';
@@ -82,16 +95,90 @@ function shuffle<T>(items: T[], random: (n: number) => Uint8Array): T[] {
   return out;
 }
 
+/** Blank means no limit. Otherwise a whole number of characters, at most 100000. */
+export function parseTruncate(text: string): number | undefined {
+  const trimmed = text.trim();
+  if (trimmed === '') return undefined;
+  if (!/^\d+$/.test(trimmed)) throw new ToolInputError('Truncate length must be a whole number, or left blank.');
+  return checkTruncate(Number(trimmed));
+}
+
+function checkTruncate(n: number): number {
+  if (!Number.isInteger(n) || n < 0 || n > MAX_TRUNCATE) {
+    throw new ToolInputError(`Truncate length must be a whole number from 0 to ${MAX_TRUNCATE}.`);
+  }
+  return n;
+}
+
+/** Cuts `value` to `max` Unicode characters. A character is one code point. */
+function truncateChars(value: string, max: number): string {
+  if (max === 0) return '';
+  let count = 0;
+  for (let i = 0; i < value.length;) {
+    if (count === max) return value.slice(0, i);
+    const cp = value.codePointAt(i) ?? 0;
+    i += cp > 0xffff ? 2 : 1;
+    count += 1;
+  }
+  return value;
+}
+
+/** Column separator for a transpose. An explicit delimiter wins; otherwise the text is scanned. */
+function columnDelimiter(input: string, split: Split): Delimiter {
+  if (split === 'comma' || split === 'semicolon' || split === 'tab' || split === 'space' || split === 'pipe') {
+    return split;
+  }
+  if (input.includes('\t')) return 'tab';
+  if (input.includes(',')) return 'comma';
+  if (input.includes(';')) return 'semicolon';
+  if (input.includes('|')) return 'pipe';
+  return 'comma';
+}
+
+function joinCells(cells: string[], joiner: string): string {
+  let end = cells.length;
+  while (end > 0 && cells[end - 1] === '') end -= 1;
+  if (end === 0) return '';
+  return cells.slice(0, end).join(joiner);
+}
+
+/** Each input line is a row. The result is one item per column. */
+function transposeItems(input: string, delim: Delimiter, trim: boolean): string[] {
+  const grid = input.split(/\r?\n/).map((line) => {
+    const cells = line.split(SPLIT[delim]);
+    return trim ? cells.map((cell) => cell.trim()) : cells;
+  });
+  const width = grid.reduce((max, row) => Math.max(max, row.length), 0);
+  const joiner = COLUMN_JOIN[delim];
+  const columns: string[] = [];
+  for (let col = 0; col < width; col++) {
+    columns.push(
+      joinCells(
+        grid.map((row) => row[col] ?? ''),
+        joiner,
+      ),
+    );
+  }
+  return columns;
+}
+
 export function listConverter(input: string, o: ListOptions = {}): { text: string; count: number } {
   if (input.length > MAX_INPUT) throw new ToolInputError('Input is too large (maximum 5 MB).');
   if (input === '') return { text: '', count: 0 };
-  const split = o.split && o.split !== 'auto' ? o.split : detectSplit(input);
-  let items = split === 'url' ? splitOnUrls(input) : input.split(SPLIT[split]);
-  // Detect also repairs a list whose separator was deleted, after the normal split.
-  if (!o.split || o.split === 'auto') {
-    items = items.flatMap((item) => (schemeCount(item) >= 2 ? splitOnUrls(item) : [item]));
+  const truncate = o.truncate === undefined ? undefined : checkTruncate(o.truncate);
+  const trim = o.trim ?? true;
+  let items: string[];
+  if (o.transpose) {
+    items = transposeItems(input, columnDelimiter(input, o.split ?? 'auto'), trim);
+  } else {
+    const split = o.split && o.split !== 'auto' ? o.split : detectSplit(input);
+    items = split === 'url' ? splitOnUrls(input) : input.split(SPLIT[split]);
+    // Detect also repairs a list whose separator was deleted, after the normal split.
+    if (!o.split || o.split === 'auto') {
+      items = items.flatMap((item) => (schemeCount(item) >= 2 ? splitOnUrls(item) : [item]));
+    }
+    if (trim) items = items.map((s) => s.trim());
   }
-  if (o.trim ?? true) items = items.map((s) => s.trim());
   if (o.removeEmpty ?? true) items = items.filter((s) => s !== '');
   if (o.caseMode === 'lower') items = items.map((s) => s.toLocaleLowerCase());
   if (o.caseMode === 'upper') items = items.map((s) => s.toLocaleUpperCase());
@@ -118,6 +205,7 @@ export function listConverter(input: string, o: ListOptions = {}): { text: strin
     default:
       break;
   }
+  if (truncate !== undefined) items = items.map((s) => truncateChars(s, truncate));
   const body = items.map((s) => `${o.prefix ?? ''}${s}${o.suffix ?? ''}`).join(JOIN[o.join ?? 'newline']);
   return { text: `${o.open ?? ''}${body}${o.close ?? ''}`, count: items.length };
 }

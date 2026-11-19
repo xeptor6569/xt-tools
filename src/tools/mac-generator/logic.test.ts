@@ -23,6 +23,20 @@ describe('macGenerator', () => {
     for (const address of addresses) expect(address).toMatch(/^[0-9A-F]{2}(?::[0-9A-F]{2}){5}$/);
   });
 
+  it('copies a prefix and prints the chosen letter case', () => {
+    expect(macGenerator(1, fixed(0x11), { prefix: 'AA:BB:CC' })).toEqual(['AA:BB:CC:11:11:11']);
+    expect(macGenerator(1, fixed(0xff), { prefix: 'aa-bb', letterCase: 'lower' })).toEqual(['aa:bb:ff:ff:ff:ff']);
+    expect(macGenerator(1, fixed(0x11), { prefix: '00 00 00' })).toEqual(['00:00:00:11:11:11']);
+    expect(macGenerator(1, fixed(0xff), { letterCase: 'lower' })).toEqual(['fe:ff:ff:ff:ff:ff']);
+    expect(macGenerator(2, fixed(0x11), { prefix: 'AABBCC' })).toEqual(['AA:BB:CC:11:11:11', 'AA:BB:CC:11:11:11']);
+  });
+
+  it('rejects a prefix that is not one to five hex bytes', () => {
+    expect(() => macGenerator(1, fixed(1), { prefix: 'zz' })).toThrow(/hex/);
+    expect(() => macGenerator(1, fixed(1), { prefix: 'A' })).toThrow(/hex/);
+    expect(() => macGenerator(1, fixed(1), { prefix: 'AA:BB:CC:DD:EE:FF' })).toThrow(/5 bytes/);
+  });
+
   it('rejects a bad count or a short buffer', () => {
     expect(() => macGenerator(0, fixed(1))).toThrow(ToolInputError);
     expect(() => macGenerator(1, () => new Uint8Array(2))).toThrow(ToolInputError);

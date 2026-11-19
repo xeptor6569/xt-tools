@@ -47,13 +47,55 @@ export const PRESETS: ReadonlyArray<{ label: string; expression: string }> = [
   { label: 'First of the month', expression: '0 0 1 * *' },
 ];
 
+function normalizeCron(input: string): string {
+  return input.trim().replace(/\s+/g, ' ');
+}
+
+/**
+ * The minute, hour, day, month and weekday fields.
+ * Nicknames are expanded. A leading seconds field is left out.
+ * Undefined when the text is empty or not five or six fields.
+ */
+export function cronFields(input: string): string[] | undefined {
+  const raw = normalizeCron(input);
+  if (raw === '') return undefined;
+  const expression = NICKNAMES[raw.toLowerCase()] ?? raw;
+  const parts = expression.split(' ');
+  if (parts.length === 5) return parts;
+  if (parts.length === 6) return parts.slice(1);
+  return undefined;
+}
+
+/** Writes one of the five fields back into an expression the explainer can check. */
+export function setCronField(input: string, index: number, value: string): string {
+  if (!Number.isInteger(index) || index < 0 || index > 4)
+    throw new ToolInputError('Choose one of the five cron fields.');
+  const field = value.replace(/\s+/g, '');
+  if (field === '') throw new ToolInputError('A cron field cannot be empty. Use * for any value.');
+  const raw = normalizeCron(input);
+  const expression = raw === '' ? '* * * * *' : (NICKNAMES[raw.toLowerCase()] ?? raw);
+  const parts = expression.split(' ');
+  let seconds: string | undefined;
+  let fields: string[];
+  if (parts.length === 6) {
+    seconds = parts[0];
+    fields = parts.slice(1);
+  } else if (parts.length === 5) {
+    fields = [...parts];
+  } else {
+    fields = ['*', '*', '*', '*', '*'];
+  }
+  fields[index] = field;
+  return seconds === undefined ? fields.join(' ') : `${seconds} ${fields.join(' ')}`;
+}
+
 /** Explains a cron expression and lists its next runs after `now`. */
 export function crontab(
   input: string,
   { now = new Date(), count = 10, zone = 'local' as Zone } = {},
 ): CronResult | undefined {
   if (input.length > MAX_INPUT) throw new ToolInputError('Expression is too long.');
-  const raw = input.trim().replace(/\s+/g, ' ');
+  const raw = normalizeCron(input);
   if (raw === '') return undefined;
   const expression = NICKNAMES[raw.toLowerCase()] ?? raw;
   const parts = expression.split(' ');

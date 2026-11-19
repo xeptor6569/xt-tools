@@ -19,7 +19,18 @@ describe('unitConverter', () => {
     expect(convert(-40, 'temperature', 'f', 'c')).toBeCloseTo(-40, 10);
     expect(convert(0, 'temperature', 'k', 'c')).toBeCloseTo(-273.15, 10);
     expect(convert(491.67, 'temperature', 'r', 'c')).toBeCloseTo(0, 10);
+    // Water freezes and boils on the historical scales.
+    expect(convert(0, 'temperature', 'c', 'de')).toBeCloseTo(150, 10);
+    expect(convert(100, 'temperature', 'c', 'de')).toBeCloseTo(0, 10);
+    expect(convert(0, 'temperature', 'c', 'n')).toBeCloseTo(0, 10);
+    expect(convert(100, 'temperature', 'c', 'n')).toBeCloseTo(33, 10);
+    expect(convert(0, 'temperature', 'c', 're')).toBeCloseTo(0, 10);
+    expect(convert(100, 'temperature', 'c', 're')).toBeCloseTo(80, 10);
+    expect(convert(0, 'temperature', 'c', 'ro')).toBeCloseTo(7.5, 10);
+    expect(convert(100, 'temperature', 'c', 'ro')).toBeCloseTo(60, 10);
+    expect(convert(7.5, 'temperature', 'ro', 'f')).toBeCloseTo(32, 8);
     expect(() => convert(-300, 'temperature', 'c', 'k')).toThrow(/absolute zero/);
+    expect(() => convert(1000, 'temperature', 'de', 'c')).toThrow(/absolute zero/);
   });
 
   it('distinguishes decimal and binary data sizes', () => {

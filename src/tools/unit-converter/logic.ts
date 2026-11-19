@@ -14,12 +14,21 @@ const TO_K: Record<string, (v: number) => number> = {
   f: (v) => ((v - 32) * 5) / 9 + 273.15,
   k: (v) => v,
   r: (v) => (v * 5) / 9,
+  // Historical scales, each defined from Celsius. Water freezes at 150 °De, 0 °N, 0 °Ré and 7.5 °Rø.
+  de: (v) => 100 - (v * 2) / 3 + 273.15,
+  n: (v) => (v * 100) / 33 + 273.15,
+  re: (v) => (v * 5) / 4 + 273.15,
+  ro: (v) => ((v - 7.5) * 40) / 21 + 273.15,
 };
 const FROM_K: Record<string, (k: number) => number> = {
   c: (k) => k - 273.15,
   f: (k) => ((k - 273.15) * 9) / 5 + 32,
   k: (k) => k,
   r: (k) => (k * 9) / 5,
+  de: (k) => ((100 - (k - 273.15)) * 3) / 2,
+  n: (k) => ((k - 273.15) * 33) / 100,
+  re: (k) => ((k - 273.15) * 4) / 5,
+  ro: (k) => ((k - 273.15) * 21) / 40 + 7.5,
 };
 
 export function format(n: number): string {

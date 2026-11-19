@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { expectRobust } from '../../../tests/helpers/expect-robust.ts';
 import { ToolInputError } from '../types.ts';
-import { crontab, PRESETS } from './logic.ts';
+import { cronFields, crontab, PRESETS, setCronField } from './logic.ts';
 
 const now = new Date('2026-10-14T08:07:30Z');
 const runs = (expr: string, count = 3) =>
@@ -43,6 +43,22 @@ describe('crontab', () => {
       ['Month', '*'],
       ['Day of week', 'sun'],
     ]);
+  });
+
+  it('builds an expression from the five fields', () => {
+    expect(cronFields('0 9 * * 1-5')).toEqual(['0', '9', '*', '*', '1-5']);
+    expect(cronFields('@daily')).toEqual(['0', '0', '*', '*', '*']);
+    expect(cronFields('30 0 9 * * 1-5')).toEqual(['0', '9', '*', '*', '1-5']);
+    expect(cronFields('')).toBeUndefined();
+    expect(cronFields('not a cron')).toBeUndefined();
+    expect(setCronField('0 9 * * 1-5', 0, '15')).toBe('15 9 * * 1-5');
+    expect(setCronField('@weekly', 3, 'JAN')).toBe('0 0 * JAN 0');
+    expect(setCronField('30 * * * * *', 1, '4')).toBe('30 * 4 * * *');
+    expect(setCronField('not a cron', 2, '1')).toBe('* * 1 * *');
+    expect(setCronField('* * * * *', 4, '1, 5')).toBe('* * * * 1,5');
+    expect(crontab(setCronField('* * * * *', 4, '1-5'), { now })?.description).toContain('Monday through Friday');
+    expect(() => setCronField('* * * * *', 0, '   ')).toThrow(ToolInputError);
+    expect(() => setCronField('* * * * *', 5, '*')).toThrow(ToolInputError);
   });
 
   it('every preset is valid', () => {

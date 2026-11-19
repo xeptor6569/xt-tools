@@ -6,7 +6,15 @@ import OutputRegion from '../../components/ui/OutputRegion.tsx';
 import ResultTable from '../../components/ui/ResultTable.tsx';
 import Select from '../../components/ui/Select.tsx';
 import { runTool } from '../../lib/run-tool.ts';
-import { crontab, PRESETS, type Zone } from './logic.ts';
+import { cronFields, crontab, PRESETS, setCronField, type Zone } from './logic.ts';
+
+const BUILDER = [
+  { label: 'Minute', hint: '0–59' },
+  { label: 'Hour', hint: '0–23' },
+  { label: 'Day of month', hint: '1–31' },
+  { label: 'Month', hint: '1–12 or JAN–DEC' },
+  { label: 'Day of week', hint: '0–7 or SUN–SAT' },
+] as const;
 
 const ZONES = [
   { value: 'local', label: 'This device’s time zone' },
@@ -30,6 +38,7 @@ export default function CrontabTool() {
       }),
     [zone],
   );
+  const fields = cronFields(input) ?? ['*', '*', '*', '*', '*'];
   const runs =
     result.output?.nextRuns.map((d, i) => ({ n: String(i + 1), when: format.format(d), iso: d.toISOString() })) ?? [];
 
@@ -47,6 +56,21 @@ export default function CrontabTool() {
           />
         </div>
         <Select label="Show times in" value={zone} options={ZONES} onValue={setZone} />
+      </div>
+      <div class="flex flex-wrap items-end gap-3">
+        {BUILDER.map((field, index) => (
+          <Input
+            key={field.label}
+            label={field.label}
+            value={fields[index] ?? '*'}
+            onValue={(value) => {
+              const next = value.replace(/\s+/g, '');
+              setInput(setCronField(input, index, next === '' ? '*' : next));
+            }}
+            hint={field.hint}
+            class="w-36 font-mono"
+          />
+        ))}
       </div>
       <div class="flex flex-wrap gap-2">
         {PRESETS.map((p) => (

@@ -991,10 +991,10 @@ The current file already matches the spec. Phase 0 makes these fixes:
 - `text-to-binary`: Text to ASCII binary
 - `text-to-unicode`: Text to Unicode code points and escapes
 - `data-format-converter`: JSON ⇄ YAML ⇄ TOML ⇄ XML ⇄ CSV ⇄ .env ⇄ INI ⇄ properties, with from/to selectors
-- `list-converter`: List converter
+- `list-converter`: List converter. Sort, reverse, prefix, suffix, lowercase, truncate and transpose rows
 - `table-converter`: CSV/TSV/JSON ⇄ Markdown/HTML tables, with a table editor
 - `html-to-markdown`: HTML to Markdown
-- `unit-converter`: Unit converter, including KB vs KiB and temperature
+- `unit-converter`: Unit converter, including KB vs KiB and temperature (Kelvin, Celsius, Fahrenheit, Rankine, Delisle, Newton, Réaumur and Rømer)
 - `currency-converter`: Currency converter. Latest ECB rates from Frankfurter, fetched only when the two currencies differ · network: `api.frankfurter.dev`
 - `time-zones`: Time zone converter and meeting planner (`Intl` only)
 - `number-to-words`: Number to words
@@ -1086,10 +1086,10 @@ The current file already matches the spec. Phase 0 makes these fixes:
 #### Network (18)
 
 - `ipv4-subnet`: IPv4 subnet calculator · **P1**
-- `ipv4-converter`: IPv4 address converter
+- `ipv4-converter`: IPv4 address converter, including the IPv4-mapped IPv6 form `::ffff:a.b.c.d`
 - `ipv4-range-expander`: IPv4 range expander
 - `mac-vendor`: MAC vendor lookup, using the bundled OUI dataset (`refresh-data oui`) · H
-- `mac-generator`: MAC address generator
+- `mac-generator`: MAC address generator, with an optional prefix and upper or lower case
 - `ipv6-ula`: IPv6 ULA generator
 - `ipv6-subnet`: IPv6 subnet calculator and expand/compress tool
 - `cidr-tools`: CIDR aggregator and overlap checker
@@ -1148,7 +1148,7 @@ The current file already matches the spec. Phase 0 makes these fixes:
 #### Data (8)
 
 - `phone-parser`: Phone parser · H
-- `iban-validator`: IBAN validator
+- `iban-validator`: IBAN validator, with country, BBAN and Swiss QR-IBAN status
 - `luhn-validator`: Credit card Luhn validator (documented for test numbers only) · S
 - `isbn-ean-validator`: ISBN, EAN and UPC validator
 - `vat-validator`: VAT format validator (format only; no VIES lookup)
@@ -1335,4 +1335,5 @@ Every phase ends with the full check set from [13.3](#133-commands-per-phase) pa
 | 2026-11-19 | 6     | **Password generator accepts a 3-word passphrase.** The Diceware page stays at 4–10 words. `diceware()` takes an optional floor so the generator can ask for 3. **Image upgrades:** the pinned nginx image installs nginx from nginx.org with a one-off `apk add -X`, so `apk upgrade` never sees a newer nginx. The runtime stage now upgrades the installed nginx.org packages from that index, and CI passes `APK_UPGRADE` (the run id) so the step is not cached for the life of the digest. The home-page end-to-end test allows 60s. |
 | 2026-11-19 | 6     | **Markdown editor downloads Word.** `Download .docx` writes Office Open XML in the browser (no new dependency). Headings, emphasis, links, lists, code and tables keep their styles; table headers are shaded and bordered, and cell alignment is kept. Remote images stay as alt text so Word has nothing to fetch. `data:` images are embedded. The converter is a lazy chunk. |
 | 2026-11-19 | 6     | **`password-vault-merge` shows a creation date with each duplicate.** Bitwarden JSON `creationDate`, 1Password `createdAt`, KeePass `CreationTime`, and Firefox `timeCreated` (plus a created column on other CSVs) are kept on the entry. A duplicate login becomes a choice when the passwords differ or a recorded creation date differs. Each choice shows the source, that date or "created date unknown", and the password. The selected copy’s password and `creationDate` are what the Bitwarden JSON download keeps. Identical copies with no dates still fold with no choice. |
+| 2026-11-19 | 6     | **Filled the remaining gaps in tools that already existed.** No new pages. `unit-converter` adds Delisle, Newton, Réaumur and Rømer, converted through Kelvin. `list-converter` truncates each item by code point and transposes columns (a line is a row; trailing empty cells are dropped; an all-empty column is removed when empty items are removed). `crontab` has minute, hour, day, month and weekday fields that rewrite the expression, including nicknames and a leading seconds field. `ipv4-converter` adds the IPv4-mapped form `::ffff:a.b.c.d`. `mac-generator` takes a prefix of up to 5 hex bytes and prints upper or lower case; a prefix is copied as written, so the local and unicast switches apply only when it is empty. `iban-validator` prints the BBAN and whether a CH or LI IBAN is a QR-IBAN (IID 30000–31999). **Left as they were:** charset tokens stay on `password-generator` (`token-generator` remains random bytes); integer bases stay 2–36 (Base64 text stays `base-encoder`); TripleDES, Rabbit and RC4 stay decrypt-only (D5). |
 

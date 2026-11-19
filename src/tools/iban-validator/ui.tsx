@@ -11,7 +11,8 @@ export default function IbanValidatorTool() {
   return (
     <div class="flex flex-col gap-4">
       <p class="text-sm text-muted">
-        Spaces are ignored. A valid IBAN has a MOD-97 remainder of 1 and is shown in groups of four.
+        Spaces are ignored. A valid IBAN has a MOD-97 remainder of 1. The result shows the country, the BBAN and whether
+        a Swiss or Liechtenstein IBAN is a QR-IBAN.
       </p>
       <TwoPane
         inputLabel="IBAN"

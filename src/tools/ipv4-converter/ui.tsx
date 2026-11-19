@@ -19,7 +19,7 @@ export default function Ipv4ConverterTool() {
         value={input}
         onValue={setInput}
         placeholder="192.168.1.1"
-        hint="Dotted decimal, a decimal integer, 0x hex, or 32-bit binary."
+        hint="Dotted decimal, a decimal integer, 0x hex, or 32-bit binary. IPv6 is the mapped form ::ffff:a.b.c.d."
         class="font-mono"
         data-xt="input"
       />

@@ -21,6 +21,7 @@ export function ipv4Converter(input: string): Variant[] {
       label: 'Binary',
       value: [24, 16, 8, 0].map((shift) => ((n >>> shift) & 255).toString(2).padStart(8, '0')).join('.'),
     },
+    { label: 'IPv6', value: `::ffff:${formatIpv4(n)}` },
   ];
 }
 
