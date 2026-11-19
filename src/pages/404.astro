@@ -1,5 +1,6 @@
 ---
 import { categories } from '../categories.ts';
+import { buttonClass } from '../components/ui/Button.tsx';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { categoryHref, href } from '../lib/href.ts';
 ---
@@ -16,4 +17,22 @@ import { categoryHref, href } from '../lib/href.ts';
       </li>
     ))}
   </ul>
+  <div class="mt-8 flex flex-col items-start gap-3 border-t border-border pt-6" data-xt="hash-snake">
+    <p class="text-sm text-muted">The bits that were on this page have wandered off.</p>
+    <button type="button" class={buttonClass('secondary')} data-xt="hash-snake-start">
+      Chase the bits
+    </button>
+    <div class="flex w-full flex-col gap-3" data-xt="hash-snake-root"></div>
+  </div>
+  <script>
+    const start = document.querySelector('[data-xt="hash-snake-start"]');
+    start?.addEventListener('click', async () => {
+      const root = document.querySelector('[data-xt="hash-snake-root"]');
+      if (!root || !(start instanceof HTMLButtonElement)) return;
+      start.disabled = true;
+      const { mountHashSnake } = await import('../components/site/hash-snake.ts');
+      start.remove();
+      mountHashSnake(root);
+    });
+  </script>
 </BaseLayout>
